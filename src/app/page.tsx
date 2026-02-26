@@ -4,7 +4,10 @@ import { auth } from "@clerk/nextjs/server";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { userId } = await auth();
+  let userId: string | null = null;
+  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    ({ userId } = await auth());
+  }
   const ctaHref = userId ? "/dashboard" : "/builder";
   const ctaLabel = userId ? "Go to Dashboard" : "Start Building";
 

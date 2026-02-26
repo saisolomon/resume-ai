@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { generatePdf } from "@/lib/pdf/generate";
 import type { ResumeData } from "@/lib/resume/types";
@@ -11,7 +10,11 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
   // Check auth (optional -- guest mode still works)
-  const { userId: clerkId } = await auth();
+  let clerkId: string | null = null;
+  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    const { auth } = await import("@clerk/nextjs/server");
+    ({ userId: clerkId } = await auth());
+  }
   let dbUserId: string | null = null;
 
   if (clerkId) {
