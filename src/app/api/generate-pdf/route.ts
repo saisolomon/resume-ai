@@ -1,15 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { generateResume } from "@/lib/docx/generate";
+import { generatePdf } from "@/lib/pdf/generate";
 import type { ResumeData } from "@/lib/resume/types";
 import { rateLimit } from "@/lib/rate-limit";
 import { getUserByClerkId } from "@/lib/db/user";
 import { logUsageEvent } from "@/lib/db/queries/usage";
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
-  // Check auth (optional — guest mode still works)
+  // Check auth (optional -- guest mode still works)
   const { userId: clerkId } = await auth();
   let dbUserId: string | null = null;
 
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Rate limit: IP-based for all users
-  const allowed = rateLimit(`docx:${ip}`, 5, 60 * 60 * 1000);
+  const allowed = rateLimit(`pdf:${ip}`, 5, 60 * 60 * 1000);
   if (!allowed) {
     return NextResponse.json(
       { error: "Download rate limit exceeded. Please try again later." },
@@ -46,25 +47,24 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const buffer = await generateResume(data);
+    const buffer = await generatePdf(data);
 
     // Log usage for authenticated users
     if (dbUserId) {
-      await logUsageEvent(dbUserId, "docx_download");
+      await logUsageEvent(dbUserId, "pdf_download");
     }
 
     return new NextResponse(new Uint8Array(buffer), {
       status: 200,
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": 'attachment; filename="resume.docx"',
+        "Content-Type": "application/pdf",
+        "Content-Disposition": 'attachment; filename="resume.pdf"',
       },
     });
   } catch (err) {
-    console.error("DOCX generation failed:", err);
+    console.error("PDF generation failed:", err);
     return NextResponse.json(
-      { error: "Failed to generate resume document" },
+      { error: "Failed to generate PDF" },
       { status: 500 },
     );
   }

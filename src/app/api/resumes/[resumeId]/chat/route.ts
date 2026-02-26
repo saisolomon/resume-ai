@@ -1,27 +1,50 @@
 import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { getUserByClerkId } from "@/lib/db/user";
+import { getResume } from "@/lib/db/queries/resumes";
+import { getChatHistory, saveChatMessage } from "@/lib/db/queries/chat";
 import { anthropic, MODEL } from "@/lib/ai/client";
 import { buildSystemPrompt } from "@/lib/ai/prompts";
 import type { ResumeData } from "@/lib/resume/types";
 import { rateLimit } from "@/lib/rate-limit";
-import { getUserByClerkId } from "@/lib/db/user";
-import { logUsageEvent } from "@/lib/db/queries/usage";
 
 export const runtime = "nodejs";
 
-export async function POST(req: Request) {
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ resumeId: string }> },
+) {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const user = await getUserByClerkId(clerkId);
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  const { resumeId } = await params;
+  const resume = await getResume(resumeId, user.id);
+  if (!resume) return NextResponse.json({ error: "Resume not found" }, { status: 404 });
+
+  const messages = await getChatHistory(resumeId);
+  return NextResponse.json(messages);
+}
+
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ resumeId: string }> },
+) {
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-
-    // Check auth (optional — guest mode still works)
     const { userId: clerkId } = await auth();
-    let dbUserId: string | null = null;
+    if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (clerkId) {
-      const user = await getUserByClerkId(clerkId);
-      if (user) dbUserId = user.id;
-    }
+    const user = await getUserByClerkId(clerkId);
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    // Rate limit: IP-based for guests, usage-based for authenticated users
+    const { resumeId } = await params;
+    const resume = await getResume(resumeId, user.id);
+    if (!resume) return NextResponse.json({ error: "Resume not found" }, { status: 404 });
+
+    // Rate limit: 20 requests per 10 minutes per IP
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
     const allowed = rateLimit(`chat:${ip}`, 20, 10 * 60 * 1000);
     if (!allowed) {
       return new Response(
@@ -44,13 +67,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const systemPrompt = buildSystemPrompt(currentResume ?? null, jobDescription);
-
-    const apiMessages = messages.map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    }));
-
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response(
         JSON.stringify({ error: "ANTHROPIC_API_KEY is not configured" }),
@@ -58,9 +74,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Log usage for authenticated users
-    if (dbUserId) {
-      await logUsageEvent(dbUserId, "chat_message");
+    const systemPrompt = buildSystemPrompt(currentResume ?? null, jobDescription);
+
+    const apiMessages = messages.map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content,
+    }));
+
+    // Save the user message (the last message in the array)
+    const lastUserMessage = messages[messages.length - 1];
+    if (lastUserMessage && lastUserMessage.role === "user") {
+      await saveChatMessage(resumeId, "user", lastUserMessage.content);
     }
 
     const stream = anthropic.messages.stream({
@@ -71,6 +95,7 @@ export async function POST(req: Request) {
     });
 
     const encoder = new TextEncoder();
+    let assistantResponse = "";
 
     const readable = new ReadableStream({
       async start(controller) {
@@ -80,10 +105,14 @@ export async function POST(req: Request) {
               event.type === "content_block_delta" &&
               event.delta.type === "text_delta"
             ) {
+              assistantResponse += event.delta.text;
               controller.enqueue(encoder.encode(event.delta.text));
             }
           }
           controller.close();
+
+          // After streaming completes, persist the assistant message
+          await saveChatMessage(resumeId, "assistant", assistantResponse);
         } catch (err) {
           controller.error(err);
         }
