@@ -10,7 +10,7 @@ export const startRun = action({
     jdUrl: v.string(),
     fingerprintHash: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<Id<"runs">> => {
     const jdId = (await ctx.runAction(api.jobDescriptionsActions.resolveJobDescription, {
       url: args.jdUrl,
     })) as Id<"jobDescriptions">;

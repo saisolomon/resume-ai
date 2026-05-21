@@ -2,6 +2,7 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import mammoth from "mammoth";
 import { getAnthropic, MODELS } from "./ai/anthropic";
 
@@ -86,7 +87,7 @@ export const parseAndStoreResume = action({
     filename: v.string(),
     source: v.union(v.literal("pdf"), v.literal("docx")),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ resumeId: Id<"resumes"> }> => {
     const blob = await ctx.storage.get(args.storageId);
     if (!blob) throw new Error("uploaded_file_missing");
     const buffer = await blob.arrayBuffer();

@@ -2,12 +2,13 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { api, internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import { scrapeJD } from "./scrape/routing";
 import { canonicalizeJobUrl } from "./scrape/canonicalize";
 
 export const resolveJobDescription = action({
   args: { url: v.string() },
-  handler: async (ctx, { url }) => {
+  handler: async (ctx, { url }): Promise<Id<"jobDescriptions">> => {
     const canonicalUrl = canonicalizeJobUrl(url);
 
     const existing = await ctx.runQuery(api.jobDescriptions.getByCanonicalUrl, {

@@ -83,6 +83,7 @@ export const runAngle = internalAction({
 
     try {
       const angle = getAngle(cardRow.angle as AngleSlug);
+      const jdMerged = { ...jd.parsed, title: jd.title, company: jd.company };
       const client = getAnthropic();
       const resp = await client.messages.create({
         model: MODELS.sonnet,
@@ -94,7 +95,7 @@ export const runAngle = internalAction({
             content: buildUserMessage({
               angleDirective: angle.directive,
               resume: resume.parsed,
-              jd: jd.parsed,
+              jd: jdMerged,
             }),
           },
         ],
@@ -105,7 +106,7 @@ export const runAngle = internalAction({
       if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
       const content = JSON.parse(json) as ResumeData;
 
-      const ats = await scoreCard(content, jd.parsed);
+      const ats = await scoreCard(content, jdMerged);
 
       await ctx.runMutation(internal.cards.patchCard, {
         cardId,
