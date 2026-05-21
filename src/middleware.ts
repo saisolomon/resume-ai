@@ -8,12 +8,14 @@ const isProtectedRoute = createRouteMatcher([
   "/api/resumes(.*)",
   "/api/upload(.*)",
   "/api/generate-pdf(.*)",
+  "/api/download(.*)",
+  "/api/claim(.*)",
   "/api/stripe/checkout(.*)",
   "/api/stripe/portal(.*)",
   "/api/usage(.*)",
 ]);
 
-// Skip Clerk middleware entirely when keys aren't configured
+// Public routes for the v2 anonymous demo: /, /try/*, /sign-in, /sign-up
 const handler = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   ? clerkMiddleware(async (auth, req) => {
       if (isProtectedRoute(req)) {
