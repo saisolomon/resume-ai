@@ -22,6 +22,8 @@ The product hook: **"Stop letting AI decide your job for you."** Every surface r
 | Paywall | At export (sign-up free, PRO unlocks unlimited) | Standard Canva/Figma pattern; preserves the hook |
 | Approach | Full top-to-bottom redesign | "Make it better by changing how it works" — total redesign |
 | Backend | Convex | Reactive subscriptions = trivial progressive reveal; no SSE infra |
+| Scraping | Firecrawl only (Apify dropped) | Coverage was sufficient; dropping the fallback removes a failure mode |
+| PDF parsing | Anthropic-native (Sonnet 4.6 document input) | pdf-parse pulls PDF.js's browser globals that Convex can't polyfill |
 | Pricing framework | Grand Slam Offer (Hormozi value equation) | Per user direction |
 
 ## Section 1 — Positioning & User Journey
@@ -52,7 +54,7 @@ The product hook: **"Stop letting AI decide your job for you."** Every surface r
 - **Auth:** Clerk (kept from v1) — Clerk's Convex integration is first-class; signed JWTs flow into Convex `ctx.auth`.
 - **Billing:** Stripe (kept) — webhook lands as a Convex HTTP action.
 - **AI:** Anthropic SDK (kept) called from Convex actions. 4 parallel angle generations via `ctx.scheduler`.
-- **Scraping:** Firecrawl (primary) + Apify (fallback for hostile domains).
+- **Scraping:** Firecrawl. Called from Convex actions. (Apify was scoped as a fallback but dropped during Plan 1 — coverage was sufficient and the fallback added more failure modes than it saved.)
 - **PDF / DOCX:** `@react-pdf/renderer` and `docx` (kept) — rendered in Convex actions; output written to Convex file storage and returned as a signed URL.
 - **Deployment:** Vercel (frontend) + Convex Cloud (backend). No more Vercel Postgres dependency.
 
@@ -170,21 +172,17 @@ Client                          Convex
 3. useQuery(api.cards.byRun, {runId})  ─── real-time subscription
 ```
 
-### Scraping routing (`scrapeJD`)
+### Scraping (`scrapeJD`)
 
-Two-tier with manual-paste fallback. Routing by domain + content quality, not user choice.
+Firecrawl-only. Apify was scoped as a fallback for hostile domains (LinkedIn, Workday) but dropped during Plan 1 implementation — Firecrawl coverage was sufficient and the fallback added more failure modes than it removed.
 
 ```
 scrapeJD(url):
-  domain = parse(url).host
-  if domain in HOSTILE_DOMAINS:      // linkedin.com/jobs, workday hosts, indeed.com
-    result = apify.run(actorFor(domain), {url})
-  else:                              // default: greenhouse, lever, ashby, ~85% of postings
-    result = firecrawl.scrape(url, {formats: ["markdown"], onlyMainContent: true})
-    if result.text.length < 800 or missing key fields:
-      result = apify.run("apify/web-scraper", {url})
+  result = firecrawl.scrape(url, {formats: ["markdown"], onlyMainContent: true})
+  if result.text.length < 400:
+    throw "scrape_failed: insufficient content"
   parsed = extractJDFields(result.text)  // Claude Haiku
-  return {sourceUrl, canonicalUrl, rawText, parsed, scraper}
+  return {sourceUrl, canonicalUrl, rawText, parsed, scraper: "firecrawl"}
 ```
 
 If both scrapers return nothing meaningful, the `runs` row is marked `failed` with `failureReason: "scrape_failed"` and the UI flips to a "Paste the JD instead" recovery path.
