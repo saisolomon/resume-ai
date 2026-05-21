@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ConvexClerkProvider } from "@/providers/ConvexClerkProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ResumeAI — AI-Powered Resume Generator",
+  title: "resume.ai — Stop letting AI decide your job for you",
   description:
-    "Generate professional, ATS-friendly resumes through a conversational AI interface. Chat with Claude to build your resume.",
+    "Paste a job. Drop your resume. See four ways to win it — with real ATS scores.",
 };
 
 export default function RootLayout({
@@ -24,21 +24,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const body = (
+  return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ConvexClerkProvider>{children}</ConvexClerkProvider>
       </body>
     </html>
   );
-
-  // ClerkProvider requires NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY at build time.
-  // Wrap conditionally so the app builds without Clerk keys configured.
-  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
-    return <ClerkProvider>{body}</ClerkProvider>;
-  }
-
-  return body;
 }
