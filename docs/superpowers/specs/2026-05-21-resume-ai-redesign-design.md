@@ -207,7 +207,7 @@ runAngle({cardId, runId}):
     jd: jd.parsed,
   })
 
-  content = await anthropic.messages.create({model: "claude-sonnet-4-7", ...prompt})
+  content = await anthropic.messages.create({model: "claude-sonnet-4-6", ...prompt})
   parsed  = parseResumeData(content)
 
   ats = await scoreCard({parsed, jd: jd.parsed})
@@ -252,8 +252,8 @@ Format checks are deterministic on purpose — the user sees "Format safety: 100
 
 | Step | Model | Tok in / out | Cost |
 |---|---|---|---|
-| JD parse | Sonnet 4.7 | 4k / 1.5k | $0.034 |
-| 4× angle gen | Sonnet 4.7 | 6k / 2k each | $0.252 |
+| JD parse | Sonnet 4.6 | 4k / 1.5k | $0.034 |
+| 4× angle gen | Sonnet 4.6 | 6k / 2k each | $0.252 |
 | 4× narrative score | Haiku 4.5 | 4k / 0.3k each | $0.012 |
 | Firecrawl scrape | — | — | $0.002–0.01 |
 | **Total** | | | **~$0.30 / run** |
