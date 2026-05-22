@@ -12,7 +12,12 @@ import type * as ai_anthropic from "../ai/anthropic.js";
 import type * as ai_runAngle from "../ai/runAngle.js";
 import type * as ai_score from "../ai/score.js";
 import type * as cards from "../cards.js";
+import type * as cardsActions from "../cardsActions.js";
+import type * as chatMessages from "../chatMessages.js";
 import type * as claim from "../claim.js";
+import type * as cleanup from "../cleanup.js";
+import type * as dashboard from "../dashboard.js";
+import type * as http from "../http.js";
 import type * as jobDescriptions from "../jobDescriptions.js";
 import type * as jobDescriptionsActions from "../jobDescriptionsActions.js";
 import type * as resumes from "../resumes.js";
@@ -24,6 +29,9 @@ import type * as scrape_direct from "../scrape/direct.js";
 import type * as scrape_extract from "../scrape/extract.js";
 import type * as scrape_firecrawl from "../scrape/firecrawl.js";
 import type * as scrape_routing from "../scrape/routing.js";
+import type * as stripe from "../stripe.js";
+import type * as stripeActions from "../stripeActions.js";
+import type * as stripeWebhook from "../stripeWebhook.js";
 import type * as users from "../users.js";
 
 import type {
@@ -37,7 +45,12 @@ declare const fullApi: ApiFromModules<{
   "ai/runAngle": typeof ai_runAngle;
   "ai/score": typeof ai_score;
   cards: typeof cards;
+  cardsActions: typeof cardsActions;
+  chatMessages: typeof chatMessages;
   claim: typeof claim;
+  cleanup: typeof cleanup;
+  dashboard: typeof dashboard;
+  http: typeof http;
   jobDescriptions: typeof jobDescriptions;
   jobDescriptionsActions: typeof jobDescriptionsActions;
   resumes: typeof resumes;
@@ -49,6 +62,9 @@ declare const fullApi: ApiFromModules<{
   "scrape/extract": typeof scrape_extract;
   "scrape/firecrawl": typeof scrape_firecrawl;
   "scrape/routing": typeof scrape_routing;
+  stripe: typeof stripe;
+  stripeActions: typeof stripeActions;
+  stripeWebhook: typeof stripeWebhook;
   users: typeof users;
 }>;
 

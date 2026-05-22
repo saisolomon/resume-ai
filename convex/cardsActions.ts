@@ -38,7 +38,11 @@ ResumeData shape:
 
 export const regenerateCard = action({
   args: { cardId: v.id("cards") },
-  handler: async (ctx, { cardId }) => {
+  // Explicit return-type annotation breaks the TS recursive-inference loop
+  // the action would otherwise hit (it calls into api.chatMessages /
+  // internal.cards / internal.chatMessages, all of which transitively
+  // reference this action through the generated api graph).
+  handler: async (ctx, { cardId }): Promise<{ newScore: number | null }> => {
     // Defense-in-depth ownership check at the top of the action. Today the
     // empty-history guard below would catch a non-owner because byCard is
     // owner-gated and returns []. But that's accidental coupling; a future
