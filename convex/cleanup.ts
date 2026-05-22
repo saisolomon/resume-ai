@@ -1,0 +1,36 @@
+// convex/cleanup.ts
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const deleteRun = mutation({
+  args: { runId: v.id("runs") },
+  handler: async (ctx, { runId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("not_authenticated");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) throw new Error("user_not_found");
+
+    const run = await ctx.db.get(runId);
+    if (!run) return;
+    if (run.userId !== user._id) throw new Error("not_owner");
+
+    // cascade: delete chatMessages → cards → run
+    const cards = await ctx.db
+      .query("cards")
+      .withIndex("by_run", (q) => q.eq("runId", runId))
+      .collect();
+    for (const card of cards) {
+      const msgs = await ctx.db
+        .query("chatMessages")
+        .withIndex("by_card", (q) => q.eq("cardId", card._id))
+        .collect();
+      for (const m of msgs) await ctx.db.delete(m._id);
+      await ctx.db.delete(card._id);
+    }
+    await ctx.db.delete(runId);
+  },
+});
