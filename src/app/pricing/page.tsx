@@ -34,7 +34,7 @@ const huntBullets = [
 ];
 
 export default function PricingPage() {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const [annual, setAnnual] = useState(false);
 
   return (
@@ -48,7 +48,11 @@ export default function PricingPage() {
           <Link href="/" className="text-neutral-400 hover:text-white">
             Home
           </Link>
-          {isSignedIn ? (
+          {!isLoaded ? (
+            // Render nothing auth-shaped until Clerk hydrates — avoids the
+            // signed-in flash of "Sign in" link on first paint.
+            <span className="h-6 w-16" aria-hidden="true" />
+          ) : isSignedIn ? (
             <>
               <Link
                 href="/dashboard"
@@ -177,12 +181,16 @@ export default function PricingPage() {
             Drop a JD, get four designs, ship the one that gets you the call.
           </p>
           <div className="mt-8">
-            <Link
-              href={isSignedIn ? "/dashboard" : "/sign-up?redirect=/pricing"}
-              className="inline-flex h-11 items-center justify-center rounded-md bg-white px-8 text-sm font-semibold text-black hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
-            >
-              {isSignedIn ? "Go to dashboard" : "Start free →"}
-            </Link>
+            {/* Wait for Clerk hydration so signed-in users don't flash a
+                "Start free →" sign-up link. */}
+            {isLoaded && (
+              <Link
+                href={isSignedIn ? "/dashboard" : "/sign-up?redirect=/pricing"}
+                className="inline-flex h-11 items-center justify-center rounded-md bg-white px-8 text-sm font-semibold text-black hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+              >
+                {isSignedIn ? "Go to dashboard" : "Start free →"}
+              </Link>
+            )}
           </div>
           <p className="mt-4 text-xs text-neutral-500">
             No card for Try. Cancel paid plans anytime.

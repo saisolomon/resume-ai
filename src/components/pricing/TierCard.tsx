@@ -1,10 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 
 export type TierName = "free" | "pro" | "career";
+
+// Stash chosen tier on signed-out CTA click so the user lands back on
+// /pricing post-signup and the tier card auto-resumes checkout — keeps the
+// highest-intent moment from costing an extra click.
+const PENDING_TIER_KEY = "resumeai:pendingTier";
 
 export function TierCard({
   name,
@@ -27,25 +32,19 @@ export function TierCard({
   mostPopular?: boolean;
   ctaLabel: string;
 }) {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // For annual view, show the effective monthly price ($12 for Apply, $28 for Hunt).
   const effectiveMonthly = annual
     ? Math.round((priceYearly / 12) * 100) / 100
     : priceMonthly;
 
-  async function pick() {
-    if (!isSignedIn) {
-      router.push(`/sign-up?redirect=/pricing`);
-      return;
-    }
-    if (name === "free") {
-      router.push("/dashboard");
-      return;
-    }
+  async function startCheckout() {
     setLoading(true);
+    setError(null);
     try {
       const resp = await fetch("/api/stripe/checkout", {
         method: "POST",
@@ -53,21 +52,58 @@ export function TierCard({
         body: JSON.stringify({ tier: name }),
       });
       if (!resp.ok) {
-        alert("Couldn't start checkout — try again or contact support.");
+        const body = await resp.text().catch(() => "");
+        console.error("checkout failed", { status: resp.status, body });
+        setError("Couldn't start checkout — try again or contact support.");
         setLoading(false);
         return;
       }
       const data = (await resp.json()) as { url?: string };
       if (!data.url) {
-        alert("Couldn't start checkout — try again or contact support.");
+        console.error("checkout response missing url", data);
+        setError("Couldn't start checkout — try again or contact support.");
         setLoading(false);
         return;
       }
       window.location.href = data.url;
-    } catch {
-      alert("Couldn't start checkout — try again or contact support.");
+    } catch (err) {
+      console.error("checkout threw", err);
+      setError("Couldn't start checkout — try again or contact support.");
       setLoading(false);
     }
+  }
+
+  // Resume checkout after sign-up. If the user picked this tier while
+  // signed out and just came back signed in, fire checkout automatically.
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || name === "free") return;
+    const pending =
+      typeof window !== "undefined"
+        ? window.sessionStorage.getItem(PENDING_TIER_KEY)
+        : null;
+    if (pending === name) {
+      window.sessionStorage.removeItem(PENDING_TIER_KEY);
+      void startCheckout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, isSignedIn, name]);
+
+  async function pick() {
+    // Wait for Clerk to hydrate before routing — otherwise a fast click
+    // during initial paint can send a signed-in user to /sign-up.
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      if (name !== "free" && typeof window !== "undefined") {
+        window.sessionStorage.setItem(PENDING_TIER_KEY, name);
+      }
+      router.push(`/sign-up?redirect=/pricing`);
+      return;
+    }
+    if (name === "free") {
+      router.push("/dashboard");
+      return;
+    }
+    await startCheckout();
   }
 
   const isFree = name === "free";
@@ -123,7 +159,7 @@ export function TierCard({
       <button
         type="button"
         onClick={pick}
-        disabled={loading}
+        disabled={loading || !isLoaded}
         aria-label={`${ctaLabel} — ${display} plan`}
         className={`mt-7 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-60 ${
           mostPopular
@@ -133,6 +169,11 @@ export function TierCard({
       >
         {loading ? "Loading…" : ctaLabel}
       </button>
+      {error && (
+        <p role="alert" className="mt-2 text-xs text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
