@@ -24,7 +24,7 @@ export const insertJD = internalMutation({
     company: v.string(),
     rawText: v.string(),
     parsed: v.any(),
-    scraper: v.union(v.literal("firecrawl"), v.literal("apify"), v.literal("manual")),
+    scraper: v.union(v.literal("firecrawl"), v.literal("direct"), v.literal("manual")),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("jobDescriptions", {

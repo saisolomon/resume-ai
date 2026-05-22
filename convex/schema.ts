@@ -44,7 +44,7 @@ export default defineSchema({
     }),
     scraper: v.union(
       v.literal("firecrawl"),
-      v.literal("apify"),
+      v.literal("direct"),
       v.literal("manual"),
     ),
     scrapedAt: v.number(),

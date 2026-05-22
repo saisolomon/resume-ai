@@ -20,6 +20,7 @@ import type * as resumesActions from "../resumesActions.js";
 import type * as runs from "../runs.js";
 import type * as runsActions from "../runsActions.js";
 import type * as scrape_canonicalize from "../scrape/canonicalize.js";
+import type * as scrape_direct from "../scrape/direct.js";
 import type * as scrape_extract from "../scrape/extract.js";
 import type * as scrape_firecrawl from "../scrape/firecrawl.js";
 import type * as scrape_routing from "../scrape/routing.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   runs: typeof runs;
   runsActions: typeof runsActions;
   "scrape/canonicalize": typeof scrape_canonicalize;
+  "scrape/direct": typeof scrape_direct;
   "scrape/extract": typeof scrape_extract;
   "scrape/firecrawl": typeof scrape_firecrawl;
   "scrape/routing": typeof scrape_routing;
