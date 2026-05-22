@@ -1,0 +1,145 @@
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
+
+export default defineSchema({
+  users: defineTable({
+    clerkId: v.string(),
+    email: v.string(),
+    name: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
+    tier: v.union(v.literal("free"), v.literal("pro"), v.literal("career")),
+  })
+    .index("by_clerk_id", ["clerkId"])
+    .index("by_stripe_customer", ["stripeCustomerId"]),
+
+  resumes: defineTable({
+    userId: v.optional(v.id("users")),
+    fingerprintHash: v.optional(v.string()),
+    title: v.string(),
+    source: v.union(
+      v.literal("pdf"),
+      v.literal("docx"),
+      v.literal("paste"),
+      v.literal("linkedin"),
+    ),
+    rawText: v.string(),
+    parsed: v.any(),
+    storageId: v.optional(v.id("_storage")),
+  })
+    .index("by_user", ["userId"])
+    .index("by_fingerprint", ["fingerprintHash"]),
+
+  jobDescriptions: defineTable({
+    sourceUrl: v.string(),
+    canonicalUrl: v.string(),
+    title: v.string(),
+    company: v.string(),
+    rawText: v.string(),
+    parsed: v.object({
+      requirements: v.array(v.string()),
+      responsibilities: v.array(v.string()),
+      keywords: v.array(v.string()),
+      seniority: v.optional(v.string()),
+      location: v.optional(v.string()),
+    }),
+    scraper: v.union(
+      v.literal("firecrawl"),
+      v.literal("direct"),
+      v.literal("manual"),
+    ),
+    scrapedAt: v.number(),
+  }).index("by_canonical_url", ["canonicalUrl"]),
+
+  runs: defineTable({
+    userId: v.optional(v.id("users")),
+    fingerprintHash: v.optional(v.string()),
+    resumeId: v.id("resumes"),
+    jobDescriptionId: v.id("jobDescriptions"),
+    status: v.union(
+      v.literal("scraping"),
+      v.literal("generating"),
+      v.literal("ready"),
+      v.literal("failed"),
+    ),
+    failureReason: v.optional(v.string()),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_fingerprint", ["fingerprintHash"]),
+
+  cards: defineTable({
+    runId: v.id("runs"),
+    angle: v.union(
+      v.literal("eng_depth"),
+      v.literal("leadership"),
+      v.literal("cross_functional"),
+      v.literal("specialist"),
+    ),
+    angleLabel: v.string(),
+    templateSlug: v.union(
+      v.literal("classic"),
+      v.literal("modern"),
+      v.literal("creative"),
+      v.literal("minimal"),
+    ),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("generating"),
+      v.literal("ready"),
+      v.literal("failed"),
+    ),
+    content: v.optional(v.any()),
+    atsScore: v.optional(
+      v.object({
+        total: v.number(),
+        keywordMatch: v.number(),
+        formatSafety: v.number(),
+        narrativeFit: v.number(),
+        breakdown: v.object({
+          keywordsFound: v.array(v.string()),
+          keywordsMissing: v.array(v.string()),
+          formatIssues: v.array(v.string()),
+          narrativeRationale: v.string(),
+        }),
+      }),
+    ),
+    failureReason: v.optional(v.string()),
+  }).index("by_run", ["runId"]),
+
+  chatMessages: defineTable({
+    cardId: v.id("cards"),
+    userId: v.id("users"),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+  }).index("by_card", ["cardId"]),
+
+  subscriptions: defineTable({
+    userId: v.id("users"),
+    stripeSubscriptionId: v.string(),
+    stripePriceId: v.string(),
+    tier: v.union(v.literal("free"), v.literal("pro"), v.literal("career")),
+    status: v.union(
+      v.literal("active"),
+      v.literal("canceled"),
+      v.literal("past_due"),
+      v.literal("trialing"),
+      v.literal("unpaid"),
+    ),
+    currentPeriodStart: v.number(),
+    currentPeriodEnd: v.number(),
+    cancelAtPeriodEnd: v.boolean(),
+    trialEnd: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_stripe_subscription", ["stripeSubscriptionId"]),
+
+  usageEvents: defineTable({
+    userId: v.optional(v.id("users")),
+    fingerprintHash: v.optional(v.string()),
+    type: v.string(),
+    runId: v.optional(v.id("runs")),
+    metadata: v.optional(v.any()),
+  })
+    .index("by_user_type", ["userId", "type"])
+    .index("by_fingerprint_type", ["fingerprintHash", "type"]),
+});

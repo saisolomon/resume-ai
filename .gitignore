@@ -45,3 +45,8 @@ next-env.d.ts
 .worktrees/
 
 /src/generated/prisma
+
+# Convex
+# convex/_generated is committed so Vercel can build without CONVEX_DEPLOY_KEY.
+# Regenerate locally with `npx convex deploy` when the schema changes.
+.convex
