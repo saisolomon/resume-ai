@@ -8,12 +8,20 @@ export const getRun = query({
 
 export const insertRun = internalMutation({
   args: {
-    fingerprintHash: v.string(),
+    // For signed-in users, set userId — runs appear in dashboard immediately.
+    // For anonymous /try users, set fingerprintHash — claim flow attaches
+    // userId at sign-up. At least one must be present.
+    userId: v.optional(v.id("users")),
+    fingerprintHash: v.optional(v.string()),
     resumeId: v.id("resumes"),
     jobDescriptionId: v.id("jobDescriptions"),
   },
   handler: async (ctx, args) => {
+    if (!args.userId && !args.fingerprintHash) {
+      throw new Error("insertRun_requires_userId_or_fingerprintHash");
+    }
     return await ctx.db.insert("runs", {
+      userId: args.userId,
       fingerprintHash: args.fingerprintHash,
       resumeId: args.resumeId,
       jobDescriptionId: args.jobDescriptionId,

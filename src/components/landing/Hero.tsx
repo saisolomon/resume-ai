@@ -2,12 +2,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAction, useMutation } from "convex/react";
+import { useUser } from "@clerk/nextjs";
 import { api } from "../../../convex/_generated/api";
 import { getFingerprint } from "@/lib/fingerprint";
 import { ResumeDropzone } from "@/components/upload/ResumeDropzone";
 
 export function Hero() {
   const router = useRouter();
+  const { isSignedIn } = useUser();
   const startRun = useAction(api.runsActions.startRun);
   const parseAndStoreResume = useAction(api.resumesActions.parseAndStoreResume);
   const generateUploadUrl = useMutation(api.resumes.generateUploadUrl);
@@ -51,7 +53,10 @@ export function Hero() {
         fingerprintHash,
       });
 
-      router.push(`/try/${runId}`);
+      // Signed-in users own the run (userId set server-side) — land them on
+      // the signed-in gallery. Anonymous users go to /try and can later
+      // claim the run via sign-up.
+      router.push(isSignedIn ? `/run/${runId}` : `/try/${runId}`);
     } catch (err) {
       const raw = (err as Error).message;
       // Server-thrown `run_limit:` errors get wrapped by Convex in a noisy

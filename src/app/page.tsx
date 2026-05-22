@@ -1,12 +1,33 @@
+"use client";
+import Link from "next/link";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { Hero } from "@/components/landing/Hero";
 
 export default function Home() {
+  const { isSignedIn, isLoaded } = useUser();
+
   return (
     <main className="min-h-screen bg-black text-white">
       <nav className="flex h-14 items-center justify-between border-b border-neutral-900 px-6">
         <span className="text-lg font-semibold tracking-tight">resume.ai</span>
         <div className="flex items-center gap-3 text-sm">
-          <a href="/sign-in" className="text-neutral-400 hover:text-white">Sign in</a>
+          <Link href="/pricing" className="text-neutral-400 hover:text-white">
+            Pricing
+          </Link>
+          {!isLoaded ? (
+            <span className="h-6 w-16" aria-hidden="true" />
+          ) : isSignedIn ? (
+            <>
+              <Link href="/dashboard" className="text-neutral-400 hover:text-white">
+                Dashboard
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </>
+          ) : (
+            <Link href="/sign-in" className="text-neutral-400 hover:text-white">
+              Sign in
+            </Link>
+          )}
         </div>
       </nav>
 

@@ -18,7 +18,10 @@ export async function GET(
   const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
   if (token) convex.setAuth(token);
 
-  const card = await convex.query(api.cards._getCardById, { cardId: cardId as Id<"cards"> });
+  // Owner-gated query — returns null for non-owners. Public
+  // api.cards._getCardById would let any signed-in user download any
+  // other user's resume by guessing the card ID.
+  const card = await convex.query(api.dashboard.getMyCard, { cardId: cardId as Id<"cards"> });
   if (!card || card.status !== "ready" || !card.content) {
     return NextResponse.json({ error: "card_not_ready" }, { status: 404 });
   }
