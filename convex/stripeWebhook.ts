@@ -25,7 +25,7 @@ export const stripeWebhook = httpAction(async (ctx, request) => {
 
   const body = await request.text();
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-09-30.clover",
+    apiVersion: "2026-02-25.clover",
   });
 
   let event: Stripe.Event;
@@ -65,8 +65,8 @@ export const stripeWebhook = httpAction(async (ctx, request) => {
         stripePriceId: sub.items.data[0].price.id,
         tier: priceToTier(sub.items.data[0].price.id),
         status: sub.status as never,
-        currentPeriodStart: sub.current_period_start * 1000,
-        currentPeriodEnd: sub.current_period_end * 1000,
+        currentPeriodStart: sub.items.data[0].current_period_start * 1000,
+        currentPeriodEnd: sub.items.data[0].current_period_end * 1000,
         cancelAtPeriodEnd: sub.cancel_at_period_end,
         trialEnd: sub.trial_end ? sub.trial_end * 1000 : undefined,
       });
@@ -85,8 +85,8 @@ export const stripeWebhook = httpAction(async (ctx, request) => {
             ? "free"
             : priceToTier(sub.items.data[0].price.id),
         status: sub.status as never,
-        currentPeriodStart: sub.current_period_start * 1000,
-        currentPeriodEnd: sub.current_period_end * 1000,
+        currentPeriodStart: sub.items.data[0].current_period_start * 1000,
+        currentPeriodEnd: sub.items.data[0].current_period_end * 1000,
         cancelAtPeriodEnd: sub.cancel_at_period_end,
         trialEnd: sub.trial_end ? sub.trial_end * 1000 : undefined,
       });
