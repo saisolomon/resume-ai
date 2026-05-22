@@ -1,52 +1,37 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe/client";
-import { getUserByClerkId } from "@/lib/db/user";
-import { prisma } from "@/lib/db/prisma";
-import { PRICE_IDS } from "@/lib/stripe/prices";
+// src/app/api/stripe/checkout/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import Stripe from "stripe";
 
-export async function POST(req: Request) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+const TIER_PRICE: Record<string, string | undefined> = {
+  pro: process.env.STRIPE_PRO_PRICE_ID,
+  career: process.env.STRIPE_CAREER_PRICE_ID,
+};
 
-  const user = await getUserByClerkId(clerkId);
-  if (!user)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+export async function POST(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId)
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const tier = body.tier as "PRO" | "CAREER";
-  const priceId = PRICE_IDS[tier];
+  const { tier } = (await req.json()) as { tier: "pro" | "career" };
+  const priceId = TIER_PRICE[tier];
   if (!priceId)
-    return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
+    return NextResponse.json({ error: "unknown_tier" }, { status: 400 });
 
-  // Get or create Stripe customer
-  let customerId = user.stripeCustomerId;
-  if (!customerId) {
-    const customer = await getStripe().customers.create({
-      email: user.email,
-      name: user.name ?? undefined,
-      metadata: { userId: user.id },
-    });
-    customerId = customer.id;
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { stripeCustomerId: customerId },
-    });
-  }
+  const user = await currentUser();
+  const email = user?.emailAddresses[0]?.emailAddress;
 
-  const session = await getStripe().checkout.sessions.create({
-    customer: customerId,
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-09-30.clover",
+  });
+  const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${req.headers.get("origin")}/dashboard?upgraded=true`,
-    cancel_url: `${req.headers.get("origin")}/pricing`,
-    subscription_data: {
-      trial_period_days: 7,
-      metadata: { userId: user.id },
-    },
-    metadata: { userId: user.id },
+    customer_email: email,
+    client_reference_id: userId,
+    subscription_data: { metadata: { clerkId: userId } },
+    success_url: `${req.nextUrl.origin}/dashboard?upgraded=1`,
+    cancel_url: `${req.nextUrl.origin}/pricing?canceled=1`,
   });
-
   return NextResponse.json({ url: session.url });
 }

@@ -1,22 +1,34 @@
+// src/app/api/stripe/portal/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe/client";
-import { getUserByClerkId } from "@/lib/db/user";
+import Stripe from "stripe";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../../../../convex/_generated/api";
 
-export async function POST(req: Request) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function POST(req: NextRequest) {
+  const { userId, getToken } = await auth();
+  if (!userId)
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const user = await getUserByClerkId(clerkId);
+  const token = await getToken({ template: "convex" });
+  const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+  if (token) convex.setAuth(token);
+
+  const sub = await convex.query(api.stripe.getMySubscription, {});
+  if (!sub)
+    return NextResponse.json({ error: "no_subscription" }, { status: 404 });
+
+  const user = await convex.query(api.users.getCurrentUser, {});
   if (!user?.stripeCustomerId) {
-    return NextResponse.json({ error: "No billing account" }, { status: 400 });
+    return NextResponse.json({ error: "no_customer_id" }, { status: 404 });
   }
 
-  const session = await getStripe().billingPortal.sessions.create({
-    customer: user.stripeCustomerId,
-    return_url: `${req.headers.get("origin")}/settings`,
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-09-30.clover",
   });
-
-  return NextResponse.json({ url: session.url });
+  const portal = await stripe.billingPortal.sessions.create({
+    customer: user.stripeCustomerId,
+    return_url: `${req.nextUrl.origin}/settings`,
+  });
+  return NextResponse.json({ url: portal.url });
 }
