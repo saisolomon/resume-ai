@@ -27,7 +27,7 @@ export default function RunPage({ params }: { params: Promise<{ runId: string }>
   // happens as a side effect, not during render.
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      router.replace(`/sign-in?redirect=/run/${runId}`);
+      router.replace(`/sign-in?redirect_url=/run/${runId}`);
     }
   }, [isLoaded, isSignedIn, runId, router]);
 

@@ -6,6 +6,29 @@ export const getRun = query({
   handler: async (ctx, args) => await ctx.db.get(args.runId),
 });
 
+// Dedicated count query for the free-tier weekly limit check. Replaces the
+// previous use of listMyRuns (which fans out to JD + cards reads per run)
+// inside runsActions.startRun. Uses .take(limit + 1) so the worst case is
+// `limit + 1` doc reads regardless of how many runs the user has.
+export const countRecentRunsForLimit = query({
+  args: { sinceMs: v.number(), takeLimit: v.number() },
+  handler: async (ctx, { sinceMs, takeLimit }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return 0;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return 0;
+    const recent = await ctx.db
+      .query("runs")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .order("desc")
+      .take(takeLimit);
+    return recent.filter((r) => r._creationTime >= sinceMs).length;
+  },
+});
+
 export const insertRun = internalMutation({
   args: {
     // For signed-in users, set userId — runs appear in dashboard immediately.

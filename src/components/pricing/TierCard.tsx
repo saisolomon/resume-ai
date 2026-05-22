@@ -96,7 +96,7 @@ export function TierCard({
       if (name !== "free" && typeof window !== "undefined") {
         window.sessionStorage.setItem(PENDING_TIER_KEY, name);
       }
-      router.push(`/sign-up?redirect=/pricing`);
+      router.push(`/sign-up?redirect_url=/pricing`);
       return;
     }
     if (name === "free") {

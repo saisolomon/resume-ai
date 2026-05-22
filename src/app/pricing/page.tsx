@@ -185,7 +185,7 @@ export default function PricingPage() {
                 "Start free →" sign-up link. */}
             {isLoaded && (
               <Link
-                href={isSignedIn ? "/dashboard" : "/sign-up?redirect=/pricing"}
+                href={isSignedIn ? "/dashboard" : "/sign-up?redirect_url=/pricing"}
                 className="inline-flex h-11 items-center justify-center rounded-md bg-white px-8 text-sm font-semibold text-black hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
               >
                 {isSignedIn ? "Go to dashboard" : "Start free →"}

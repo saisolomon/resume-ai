@@ -25,7 +25,7 @@ export default function EditCardPage({
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      router.replace(`/sign-in?redirect=/run/${runId}/edit/${cardId}`);
+      router.replace(`/sign-in?redirect_url=/run/${runId}/edit/${cardId}`);
     }
   }, [isLoaded, isSignedIn, runId, cardId, router]);
 
