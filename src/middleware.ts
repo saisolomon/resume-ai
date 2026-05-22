@@ -5,15 +5,11 @@ const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/run(.*)",
   "/settings(.*)",
-  "/templates(.*)",
-  "/api/resumes(.*)",
-  "/api/upload(.*)",
-  "/api/generate-pdf(.*)",
   "/api/download(.*)",
   "/api/claim(.*)",
+  "/api/account(.*)",
   "/api/stripe/checkout(.*)",
   "/api/stripe/portal(.*)",
-  "/api/usage(.*)",
 ]);
 
 // Public routes for the v2 anonymous demo: /, /try/*, /sign-in, /sign-up
