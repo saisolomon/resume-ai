@@ -14,9 +14,10 @@ export const deleteRun = mutation({
       .unique();
     if (!user) throw new Error("user_not_found");
 
+    // Collapse "missing" and "not owner" into one error so the runId space
+    // can't double as an existence oracle.
     const run = await ctx.db.get(runId);
-    if (!run) return;
-    if (run.userId !== user._id) throw new Error("not_owner");
+    if (!run || run.userId !== user._id) throw new Error("not_found");
 
     // cascade: delete chatMessages → cards → run
     const cards = await ctx.db

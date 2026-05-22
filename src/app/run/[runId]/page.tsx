@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useUser, UserButton } from "@clerk/nextjs";
@@ -13,21 +13,46 @@ export default function RunPage({ params }: { params: Promise<{ runId: string }>
   const { runId } = use(params);
   const router = useRouter();
   const { isSignedIn, isLoaded } = useUser();
-  const cards = useQuery(api.cards.byRun, { runId: runId as Id<"runs"> });
-  const run = useQuery(api.runs.getRun, { runId: runId as Id<"runs"> });
+  // Owner-gated queries — return null if the caller isn't the owner of this
+  // run. Public `api.runs.getRun` / `api.cards.byRun` are reserved for the
+  // anonymous /try flow where the URL itself is the access token.
+  const cards = useQuery(api.dashboard.cardsByMyRun, {
+    runId: runId as Id<"runs">,
+  });
+  const run = useQuery(api.dashboard.getMyRun, {
+    runId: runId as Id<"runs"> });
   const deleteRun = useMutation(api.cleanup.deleteRun);
 
-  if (isLoaded && !isSignedIn) {
-    router.replace(`/sign-in?redirect=/run/${runId}`);
-    return null;
-  }
+  // Redirect unauthenticated visitors. Use useEffect so the navigation
+  // happens as a side effect, not during render.
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.replace(`/sign-in?redirect=/run/${runId}`);
+    }
+  }, [isLoaded, isSignedIn, runId, router]);
+
+  if (isLoaded && !isSignedIn) return null;
 
   if (cards === undefined || run === undefined) {
     return <div className="p-12 text-center text-neutral-400">Loading…</div>;
   }
 
+  // Run no longer accessible: either deleted from another tab, or the caller
+  // is signed in but doesn't own this run. Either way, send them home.
+  if (run === null || cards === null) {
+    return (
+      <div className="p-12 text-center text-neutral-400">
+        This run isn&apos;t available.{" "}
+        <Link href="/dashboard" className="text-white underline">
+          Back to dashboard
+        </Link>
+      </div>
+    );
+  }
+
   const readyCount = cards.filter((c) => c.status === "ready").length;
-  const allReady = readyCount === 4;
+  const totalCount = cards.length || 4;
+  const allReady = cards.length > 0 && readyCount === totalCount;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -44,7 +69,7 @@ export default function RunPage({ params }: { params: Promise<{ runId: string }>
           <div>
             <h1 className="text-2xl font-semibold">Your 4 designs</h1>
             <p className="text-sm text-neutral-400 mt-1">
-              {allReady ? "Click any card to preview or edit." : `Tailoring… ${readyCount} / 4 ready`}
+              {allReady ? "Click any card to preview or edit." : `Tailoring… ${readyCount} / ${totalCount} ready`}
             </p>
           </div>
           <button
