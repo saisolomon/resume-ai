@@ -24,7 +24,15 @@ export const ensureUser = mutation({
       .query("users")
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .unique();
-    if (existing) return existing._id;
+    if (existing) {
+      // Backfill identity fields if a prior write (e.g. Stripe webhook) created
+      // the row without them. Never overwrite non-empty existing values.
+      const patch: { email?: string; name?: string } = {};
+      if (!existing.email && args.email) patch.email = args.email;
+      if (!existing.name && args.name) patch.name = args.name;
+      if (Object.keys(patch).length > 0) await ctx.db.patch(existing._id, patch);
+      return existing._id;
+    }
 
     return await ctx.db.insert("users", {
       clerkId: identity.subject,

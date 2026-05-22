@@ -13,7 +13,10 @@ export const upsertSubscription = internalMutation({
     status: v.union(
       v.literal("active"),
       v.literal("canceled"),
+      v.literal("incomplete"),
+      v.literal("incomplete_expired"),
       v.literal("past_due"),
+      v.literal("paused"),
       v.literal("trialing"),
       v.literal("unpaid"),
     ),
@@ -28,9 +31,13 @@ export const upsertSubscription = internalMutation({
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
       .unique();
     if (!user) {
+      // Webhook arrived before the user row exists. Insert a placeholder; the
+      // user's real email is backfilled by `users.ensureUser` when they next
+      // load a signed-in page. If they never sign in, the row stays
+      // discoverable by clerkId / stripeCustomerId for support.
       const userId = await ctx.db.insert("users", {
         clerkId: args.clerkId,
-        email: "", // filled by ensureUser later
+        email: "",
         stripeCustomerId: args.stripeCustomerId,
         tier: args.tier,
       });

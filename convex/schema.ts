@@ -121,7 +121,10 @@ export default defineSchema({
     status: v.union(
       v.literal("active"),
       v.literal("canceled"),
+      v.literal("incomplete"),
+      v.literal("incomplete_expired"),
       v.literal("past_due"),
+      v.literal("paused"),
       v.literal("trialing"),
       v.literal("unpaid"),
     ),
