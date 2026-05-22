@@ -36,6 +36,20 @@ export function BillingSection() {
     }
   }
 
+  // Avoid the "Current plan: Try / Upgrade" flicker for paid users by
+  // rendering a skeleton until the user row resolves.
+  if (user === undefined) {
+    return (
+      <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-5">
+        <h3 className="font-semibold mb-3">Billing</h3>
+        <div className="flex items-center justify-between text-sm">
+          <div className="h-4 w-32 rounded bg-neutral-800 animate-pulse" />
+          <div className="h-8 w-32 rounded bg-neutral-800 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
   const tier = user?.tier ?? "free";
 
   return (

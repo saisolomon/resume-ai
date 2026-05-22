@@ -53,7 +53,17 @@ export function Hero() {
 
       router.push(`/try/${runId}`);
     } catch (err) {
-      setError((err as Error).message);
+      const raw = (err as Error).message;
+      // Server-thrown `run_limit:` errors get wrapped by Convex in a noisy
+      // `[CONVEX A(runsActions:startRun)] ...` envelope. Detect the marker
+      // and surface a clean user-facing message instead.
+      if (raw.includes("run_limit:")) {
+        setError(
+          "You've hit the Try tier's weekly run limit (3 / week). Upgrade to Apply for unlimited runs.",
+        );
+      } else {
+        setError(raw);
+      }
       setSubmitting(false);
     }
   }

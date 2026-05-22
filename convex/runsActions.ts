@@ -15,7 +15,10 @@ export const startRun = action({
     const identity = await ctx.auth.getUserIdentity();
     if (identity) {
       const user = await ctx.runQuery(api.users.getCurrentUser, {});
-      if (user) {
+      // Only free tier has a weekly limit. Skip the (potentially large)
+      // listMyRuns scan entirely for pro/career — `>= Infinity` is always
+      // false but the query would still pay the fan-out cost.
+      if (user && user.tier === "free") {
         const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
         const recentRuns = await ctx.runQuery(api.dashboard.listMyRuns, {});
         const recentCount = recentRuns.filter((r) => r._creationTime >= oneWeekAgo).length;
