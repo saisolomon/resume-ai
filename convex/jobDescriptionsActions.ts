@@ -17,13 +17,15 @@ export const resolveJobDescription = action({
     if (existing) return existing._id;
 
     const scraped = await scrapeJD(url);
+    // strip title/company from parsed — they're top-level schema fields, not nested
+    const { title, company, ...parsedRest } = scraped.parsed;
     return await ctx.runMutation(internal.jobDescriptions.insertJD, {
       sourceUrl: scraped.sourceUrl,
       canonicalUrl: scraped.canonicalUrl,
-      title: scraped.parsed.title,
-      company: scraped.parsed.company,
+      title,
+      company,
       rawText: scraped.rawText,
-      parsed: scraped.parsed,
+      parsed: parsedRest,
       scraper: scraped.scraper,
     });
   },
