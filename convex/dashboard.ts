@@ -85,3 +85,25 @@ export const cardsByMyRun = query({
       .collect();
   },
 });
+
+// Owner-gated single-card lookup for the signed-in edit page. Public
+// api.cards._getCardById would leak card content / ATS score / failure
+// reason to anyone with a guessed card ID. Returns null on: unauth, missing
+// user row, missing card, missing run, OR non-owner.
+export const getMyCard = query({
+  args: { cardId: v.id("cards") },
+  handler: async (ctx, { cardId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) return null;
+    const card = await ctx.db.get(cardId);
+    if (!card) return null;
+    const run = await ctx.db.get(card.runId);
+    if (!run || run.userId !== user._id) return null;
+    return card;
+  },
+});
