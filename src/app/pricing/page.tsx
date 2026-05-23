@@ -80,7 +80,7 @@ export default function PricingPage() {
             <PackCard
               pack="single"
               name="Single"
-              tagline="One job? One purchase. Done."
+              tagline="One job in your sights. One purchase, done."
               price={9}
               credits={1}
               perUnit="$9.00 per resume"
@@ -95,7 +95,7 @@ export default function PricingPage() {
             <PackCard
               pack="5pack"
               name="5-pack"
-              tagline="For the active job hunt."
+              tagline="Five applications in flight, five tailored runs."
               price={29}
               credits={5}
               perUnit="$5.80 per resume"
@@ -111,7 +111,7 @@ export default function PricingPage() {
             <PackCard
               pack="20pack"
               name="20-pack"
-              tagline="The full job hunt, ammunition included."
+              tagline="A real hunt — twenty runs and the full stack."
               price={79}
               credits={20}
               perUnit="$3.95 per resume"
