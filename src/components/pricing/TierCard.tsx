@@ -116,44 +116,53 @@ export function TierCard({
   return (
     <div
       aria-label={`${display} plan`}
-      className={`relative flex flex-col rounded-2xl border p-7 transition-colors ${
+      className={`relative flex h-full flex-col rounded-2xl border p-7 transition-colors ${
         mostPopular
-          ? "border-white bg-neutral-950 md:scale-105 shadow-[0_0_0_1px_rgba(255,255,255,0.4)]"
+          ? "border-white bg-neutral-950 shadow-[0_0_0_1px_rgba(255,255,255,0.4)] md:scale-105"
           : "border-neutral-800 bg-neutral-950 hover:border-neutral-700"
       }`}
     >
       {mostPopular && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-black">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-black">
           Most popular
         </div>
       )}
 
-      <div className="text-sm font-semibold uppercase tracking-wider text-neutral-400">
+      {/* Tier name — display label. */}
+      <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
         {display}
       </div>
-      <p className="mt-2 text-sm text-neutral-500">{tagline}</p>
+      <p className="mt-3 min-h-[2.75rem] text-sm leading-relaxed text-neutral-500">
+        {tagline}
+      </p>
 
-      <div className="mt-6 flex items-baseline gap-1">
-        <span className="text-4xl font-bold tracking-tight text-white">
-          ${isFree ? 0 : effectiveMonthly}
-        </span>
-        {!isFree && (
-          <span className="text-sm text-neutral-500">/mo</span>
-        )}
-      </div>
-      <div className="mt-1 text-xs text-neutral-500">
-        {isFree
-          ? "Free forever. No card."
-          : annual
-            ? `$${priceYearly} billed yearly`
-            : `$${priceYearly}/yr if annual (20% off)`}
+      {/* Price block — display weight, mono cents-aligned. */}
+      <div className="mt-7 border-t border-neutral-900 pt-6">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-5xl font-bold tracking-tight text-white tabular-nums">
+            ${isFree ? 0 : effectiveMonthly}
+          </span>
+          {!isFree && (
+            <span className="text-sm text-neutral-500">/mo</span>
+          )}
+        </div>
+        <div className="mt-2 text-xs text-neutral-500">
+          {isFree
+            ? "Free forever. No card."
+            : annual
+              ? `$${priceYearly} billed yearly`
+              : `$${priceYearly}/yr on annual (20% off)`}
+        </div>
       </div>
 
-      <ul className="mt-6 space-y-2.5 text-sm text-neutral-300 flex-1">
+      {/* Feature list. */}
+      <ul className="mt-7 flex-1 space-y-3 text-sm text-neutral-300">
         {bullets.map((b, i) => (
-          <li key={i} className="flex gap-2">
+          <li key={i} className="flex gap-2.5">
             <Check
-              className={`size-4 shrink-0 mt-0.5 ${mostPopular ? "text-white" : "text-neutral-400"}`}
+              className={`size-4 shrink-0 translate-y-[3px] ${
+                mostPopular ? "text-white" : "text-neutral-400"
+              }`}
               aria-hidden="true"
             />
             <span>{b}</span>
@@ -166,10 +175,10 @@ export function TierCard({
         onClick={pick}
         disabled={loading || !isLoaded}
         aria-label={`${ctaLabel} — ${display} plan`}
-        className={`mt-7 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-60 ${
+        className={`mt-8 inline-flex h-11 items-center justify-center rounded-md px-5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-60 ${
           mostPopular
             ? "bg-white text-black hover:bg-neutral-200"
-            : "bg-neutral-800 text-white hover:bg-neutral-700"
+            : "bg-neutral-900 text-white border border-neutral-800 hover:bg-neutral-800 hover:border-neutral-700"
         }`}
       >
         {loading ? "Loading…" : ctaLabel}

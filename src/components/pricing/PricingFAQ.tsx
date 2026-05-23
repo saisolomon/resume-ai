@@ -1,3 +1,5 @@
+import { Plus } from "lucide-react";
+
 const faqs = [
   {
     q: "Can I try it without paying?",
@@ -25,26 +27,32 @@ const faqs = [
   },
 ];
 
+/**
+ * FAQ — native <details>/<summary> for keyboard + screen reader support.
+ * The Plus icon rotates 45° to an × when the row opens. Hairline dividers
+ * between items keep it editorial.
+ */
 export function PricingFAQ() {
   return (
-    <section className="border-t border-neutral-900 py-20">
+    <section className="border-t border-neutral-900 py-20 sm:py-24">
       <div className="mx-auto max-w-3xl px-6">
-        <h2 className="text-center text-2xl font-semibold sm:text-3xl text-white">
-          Questions
-        </h2>
-        <div className="mt-10 divide-y divide-neutral-900 border-y border-neutral-900">
+        <div className="text-center">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+            Objections, handled
+          </span>
+          <h2 className="mt-4 text-h1 text-white sm:text-3xl">Questions</h2>
+        </div>
+        <div className="mt-12 divide-y divide-neutral-900 border-y border-neutral-900">
           {faqs.map((f, i) => (
             <details key={i} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between text-left text-base font-medium text-white">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-medium text-white transition-colors hover:text-neutral-200">
                 {f.q}
-                <span
+                <Plus
                   aria-hidden="true"
-                  className="ml-4 shrink-0 text-neutral-500 transition-transform group-open:rotate-45"
-                >
-                  +
-                </span>
+                  className="size-4 shrink-0 text-neutral-500 transition-transform duration-200 group-open:rotate-45"
+                />
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-neutral-400">
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">
                 {f.a}
               </p>
             </details>
