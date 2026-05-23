@@ -14,6 +14,11 @@ export function SignUpWall({ onClose, onSignedUp }: { onClose: () => void; onSig
         <h3 className="text-lg font-semibold text-white mb-2">One more step</h3>
         <p className="text-sm text-neutral-400 mb-4">Save your run. Download the PDF. Free forever.</p>
         <SignUp
+          // virtual routing keeps the widget in-place during OAuth and email
+          // verification — without it, Clerk navigates to /sign-up/sso-callback
+          // which 404s because this modal renders on /try/[runId]/cards/[cardId].
+          routing="virtual"
+          signInUrl="/sign-in"
           appearance={{
             elements: { rootBox: "w-full", card: "shadow-none border-0" },
           }}
