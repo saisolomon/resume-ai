@@ -723,16 +723,18 @@ grid (3-col, max-w-6xl, order on mobile: 5-pack first):
 
 ValueStack section (max-w-3xl):
   H2:      "Everything that's in the 20-pack"
-  Implied-value rows:
-    - 20 × 4-angle resume gallery        ($180)
-    - 20 × 3-variant cover letter        ($60)
-    - 20 × ATS deep-scan + per-bullet    ($80)
-    - 1 × LinkedIn profile rewrite        ($40)
-    - 10 × interview prep sessions        ($150)
-    - 20 × outreach templates             ($60)
-    - 1 × human review by certified recruiter ($150)
-    - Cover letter ES/EN bilingual        ($20)
-  Total implied value: $740 — strikethrough
+  Implied-value rows (canonical, kept in sync with
+   src/components/pricing/ValueStack.tsx):
+    - 20 × 4-angle resume gallery (80 designs)          ($180)
+    - 20 × 3-variant cover letter (60 letters)          ($60)
+    - 20 × ATS deep-scan + per-bullet impact            ($80)
+    - Unlimited chat fine-tune edits per run            ($30)
+    - LinkedIn profile rewrite (1× included)            ($40)
+    - 10 × interview prep sessions — likely Qs + practice ($150)
+    - 20 × outreach DM templates for hiring managers    ($60)
+    - Cover letter generator in English + Spanish       ($20)
+    - 1 × human review by a certified recruiter         ($150)
+  Total implied value: $770 — strikethrough
   Price: $79
   CTA → Get 20-pack ($79)
 
