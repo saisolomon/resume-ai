@@ -3,47 +3,75 @@
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { Plus } from "lucide-react";
 import { RunListItem } from "@/components/dashboard/RunListItem";
 import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
+import { SiteNav, NavLink } from "@/components/layout/SiteNav";
 
 export default function DashboardPage() {
   const runs = useQuery(api.dashboard.listMyRuns, {});
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <nav className="flex h-14 items-center justify-between border-b border-neutral-900 px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">resume.ai</Link>
-        <div className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-neutral-400 hover:text-white">New run</Link>
-          <Link href="/settings" className="text-neutral-400 hover:text-white">Settings</Link>
-          <UserButton afterSignOutUrl="/" />
-        </div>
-      </nav>
+      <SiteNav home="/dashboard">
+        <NavLink href="/pricing">Pricing</NavLink>
+        <NavLink href="/settings">Settings</NavLink>
+      </SiteNav>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-2xl font-semibold mb-6">Your runs</h1>
+      <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+        {/* Header */}
+        <div className="mb-10 flex items-end justify-between gap-4">
+          <div>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+              Dashboard
+            </span>
+            <h1 className="mt-3 text-h1 text-white">Your runs</h1>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex h-10 items-center gap-2 rounded-md bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            New run
+          </Link>
+        </div>
 
         {runs === undefined ? (
-          <div className="text-neutral-500">Loading…</div>
-        ) : runs.length === 0 ? (
-          <EmptyDashboard />
-        ) : (
-          <div className="space-y-2">
-            {runs.map((r) => (
-              <RunListItem
-                key={r._id}
-                runId={r._id}
-                jdTitle={r.jdTitle}
-                jdCompany={r.jdCompany}
-                topScore={r.topScore}
-                readyCount={r.readyCount}
-                cardCount={r.cardCount}
-                createdAt={r._creationTime}
-                status={r.status}
+          <div className="space-y-3" aria-label="Loading runs">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="h-24 animate-pulse rounded-xl border border-neutral-900 bg-neutral-950"
               />
             ))}
           </div>
+        ) : runs.length === 0 ? (
+          <EmptyDashboard />
+        ) : (
+          <>
+            {/* meta row above the list — gives the list a header */}
+            <div className="mb-3 flex items-baseline justify-between px-1 text-xs text-neutral-500">
+              <span>
+                {runs.length} {runs.length === 1 ? "run" : "runs"}
+              </span>
+              <span className="font-mono tabular-nums">most recent first</span>
+            </div>
+            <div className="space-y-3">
+              {runs.map((r) => (
+                <RunListItem
+                  key={r._id}
+                  runId={r._id}
+                  jdTitle={r.jdTitle}
+                  jdCompany={r.jdCompany}
+                  topScore={r.topScore}
+                  readyCount={r.readyCount}
+                  cardCount={r.cardCount}
+                  createdAt={r._creationTime}
+                  status={r.status}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </main>

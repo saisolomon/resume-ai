@@ -1,12 +1,18 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { ArrowRight } from "lucide-react";
 import { TierCard } from "@/components/pricing/TierCard";
 import { ValueStack } from "@/components/pricing/ValueStack";
 import { GuaranteeBlock } from "@/components/pricing/GuaranteeBlock";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import {
+  SiteNav,
+  NavLink,
+  AuthAwareNavLink,
+} from "@/components/layout/SiteNav";
 
 const tryBullets = [
   "3 runs / week, last 3 saved",
@@ -40,57 +46,33 @@ export default function PricingPage() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* Nav */}
-      <nav className="flex h-14 items-center justify-between border-b border-neutral-900 px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          resume.ai
-        </Link>
-        <div className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-neutral-400 hover:text-white">
-            Home
-          </Link>
-          {!isLoaded ? (
-            // Render nothing auth-shaped until Clerk hydrates — avoids the
-            // signed-in flash of "Sign in" link on first paint.
-            <span className="h-6 w-16" aria-hidden="true" />
-          ) : isSignedIn ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="text-neutral-400 hover:text-white"
-              >
-                Dashboard
-              </Link>
-              <UserButton afterSignOutUrl="/" />
-            </>
-          ) : (
-            <Link
-              href="/sign-in"
-              className="text-neutral-400 hover:text-white"
-            >
-              Sign in
-            </Link>
-          )}
-        </div>
-      </nav>
+      <SiteNav home="/">
+        <NavLink href="/">Home</NavLink>
+        <AuthAwareNavLink href="/dashboard" when="signed-in">
+          Dashboard
+        </AuthAwareNavLink>
+      </SiteNav>
 
       {/* Hero */}
       <section className="mx-auto max-w-3xl px-6 pt-20 pb-12 text-center sm:pt-24">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+          Pricing
+        </span>
+        <h1 className="mt-5 text-display text-white">
           One price. The whole job hunt.
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-base text-neutral-400 sm:text-lg">
+        <p className="mx-auto mt-5 max-w-xl text-body-l text-neutral-400">
           Tailored resumes, cover letters, ATS scoring, outreach, interview
           prep. Pick the tier that matches how serious you are.
         </p>
 
         {/* Annual toggle */}
-        <div className="mt-10 inline-flex items-center gap-3 rounded-full border border-neutral-800 bg-neutral-950 p-1">
+        <div className="mt-10 inline-flex items-center gap-1 rounded-full border border-neutral-800 bg-neutral-950 p-1">
           <button
             type="button"
             onClick={() => setAnnual(false)}
             aria-pressed={!annual}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-white/40 ${
               !annual
                 ? "bg-white text-black"
                 : "text-neutral-400 hover:text-white"
@@ -102,7 +84,7 @@ export default function PricingPage() {
             type="button"
             onClick={() => setAnnual(true)}
             aria-pressed={annual}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-white/40 ${
               annual
                 ? "bg-white text-black"
                 : "text-neutral-400 hover:text-white"
@@ -117,9 +99,9 @@ export default function PricingPage() {
           Order on desktop: Apply, Hunt, Try
           On mobile: Hunt first (most popular), then Apply, then Try */}
       <section className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="grid gap-6 md:grid-cols-3 md:items-stretch">
+        <div className="grid gap-6 md:grid-cols-3 md:items-stretch md:gap-5">
           {/* Apply — left */}
-          <div className="md:order-1 order-2">
+          <div className="order-2 md:order-1">
             <TierCard
               name="pro"
               display="Apply"
@@ -133,7 +115,7 @@ export default function PricingPage() {
           </div>
 
           {/* Hunt — center, anchored */}
-          <div className="md:order-2 order-1">
+          <div className="order-1 md:order-2">
             <TierCard
               name="career"
               display="Hunt"
@@ -148,7 +130,7 @@ export default function PricingPage() {
           </div>
 
           {/* Try — right */}
-          <div className="md:order-3 order-3">
+          <div className="order-3 md:order-3">
             <TierCard
               name="free"
               display="Try"
@@ -161,6 +143,10 @@ export default function PricingPage() {
             />
           </div>
         </div>
+
+        <p className="mt-10 text-center text-xs text-neutral-500">
+          All plans include the 30-day guarantee. Cancel anytime from Settings.
+        </p>
       </section>
 
       {/* Value stack */}
@@ -175,11 +161,11 @@ export default function PricingPage() {
       {/* Footer CTA */}
       <section className="border-t border-neutral-900 bg-neutral-950/60 py-20">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="text-2xl font-semibold sm:text-3xl text-white">
+          <h2 className="text-h1 text-white">
             Stop tweaking resumes by hand.
           </h2>
-          <p className="mt-3 text-sm text-neutral-400">
-            Drop a JD, get four designs, ship the one that gets you the call.
+          <p className="mt-4 text-sm text-neutral-400">
+            Drop a JD, get four designs, ship the one that gets the call.
           </p>
           <div className="mt-8">
             {/* Wait for Clerk hydration so signed-in users don't flash a
@@ -187,9 +173,13 @@ export default function PricingPage() {
             {isLoaded && (
               <Link
                 href={isSignedIn ? "/dashboard" : "/sign-up?redirect_url=/pricing"}
-                className="inline-flex h-11 items-center justify-center rounded-md bg-white px-8 text-sm font-semibold text-black hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+                className="group inline-flex h-12 items-center gap-2 rounded-md bg-white px-7 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
               >
-                {isSignedIn ? "Go to dashboard" : "Start free →"}
+                {isSignedIn ? "Go to dashboard" : "Start free"}
+                <ArrowRight
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
               </Link>
             )}
           </div>

@@ -124,3 +124,96 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* resume.ai design system — tightening utilities                      */
+/* ------------------------------------------------------------------ */
+/* These map Design.md's type rules to single-class utilities so we    */
+/* don't drift on tracking / weight / line-height across surfaces.     */
+/* Tailwind's `text-5xl/6xl/7xl` get us in the ballpark; these lock    */
+/* in the brand's tightened tracking + the line-heights from the spec. */
+
+@layer utilities {
+  /* Display XL — 72/48px, line 1.02, tracking -0.04em, weight 700. Hero only. */
+  .text-display-xl {
+    font-size: clamp(2.75rem, 1.5rem + 5.6vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+
+  /* Display — 56/40px, line 1.05, tracking -0.03em, weight 700. */
+  .text-display {
+    font-size: clamp(2.25rem, 1.5rem + 3.4vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  /* H1 — 32px, line 1.1, tracking -0.02em, weight 700. Product page titles. */
+  .text-h1 {
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  /* H2 — 24px, line 1.2, tracking -0.015em, weight 600. */
+  .text-h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+
+  /* H3 — 20px, line 1.3, tracking -0.01em, weight 600. Card / modal titles. */
+  .text-h3 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+
+  /* Body L — 18px, line 1.5. Hero subhead, marketing paragraphs. */
+  .text-body-l {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  /* Label — 11px, weight 600, uppercase, tracking 0.08em. */
+  /* The angle chips, "Most popular" pill, kicker eyebrows. */
+  .text-label {
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* Caption — 12px, line 1.4, tracking 0.01em. Timestamps, hints. */
+  .text-caption {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  /* Mono ATS score — Geist Mono, tabular figures, weight 500. */
+  .text-score {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Focus rings — Design.md says white-on-black for max visibility.     */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  :focus-visible {
+    outline: none;
+  }
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black;
+  }
+}

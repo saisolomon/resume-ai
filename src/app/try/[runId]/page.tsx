@@ -4,6 +4,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { CardSkeleton } from "@/components/try/CardSkeleton";
 import { CardTile } from "@/components/try/CardTile";
+import { SiteNav } from "@/components/layout/SiteNav";
 import { use } from "react";
 
 export default function TryRunPage({ params }: { params: Promise<{ runId: string }> }) {
@@ -12,10 +13,27 @@ export default function TryRunPage({ params }: { params: Promise<{ runId: string
   const run = useQuery(api.runs.getRun, { runId: runId as Id<"runs"> });
 
   if (cards === undefined) {
-    return <div className="p-12 text-center text-neutral-400">Loading…</div>;
+    return (
+      <main className="min-h-screen bg-black text-white">
+        <SiteNav home="/" />
+        <div className="mx-auto max-w-6xl px-6 py-16 text-sm text-neutral-500">
+          Loading…
+        </div>
+      </main>
+    );
   }
   if (cards.length === 0 && run?.status === "scraping") {
-    return <div className="p-12 text-center text-neutral-400">Scraping the job posting…</div>;
+    return (
+      <main className="min-h-screen bg-black text-white">
+        <SiteNav home="/" />
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <p className="flex items-center gap-2 text-sm text-neutral-400">
+            <span className="size-1.5 animate-pulse rounded-full bg-neutral-400" aria-hidden="true" />
+            Scraping the job posting…
+          </p>
+        </div>
+      </main>
+    );
   }
 
   const readyCount = cards.filter((c) => c.status === "ready").length;
@@ -24,19 +42,41 @@ export default function TryRunPage({ params }: { params: Promise<{ runId: string
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <nav className="border-b border-neutral-900 px-6 h-14 flex items-center">
-        <a href="/" className="text-lg font-semibold tracking-tight">resume.ai</a>
-      </nav>
+      <SiteNav home="/" />
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold">Your 4 designs</h1>
-          <p className="text-sm text-neutral-400 mt-1">
-            {allReady ? "Ready — click any to preview." : `Tailoring… ${readyCount} / ${totalCount} ready`}
+      <div className="mx-auto max-w-7xl px-6 py-10 sm:py-12">
+        <div className="mb-10">
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+              Run
+            </span>
+            <span className="font-mono text-[11px] tabular-nums text-neutral-600">
+              {runId.slice(0, 8)}
+            </span>
+          </div>
+          <h1 className="mt-3 text-h1 text-white">Your 4 designs</h1>
+          <p className="mt-3 flex items-center gap-2 text-sm text-neutral-500">
+            {allReady ? (
+              <>
+                <span className="size-1.5 rounded-full bg-green-500" aria-hidden="true" />
+                All ready. Click any card to preview and download.
+              </>
+            ) : (
+              <>
+                <span className="size-1.5 animate-pulse rounded-full bg-neutral-400" aria-hidden="true" />
+                <span>
+                  Tailoring —{" "}
+                  <span className="font-mono tabular-nums text-neutral-300">
+                    {readyCount.toString().padStart(2, "0")}/{totalCount.toString().padStart(2, "0")}
+                  </span>{" "}
+                  ready
+                </span>
+              </>
+            )}
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {cards.map((card) =>
             card.status === "ready" && card.content && card.atsScore ? (
               <CardTile
@@ -49,15 +89,26 @@ export default function TryRunPage({ params }: { params: Promise<{ runId: string
                 totalScore={card.atsScore.total}
               />
             ) : card.status === "failed" ? (
-              <div key={card._id} className="rounded border border-red-900 bg-red-950 p-4 aspect-[3/4] flex flex-col">
-                <div className="text-[10px] uppercase tracking-wider text-red-400 font-semibold mb-2">
+              <div
+                key={card._id}
+                className="flex aspect-[3/4] flex-col rounded-lg border border-red-900 bg-red-950/30 p-4"
+              >
+                <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-red-400">
                   {card.angleLabel}
                 </div>
-                <div className="flex-1 text-xs text-red-300">{card.failureReason}</div>
-                <div className="text-xs text-red-400 text-center">Failed</div>
+                <div className="flex-1 text-xs text-red-300">
+                  {card.failureReason}
+                </div>
+                <div className="mt-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-red-500">
+                  Failed
+                </div>
               </div>
             ) : (
-              <CardSkeleton key={card._id} angleLabel={card.angleLabel} templateSlug={card.templateSlug} />
+              <CardSkeleton
+                key={card._id}
+                angleLabel={card.angleLabel}
+                templateSlug={card.templateSlug}
+              />
             ),
           )}
         </div>
