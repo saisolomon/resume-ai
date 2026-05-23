@@ -91,7 +91,14 @@ export function Hero() {
       // Server-thrown `run_limit:` errors get wrapped by Convex in a noisy
       // `[CONVEX A(runsActions:startRun)] ...` envelope. Detect the marker
       // and surface a clean user-facing message instead.
-      if (raw.includes("run_limit:")) {
+      if (raw.includes("no_credits")) {
+        // v4 credit-pack model. Signed-in user with 0 credits — point them
+        // at /pricing. Plain text for now; the upsell-link styling lands
+        // with the Aura pass.
+        setError(
+          "You're out of credits. Buy a pack to start a new run →",
+        );
+      } else if (raw.includes("run_limit:")) {
         setError(
           "You've hit the Try tier's weekly run limit (3 / week). Upgrade to Apply for unlimited runs.",
         );
