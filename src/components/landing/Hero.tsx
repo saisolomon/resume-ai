@@ -3,20 +3,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAction, useMutation } from "convex/react";
 import { useUser } from "@clerk/nextjs";
-import { ArrowRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { getFingerprint } from "@/lib/fingerprint";
 import { ResumeDropzone } from "@/components/upload/ResumeDropzone";
 
 /**
- * Landing hero form.
+ * Landing hero form — Apple-light.
  *
- * Renders inside a hairline-bordered card on the landing page; the layout
- * gives it a "panel" feel rather than a marketing form floating in space.
+ * Pill primary CTA, sentence-case labels (NOT uppercase eyebrows), light
+ * inputs with hairline borders and the Apple-blue focus ring at 20% opacity.
+ * Sits in a narrow column below the TemplateBrowser hero centerpiece.
  *
- * Behavior is the same as v2: parse → store → start run, with the
- * anonymous/signed-in branch + the error-marker matcher preserved. Visual
- * changes only.
+ * Behavior is unchanged from v4: parse → store → start run, with the
+ * anonymous/signed-in branch + the full error-marker matcher preserved.
+ * Visual restyle only.
  */
 export function Hero() {
   const router = useRouter();
@@ -60,8 +60,7 @@ export function Hero() {
 
       // Signed-in users call Convex directly. Anonymous users go through
       // the Next.js /api/anonymous-run-start route which adds an IP
-      // velocity guard (server can read the request IP; Convex actions
-      // called from the browser can't).
+      // velocity guard.
       let runId: string;
       if (isSignedIn) {
         runId = await startRun({
@@ -83,39 +82,30 @@ export function Hero() {
         runId = data.runId;
       }
 
-      // Signed-in users own the run — land them on the signed-in gallery.
-      // Anonymous users go to /try and can later claim the run via sign-up.
       router.push(isSignedIn ? `/run/${runId}` : `/try/${runId}`);
     } catch (err) {
       const raw = (err as Error).message;
-      // Server-thrown `run_limit:` errors get wrapped by Convex in a noisy
-      // `[CONVEX A(runsActions:startRun)] ...` envelope. Detect the marker
-      // and surface a clean user-facing message instead.
+      // Error-marker matcher preserved verbatim from v4.
       if (raw.includes("no_credits")) {
-        // v4 credit-pack model. Signed-in user with 0 credits — point them
-        // at /pricing. Plain text for now; the upsell-link styling lands
-        // with the Aura pass.
-        setError(
-          "You're out of credits. Buy a pack to start a new run →",
-        );
+        setError("You're out of credits. Pick a pack to start a new run.");
       } else if (raw.includes("run_limit:")) {
         setError(
-          "You've hit the Try tier's weekly run limit (3 / week). Upgrade to Apply for unlimited runs.",
+          "You've hit your weekly run limit. Buy a pack for unlimited runs.",
         );
       } else if (raw.includes("rate_limit_exceeded")) {
         setError(
-          "You've used your free anonymous runs. Sign up free for unlimited.",
+          "You've used your free anonymous runs. Sign up to keep going.",
         );
       } else if (raw.includes("ip_velocity_exceeded")) {
         setError(
-          "Too many submissions from your network. Sign up for guaranteed access.",
+          "Too many submissions from your network. Sign up to keep going.",
         );
       } else if (raw.includes("circuit_open")) {
         setError(
-          "We're experiencing unusually high demand right now. Sign up for guaranteed access, or try again later.",
+          "We're experiencing unusually high demand. Sign up for guaranteed access, or try again in a moment.",
         );
       } else if (raw === "start_run_failed" || raw === "bad_request") {
-        setError("Something went wrong starting your run. Please try again.");
+        setError("Something went wrong. Try again.");
       } else {
         setError(raw);
       }
@@ -126,13 +116,13 @@ export function Hero() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-3"
+      className="mx-auto flex w-full max-w-xl flex-col gap-5"
       aria-label="Start a tailored resume run"
     >
       <div>
         <label
           htmlFor="jdUrl"
-          className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400"
+          className="mb-2 block text-[15px] font-medium text-[#1D1D1F]"
         >
           Job posting URL
         </label>
@@ -143,14 +133,14 @@ export function Hero() {
           placeholder="https://jobs.lever.co/anthropic/swe"
           value={jdUrl}
           onChange={(e) => setJdUrl(e.target.value)}
-          className="w-full rounded-md border border-neutral-800 bg-neutral-900 px-4 py-3 text-sm text-white placeholder:text-neutral-600 transition-colors focus:border-white focus:outline-none focus:ring-2 focus:ring-white/20"
+          className="focus-ring h-12 w-full rounded-xl border border-[#D2D2D7] bg-white px-4 text-[17px] text-[#1D1D1F] placeholder:text-[#A1A1A6] transition-colors duration-150 focus:border-[#86868B] focus:outline-none"
         />
       </div>
 
       <div>
         <label
           htmlFor="resume"
-          className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400"
+          className="mb-2 block text-[15px] font-medium text-[#1D1D1F]"
         >
           Your resume
         </label>
@@ -160,7 +150,7 @@ export function Hero() {
       {error && (
         <p
           role="alert"
-          className="rounded-md border border-red-900 bg-red-950/30 px-3 py-2 text-sm text-red-400"
+          className="rounded-xl border border-[#FCA5A5] bg-[#FEF2F2] px-4 py-3 text-[15px] text-[#B91C1C]"
         >
           {error}
         </p>
@@ -169,23 +159,13 @@ export function Hero() {
       <button
         type="submit"
         disabled={!jdUrl || !file || submitting}
-        className="group mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-white px-6 text-sm font-semibold text-black transition-all hover:bg-neutral-200 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:cursor-not-allowed disabled:opacity-50"
+        className="focus-ring inline-flex h-14 items-center justify-center rounded-full bg-[#1D1D1F] px-8 text-[17px] font-medium text-white transition-colors duration-150 hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {submitting ? (
-          <>Tailoring<span className="inline-block w-3 text-left">…</span></>
-        ) : (
-          <>
-            See my 4 designs
-            <ArrowRight
-              className="size-4 transition-transform group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
-          </>
-        )}
+        {submitting ? "Tailoring." : "Tailor my resume"}
       </button>
 
-      <p className="text-xs text-neutral-500">
-        No card. 4 angles. Real ATS. Sub-30s.
+      <p className="text-center text-[15px] text-[#6E6E73]">
+        $9 · No subscription · Credits never expire.
       </p>
     </form>
   );

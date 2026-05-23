@@ -129,29 +129,26 @@ const afterResume: ResumeData = {
 
 export function BeforeAfter() {
   return (
-    <section className="border-t border-neutral-900 py-16 sm:py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-10 max-w-xl">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            Before / after
-          </span>
-          <h2 className="mt-3 text-h1 text-white">
-            Same person. 27 points of ATS headroom.
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 sm:px-8">
+        <div className="mb-14 max-w-2xl">
+          <h2 className="text-h1 text-[#1D1D1F]">
+            What &lsquo;tailored&rsquo; actually means.
           </h2>
-          <p className="mt-3 text-sm text-neutral-400">
-            One JD, one resume, one credit. The left side is what most engineers
-            send. The right side is what resume.ai ships in under thirty seconds.
+          <p className="mt-4 text-[17px] leading-relaxed text-[#6E6E73]">
+            One JD, one credit, one minute. The left side is what most
+            engineers send. The right side is what resume.ai ships.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
           {/* Before */}
           <figure className="flex flex-col">
-            <div className="relative aspect-[5/7] overflow-hidden rounded-lg border border-neutral-800 bg-white">
-              <div className="absolute left-3 top-3 z-10 rounded-md bg-red-950 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-red-400">
-                Before — template resume
+            <div className="relative aspect-[5/7] overflow-hidden rounded-2xl bg-white shadow-card">
+              <div className="absolute left-4 top-4 z-10 inline-flex items-center rounded-md bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#B91C1C]">
+                Before · generic
               </div>
-              <div className="absolute right-3 top-3 z-10">
+              <div className="absolute right-4 top-4 z-10">
                 <ScoreBadge score={64} size="md" />
               </div>
               <div
@@ -162,7 +159,7 @@ export function BeforeAfter() {
                 <ResumePreviewHtml data={beforeResume} template="classic" />
               </div>
             </div>
-            <figcaption className="mt-4 text-sm text-neutral-400">
+            <figcaption className="mt-5 text-[15px] leading-relaxed text-[#6E6E73]">
               Generic bullets, no JD keywords, no quantified results. Reads
               like a hundred others in the pile.
             </figcaption>
@@ -170,11 +167,11 @@ export function BeforeAfter() {
 
           {/* After */}
           <figure className="flex flex-col">
-            <div className="relative aspect-[5/7] overflow-hidden rounded-lg border border-neutral-800 bg-white">
-              <div className="absolute left-3 top-3 z-10 rounded-md bg-green-950 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-green-400">
-                After — tailored to {TARGET_JD_TITLE}
+            <div className="relative aspect-[5/7] overflow-hidden rounded-2xl bg-white shadow-card">
+              <div className="absolute left-4 top-4 z-10 inline-flex items-center rounded-md bg-[#F0FDF4] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#1A7F45]">
+                After · tailored to {TARGET_JD_TITLE}
               </div>
-              <div className="absolute right-3 top-3 z-10">
+              <div className="absolute right-4 top-4 z-10">
                 <ScoreBadge score={91} size="md" />
               </div>
               <div
@@ -185,7 +182,7 @@ export function BeforeAfter() {
                 <ResumePreviewHtml data={afterResume} template="classic" />
               </div>
             </div>
-            <figcaption className="mt-4 text-sm text-neutral-400">
+            <figcaption className="mt-5 text-[15px] leading-relaxed text-[#6E6E73]">
               JD keywords lifted in, bullets quantified (47%, 9 services, 200k
               fleet), seniority surfaced. Same person, four seconds longer to
               read.
@@ -193,9 +190,10 @@ export function BeforeAfter() {
           </figure>
         </div>
 
-        <p className="mx-auto mt-10 max-w-2xl text-center text-sm italic text-neutral-500">
-          Same person. Same resume. Same job. 27 points of ATS headroom from
-          one credit.
+        <p className="mx-auto mt-12 max-w-2xl text-center text-[17px] leading-relaxed text-[#1D1D1F]">
+          Same person. Same resume. Same job.{" "}
+          <span className="font-medium">27 points of ATS headroom</span>{" "}
+          from one credit.
         </p>
       </div>
     </section>

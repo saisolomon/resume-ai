@@ -1,21 +1,20 @@
 /**
- * Three-step "how it works" strip.
+ * HowItWorks — three-step strip, Apple-light.
  *
- * Editorial numbered list, not a stack of icon cards. Monospaced numerals
- * + hairline column dividers do the visual work; the copy stays specific
- * (the *what* of each step, in tool-language). No CTA inside this block —
- * the page already has one above.
+ * Three white cards on the mist canvas, generous gutters, monospaced step
+ * numerals to carry rhythm. No dividers, no card borders — soft shadows do
+ * the work. Sentence-case throughout.
  */
 const STEPS: { n: string; title: string; body: string }[] = [
   {
     n: "01",
-    title: "Paste a JD URL.",
-    body: "Lever, Greenhouse, Ashby, company careers page — we scrape it.",
+    title: "Paste a job posting URL.",
+    body: "Lever, Greenhouse, Ashby, company careers page — we parse it.",
   },
   {
     n: "02",
     title: "Drop your resume.",
-    body: "PDF or DOCX. Stays on your account, never trained on, never shared.",
+    body: "PDF or DOCX. Stays on your account. Never trained on. Never shared.",
   },
   {
     n: "03",
@@ -26,27 +25,28 @@ const STEPS: { n: string; title: string; body: string }[] = [
 
 export function HowItWorks() {
   return (
-    <section className="border-t border-neutral-900 py-16 sm:py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-10 flex items-baseline justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            How it works
-          </span>
-          <span className="font-mono text-[11px] tabular-nums text-neutral-600">
-            03 / steps
-          </span>
+    <section className="bg-[#FAFAFA] py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 sm:px-8">
+        <div className="mb-16 text-center">
+          <h2 className="text-h1 text-[#1D1D1F]">How it works.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-[#6E6E73]">
+            Thirty seconds, three steps. No card required for the preview.
+          </p>
         </div>
-        <div className="grid gap-px overflow-hidden rounded-xl border border-neutral-800 bg-neutral-800 sm:grid-cols-3">
+
+        <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
           {STEPS.map((step) => (
             <div
               key={step.n}
-              className="flex flex-col gap-3 bg-black p-6 sm:p-8"
+              className="flex flex-col gap-4 rounded-2xl bg-white p-8 shadow-card transition-shadow duration-300 hover:shadow-card-hover"
             >
-              <span className="font-mono text-sm tabular-nums text-neutral-500">
+              <span className="font-mono text-[13px] tabular-nums text-[#86868B]">
                 {step.n}
               </span>
-              <div className="text-h3 text-white">{step.title}</div>
-              <p className="text-sm text-neutral-400">{step.body}</p>
+              <h3 className="text-h3 text-[#1D1D1F]">{step.title}</h3>
+              <p className="text-[15px] leading-relaxed text-[#6E6E73]">
+                {step.body}
+              </p>
             </div>
           ))}
         </div>

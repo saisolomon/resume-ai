@@ -1,157 +1,130 @@
 import { Check } from "lucide-react";
 
 /**
- * DarkPatternCompare — "What we don't do."
+ * What we don't do — category practices we declined to copy.
  *
- * The single most conviction-heavy block on the landing. The category
- * runs on dark patterns; we name them, then reject each one. Research
- * brief Section 10.3 — locked.
+ * Reframed from the prior "dark pattern compare" — Apple voice is
+ * confidence through specificity, not insurgent attack. The left column
+ * lists category practices (no specific competitor brands by name); the
+ * right column lists how resume.ai works. Two columns of light cards on
+ * the alt canvas, hairline divider between rows.
  *
- * Layout: two columns. Left is greyed and strikethrough-heavy ("everyone
- * else does this"). Right is white and clear ("here's what we do"). The
- * column heads carry generic competitor labels — not specific brand
- * names — because we don't need to punch down to win this one. The rows
- * themselves do the work.
- *
- * Voice: declarative. Period after each line. No exclamation marks. No
- * "we promise" hedging.
+ * Filename is preserved (`DarkPatternCompare.tsx`) to avoid a rename
+ * cascade through tests and imports; the exported function is renamed
+ * to `WhatWeDontDo` and the old name is kept as a back-compat alias.
  */
 
 type Row = {
-  /** The category dark pattern. Will be visually de-emphasized + may carry
-   * a strikethrough where a price or commitment is being rejected. */
-  category: { lead: string; strike?: string; tail?: string };
-  /** The resume.ai counter — clear, declarative. */
+  category: string;
   ours: string;
 };
 
 const ROWS: Row[] = [
   {
-    category: {
-      lead: "$2.95 trials that auto-renew to ",
-      strike: "$24.95/mo",
-      tail: ".",
-    },
+    category: "Trials that quietly auto-renew at four times the trial price.",
     ours: "Per-credit. $9, $29, or $79. Pay once.",
   },
   {
-    category: { lead: "Hidden pricing at checkout." },
+    category: "Pricing hidden until the checkout screen.",
     ours: "All three prices on this page. Right above this block.",
   },
   {
-    category: { lead: "Watermarked downloads." },
+    category: "Watermarked downloads on the free tier.",
     ours: "No watermarks. Ever.",
   },
   {
-    category: { lead: "Cancellation buried four clicks deep." },
+    category: "Cancellation buried four clicks deep.",
     ours: "Nothing to cancel. Credits don't expire.",
   },
   {
-    category: { lead: "Templates over interviews." },
+    category: "Templates sold as outcomes.",
     ours: "Four tailored angles, not 35 templates.",
   },
   {
-    category: { lead: "AI that sounds like every other AI." },
+    category: "AI that sounds like every other AI.",
     ours: "Sonnet rewrites your bullets in your voice.",
   },
   {
-    category: { lead: "ATS theater." },
+    category: "ATS scoring presented as a guarantee.",
     ours: "Honest scoring. Recruiter-readable bullets.",
   },
 ];
 
-export function DarkPatternCompare() {
+export function WhatWeDontDo() {
   return (
     <section
-      aria-label="What we don't do — dark patterns we visibly reject"
-      className="border-t border-neutral-900 py-16 sm:py-20"
+      aria-label="What we don't do — category practices we declined to copy"
+      className="bg-[#FAFAFA] py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-12 grid items-end gap-6 sm:grid-cols-[1fr_auto]">
-          <div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-              The compare
-            </span>
-            <h2 className="mt-3 text-h1 text-white">
-              What we don&apos;t do.
-            </h2>
-            <p className="mt-4 max-w-xl text-sm text-neutral-400">
-              The category runs on dark patterns. We named the ones we refuse
-              to copy — in order, on the same page. If something changes here,
-              you&apos;ll see it.
-            </p>
-          </div>
-          <span className="font-mono text-[11px] tabular-nums text-neutral-600">
-            07 / patterns rejected
-          </span>
+      <div className="mx-auto max-w-6xl px-6 sm:px-8">
+        <div className="mb-16 max-w-2xl">
+          <h2 className="text-h1 text-[#1D1D1F]">What we don&apos;t do.</h2>
+          <p className="mt-4 text-[17px] leading-relaxed text-[#6E6E73]">
+            The category runs on a small set of recurring practices. Here are
+            the ones we chose not to copy — on the same page, before you pay.
+          </p>
         </div>
 
-        {/* Compare grid. Two-column on desktop, single-column on mobile
-            (where each row reads as a paired "left / right" stack). */}
-        <div className="overflow-hidden rounded-xl border border-neutral-800">
+        {/* Single card with rows. Two columns on desktop, stacked on mobile. */}
+        <div className="overflow-hidden rounded-2xl bg-white shadow-card">
           {/* Column heads */}
-          <div className="grid grid-cols-1 border-b border-neutral-800 bg-neutral-950 lg:grid-cols-2">
-            <div className="border-b border-neutral-900 px-5 py-4 lg:border-b-0 lg:border-r lg:border-neutral-900">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
-                What every other tool does
+          <div className="grid grid-cols-1 border-b border-[#D2D2D7]/70 lg:grid-cols-2">
+            <div className="px-6 py-4 lg:border-r lg:border-[#D2D2D7]/70 lg:px-8">
+              <span className="text-[13px] font-medium text-[#86868B]">
+                Category practices
               </span>
             </div>
-            <div className="px-5 py-4">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
-                What resume.ai does
+            <div className="border-t border-[#D2D2D7]/70 px-6 py-4 lg:border-l-0 lg:border-t-0 lg:px-8">
+              <span className="text-[13px] font-medium text-[#1D1D1F]">
+                How resume.ai works
               </span>
             </div>
           </div>
 
           {/* Rows */}
-          <div className="divide-y divide-neutral-900">
+          <div className="divide-y divide-[#D2D2D7]/70">
             {ROWS.map((row, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-1 lg:grid-cols-2"
-              >
-                {/* Left — competitor pattern. Greyed text, strikethrough on
-                    the dollar amount if present. The "×" mono marker
-                    visually rhymes with the Manifesto section. */}
-                <div className="flex items-start gap-3 border-b border-neutral-900 bg-neutral-950 px-5 py-5 lg:border-b-0 lg:border-r lg:border-neutral-900">
+              <div key={i} className="grid grid-cols-1 lg:grid-cols-2">
+                {/* Left — category practice */}
+                <div className="flex items-start gap-3 px-6 py-5 lg:border-r lg:border-[#D2D2D7]/70 lg:px-8">
                   <span
                     aria-hidden="true"
-                    className="mt-1 font-mono text-xs text-neutral-700"
+                    className="mt-0.5 text-[15px] text-[#A1A1A6]"
                   >
-                    ×
+                    —
                   </span>
-                  <p className="text-sm text-neutral-500">
-                    {row.category.lead}
-                    {row.category.strike && (
-                      <span className="text-neutral-400 line-through decoration-neutral-700 decoration-1 underline-offset-2">
-                        {row.category.strike}
-                      </span>
-                    )}
-                    {row.category.tail}
+                  <p className="text-[15px] leading-relaxed text-[#86868B]">
+                    {row.category}
                   </p>
                 </div>
 
-                {/* Right — resume.ai's counter. White text, Check icon in
-                    the brand inversion. */}
-                <div className="flex items-start gap-3 bg-black px-5 py-5">
+                {/* Right — our practice */}
+                <div className="flex items-start gap-3 border-t border-[#D2D2D7]/70 px-6 py-5 lg:border-l-0 lg:border-t-0 lg:px-8">
                   <Check
-                    className="mt-0.5 size-4 flex-shrink-0 text-white"
+                    className="mt-0.5 size-5 flex-shrink-0 text-[#1A7F45]"
                     aria-hidden="true"
                   />
-                  <p className="text-sm font-medium text-white">{row.ours}</p>
+                  <p className="text-[15px] font-medium leading-relaxed text-[#1D1D1F]">
+                    {row.ours}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Footnote — keeps the block from feeling like a polemic by
-            offering the user verification. */}
-        <p className="mt-6 text-center font-mono text-[11px] text-neutral-500">
-          We expect this list to be read by competitor employees. We expect to
-          stand behind every line of it.
+        <p className="mt-8 text-center text-[13px] text-[#86868B]">
+          We expect this list to be read closely. We expect to stand behind
+          every line of it.
         </p>
       </div>
     </section>
   );
 }
+
+/**
+ * Back-compat alias — keep the old name exported so existing imports
+ * (`import { DarkPatternCompare } from ...`) keep working through the
+ * rename without ripple.
+ */
+export const DarkPatternCompare = WhatWeDontDo;

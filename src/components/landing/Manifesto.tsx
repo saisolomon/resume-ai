@@ -1,61 +1,52 @@
 /**
- * Manifesto / against-the-status-quo block.
+ * Manifesto — calm statement of purpose, no insurgent attacks.
  *
- * The page's most opinionated moment — names the competition (template
- * builders, Easy Apply, generic AI). Editorial two-column layout: left
- * is the manifesto headline, right is the three-line indictment. The
- * right column uses hairline separators rather than bullets so it
- * reads as a written argument, not a checklist.
+ * The earlier version named Indeed, LinkedIn Easy Apply, and "generic AI"
+ * by category. Apple voice is confidence through specificity — we don't
+ * punch down to make the point. The headline lands, the right column lists
+ * the category practices we declined to copy, but the rhythm is editorial
+ * (not combative).
  */
-const POINTS: { source: string; claim: string }[] = [
+const POINTS: { name: string; body: string }[] = [
   {
-    source: "Indeed Resume.",
-    claim: "Builds one generic resume. Fits zero jobs.",
+    name: "One generic resume.",
+    body: "Built once, sent everywhere. Fits zero jobs in particular.",
   },
   {
-    source: "LinkedIn Easy Apply.",
-    claim: "Drops you in the same pile as 800 other applicants.",
+    name: "Easy-apply pile-up.",
+    body: "Dropped into the same pile as 800 other applicants.",
   },
   {
-    source: "Generic AI resume tools.",
-    claim: "Output copy a recruiter clears in four seconds.",
+    name: "Generic AI output.",
+    body: "Reads like every other AI resume. Recruiters spot it in six seconds.",
   },
 ];
 
 export function Manifesto() {
   return (
-    <section className="border-t border-neutral-900 py-16 sm:py-24">
-      <div className="mx-auto max-w-6xl px-6">
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 sm:px-8">
         <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
           <div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-              Against the template factory
-            </span>
-            <h2 className="mt-4 text-display text-white">
-              Take your job hunt back.
+            <h2 className="text-display text-[#1D1D1F]">
+              We built the resume tool we wished existed.
             </h2>
-            <p className="mt-6 max-w-md text-base text-neutral-400">
+            <p className="mt-6 max-w-md text-[17px] leading-relaxed text-[#6E6E73]">
               You already write good resumes. You don&apos;t need a tool that
-              writes them for you. You need one that retailors them per
-              application — without burning your evening every time.
+              writes them for you — you need one that retailors them per
+              application, without burning your evening every time.
             </p>
           </div>
 
-          <ul className="divide-y divide-neutral-900 border-y border-neutral-900">
+          <ul className="divide-y divide-[#D2D2D7]/70 border-y border-[#D2D2D7]/70">
             {POINTS.map((p) => (
-              <li key={p.source} className="flex items-baseline gap-4 py-5">
-                <span
-                  aria-hidden="true"
-                  className="font-mono text-xs text-neutral-600"
-                >
-                  ×
+              <li key={p.name} className="flex flex-col gap-1 py-5">
+                <span className="text-[15px] font-semibold text-[#1D1D1F]">
+                  {p.name}
                 </span>
-                <div>
-                  <span className="text-sm font-semibold text-white">
-                    {p.source}
-                  </span>{" "}
-                  <span className="text-sm text-neutral-400">{p.claim}</span>
-                </div>
+                <span className="text-[15px] leading-relaxed text-[#6E6E73]">
+                  {p.body}
+                </span>
               </li>
             ))}
           </ul>

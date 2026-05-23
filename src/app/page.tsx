@@ -1,13 +1,14 @@
-"use client";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TheFourAngles } from "@/components/landing/TheFourAngles";
+import { TemplateBrowser } from "@/components/landing/TemplateBrowser";
+import { TemplateGallery } from "@/components/landing/TemplateGallery";
+import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { AtsHonestySection } from "@/components/landing/AtsHonestySection";
-import { DarkPatternCompare } from "@/components/landing/DarkPatternCompare";
 import { Manifesto } from "@/components/landing/Manifesto";
 import { ClosingCTA } from "@/components/landing/ClosingCTA";
+import { WhatWeDontDo } from "@/components/landing/DarkPatternCompare";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import {
   SiteNav,
@@ -15,20 +16,31 @@ import {
   AuthAwareNavLink,
 } from "@/components/layout/SiteNav";
 
-// LiveTailorDemo drives the page's most expensive animation work — typewriter,
-// score counter, chip stagger. SSR isn't useful for an interactive demo and
-// dynamic import keeps the initial bundle lean for the form-submission path.
-const LiveTailorDemo = dynamic(
-  () =>
-    import("@/components/landing/LiveTailorDemo").then((m) => ({
-      default: m.LiveTailorDemo,
-    })),
-  { ssr: false, loading: () => <LiveTailorDemoPlaceholder /> },
-);
-
+/**
+ * Landing page — Apple-light brand.
+ *
+ * Layout (top → bottom), per Design.md "Landing hero" example:
+ *
+ *   SiteNav            — sticky h-16, backdrop blur, lowercase wordmark
+ *   Hero               — Display XL center, TemplateBrowser, form, trust line
+ *   HowItWorks         — three light cards on alt canvas
+ *   TheFourAngles      — four light cards w/ editorial-blue chips
+ *   TemplateGallery    — horizontal scroll-rail of 8 samples
+ *   BeforeAfter        — two-column 64 vs 91 ATS comparison
+ *   AtsHonestySection  — "Floor / Ceiling / What ATS isn't" on alt canvas
+ *   Manifesto          — calm statement of purpose
+ *   ClosingCTA         — pricing trio + 30-day guarantee + pill CTAs
+ *   WhatWeDontDo       — category practices vs how resume.ai works
+ *   SiteFooter         — hairline divider, three inline links
+ *
+ * HeroPreview is intentionally omitted: TemplateBrowser already plays the
+ * "see a sample resume" hero role, and TemplateGallery handles the "see
+ * eight more" follow-up below the fold. A third scaled-tile pattern would
+ * over-rotate the page on the same visual idea.
+ */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
       <SiteNav home="/">
         <NavLink href="/pricing">Pricing</NavLink>
         <AuthAwareNavLink href="/dashboard" when="signed-in">
@@ -36,95 +48,43 @@ export default function Home() {
         </AuthAwareNavLink>
       </SiteNav>
 
-      {/* ─── Hero ─────────────────────────────────────────────────────────
-          The visitor sees the *product* first, then the form. The Live
-          Tailor demo runs an 8-second scripted animation across four
-          angles so the visitor knows exactly what they're paying for
-          before any form lands. The headline sits above. The form sits
-          below — narrower, anchored on a hairline panel.
-      */}
+      {/* ─── Hero ────────────────────────────────────────────────────────── */}
       <section
         id="start"
-        className="border-b border-neutral-900"
         aria-label="Start a tailored resume run"
+        className="pt-24 pb-24 sm:pt-32 sm:pb-32"
       >
-        <div className="mx-auto max-w-6xl px-6 pt-16 pb-12 lg:pt-20 lg:pb-16">
-          {/* Eyebrow strip — same construction as the old hero but tightened. */}
-          <div className="mx-auto mb-6 flex max-w-2xl items-center justify-center">
-            <div className="inline-flex items-center gap-3 rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1">
-              <span className="size-1.5 rounded-full bg-green-500" aria-hidden="true" />
-              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
-                For engineers, PMs, and data scientists
-              </span>
-            </div>
+        <div className="mx-auto max-w-6xl px-6 sm:px-8">
+          {/* Display headline + Body L subhead, both center-aligned. */}
+          <h1 className="mx-auto max-w-4xl text-center text-display-xl">
+            Four resumes.
+            <br />
+            One application.
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-body-l text-[#6E6E73]">
+            One job. Four angles. Thirty seconds. We tailor your resume four
+            ways so you can pick the one that lands.
+          </p>
+
+          {/* TemplateBrowser — hero centerpiece. */}
+          <div className="mt-16 sm:mt-20">
+            <TemplateBrowser />
           </div>
 
-          <h1 className="mx-auto max-w-3xl text-center text-display-xl text-white">
-            Stop letting AI decide your job for you.
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-xl text-center text-body-l text-neutral-400">
-            One JD. Four tailored angles. Real ATS scores. Watch the demo write
-            itself — then run it on the job you actually want.
-          </p>
-        </div>
-
-        {/* Live Tailor demo — full-width within the page max, dark-canvas
-            framed. This is the centerpiece. */}
-        <div className="mx-auto max-w-6xl px-6 pb-12">
-          <LiveTailorDemo />
-        </div>
-
-        {/* The form sits below the demo on a hairline panel. Visitor has
-            now seen what they're getting — the form is the commit. */}
-        <div className="mx-auto max-w-6xl border-t border-neutral-900 px-6 pt-12 pb-16 lg:pt-16 lg:pb-20">
-          <div className="mx-auto grid max-w-5xl items-start gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
-            <div>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-                Your turn
-              </span>
-              <h2 className="mt-3 text-h1 text-white">
-                Now run it on a real JD.
-              </h2>
-              <p className="mt-4 max-w-md text-sm text-neutral-400">
-                Paste the URL. Drop your resume. We&apos;ll show you four ways
-                to tell your story for this job in under thirty seconds.
-              </p>
-              <ul className="mt-6 flex flex-col gap-2 font-mono text-[11px] text-neutral-500">
-                <li>
-                  <span className="text-neutral-700">·</span>{" "}
-                  <span className="text-neutral-400">Lever / Greenhouse / Ashby</span>{" "}
-                  / company careers page — all parsed.
-                </li>
-                <li>
-                  <span className="text-neutral-700">·</span>{" "}
-                  Resume stays on your account. Never sold. Never trained on.
-                </li>
-                <li>
-                  <span className="text-neutral-700">·</span>{" "}
-                  <span className="text-neutral-400">No card required</span> for the
-                  preview. Pay only when you download.
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-5 sm:p-6">
-              <Hero />
-              <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-neutral-900 pt-4 text-[11px] text-neutral-500">
-                <span>No subscription.</span>
-                <span aria-hidden="true" className="text-neutral-700">·</span>
-                <span>No auto-renew.</span>
-                <span aria-hidden="true" className="text-neutral-700">·</span>
-                <span>Credits never expire.</span>
-                <span aria-hidden="true" className="text-neutral-700">·</span>
-                <Link
-                  href="/privacy"
-                  className="underline decoration-neutral-700 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
-                >
-                  Privacy
-                </Link>
-              </div>
-            </div>
+          {/* Form sits below the demo on a narrow column. The Hero form
+              already renders its own trust line; the privacy link below is
+              the only extra "after the form" affordance. */}
+          <div className="mt-16 sm:mt-20">
+            <Hero />
+            <p className="mx-auto mt-3 max-w-xl text-center text-[13px] text-[#86868B]">
+              We never sell your resume or train on it.{" "}
+              <Link
+                href="/privacy"
+                className="text-[#0071E3] underline-offset-4 hover:underline"
+              >
+                Privacy
+              </Link>
+            </p>
           </div>
         </div>
       </section>
@@ -132,24 +92,13 @@ export default function Home() {
       {/* ─── Below the fold ─────────────────────────────────────────────── */}
       <HowItWorks />
       <TheFourAngles />
+      <TemplateGallery />
+      <BeforeAfter />
       <AtsHonestySection />
       <Manifesto />
       <ClosingCTA />
-      <DarkPatternCompare />
+      <WhatWeDontDo />
       <SiteFooter />
     </main>
-  );
-}
-
-/**
- * SSR placeholder for the LiveTailorDemo. Renders a frame of the same
- * approximate height so the page doesn't shift when the demo hydrates.
- */
-function LiveTailorDemoPlaceholder() {
-  return (
-    <div
-      aria-hidden="true"
-      className="h-[460px] w-full rounded-2xl border border-neutral-800 bg-neutral-950 sm:h-[520px]"
-    />
   );
 }
