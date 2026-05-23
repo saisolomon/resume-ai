@@ -77,7 +77,12 @@ export async function POST(req: NextRequest) {
     // is added by Phase H — the daily $50 breaker rejects anonymous traffic
     // once the cap is hit. ip_velocity_exceeded is also a 429 surface, but
     // it short-circuits earlier in this route — see the velocity check above.
-    const knownMarkers = ["rate_limit_exceeded", "circuit_open"];
+    // `no_credits` shouldn't reach this anonymous route (it's only thrown
+    // for signed-in users) but listing it here keeps the marker set
+    // exhaustive in case a future code path routes through here. 429 is
+    // the right status for "out of credits" the same way it is for
+    // rate-limit exhaustion — the client is asking too much, not broken.
+    const knownMarkers = ["rate_limit_exceeded", "circuit_open", "no_credits"];
     const matched = knownMarkers.find((m) => msg.includes(m));
     if (matched) return NextResponse.json({ error: msg }, { status: 429 });
     return NextResponse.json({ error: "start_run_failed", detail: msg }, { status: 500 });

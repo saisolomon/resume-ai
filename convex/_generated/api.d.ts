@@ -17,6 +17,7 @@ import type * as chatMessages from "../chatMessages.js";
 import type * as claim from "../claim.js";
 import type * as cleanup from "../cleanup.js";
 import type * as costGuard from "../costGuard.js";
+import type * as creditTransactions from "../creditTransactions.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as http from "../http.js";
@@ -55,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   claim: typeof claim;
   cleanup: typeof cleanup;
   costGuard: typeof costGuard;
+  creditTransactions: typeof creditTransactions;
   crons: typeof crons;
   dashboard: typeof dashboard;
   http: typeof http;

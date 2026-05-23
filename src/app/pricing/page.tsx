@@ -1,9 +1,8 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { ArrowRight } from "lucide-react";
-import { TierCard } from "@/components/pricing/TierCard";
+import { PackCard } from "@/components/pricing/PackCard";
 import { ValueStack } from "@/components/pricing/ValueStack";
 import { GuaranteeBlock } from "@/components/pricing/GuaranteeBlock";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
@@ -14,35 +13,38 @@ import {
   AuthAwareNavLink,
 } from "@/components/layout/SiteNav";
 
-const tryBullets = [
-  "3 runs / week, last 3 saved",
-  "All 4 templates, all 4 angles",
-  "PDF + DOCX export",
-  "Standard ATS scoring",
+// Per Design.md, every credit = 4 tailored resume designs + 3 cover letter
+// variants + ATS deep-scan + unlimited fine-tune edits. The 5-pack and
+// 20-pack add bonuses on top — they're not larger versions of the same
+// thing, they're "everything in Single, × N, + the implied-value stack".
+
+const SINGLE_BULLETS = [
+  "4 tailored resume designs (one JD)",
+  "3 cover letter variants",
+  "ATS deep-scan with per-bullet impact",
+  "PDF + DOCX downloads",
+  "Unlimited chat fine-tune edits",
 ];
 
-const applyBullets = [
-  "Unlimited runs, unlimited history",
-  "Chat fine-tune editor",
-  "Custom angles (your own prompt)",
-  "ATS deep-scan — per-bullet impact",
+const FIVE_PACK_BULLETS = [
+  "5 × everything in Single",
+  "LinkedIn profile rewrite (1× included)",
+  "Save your runs in your dashboard",
   "Side-by-side compare any 2 runs",
-  "Priority queue (sub-10s)",
-  "JD watchlist (weekly rescore)",
+  "Credits never expire",
 ];
 
-const huntBullets = [
-  "Everything in Apply",
-  "Cover letter generator (3 variants per JD)",
-  "LinkedIn profile rewrite (quarterly)",
-  "Interview prep — questions + practice",
+const TWENTY_PACK_BULLETS = [
+  "20 × everything in 5-pack",
+  "Cover letters in English + Spanish",
+  "Interview prep — likely Qs + practice (10 sessions)",
   "Outreach templates for hiring managers",
-  "1 human review credit / month",
+  "1 × human review by a certified recruiter",
+  "Credits never expire",
 ];
 
 export default function PricingPage() {
   const { isSignedIn, isLoaded } = useUser();
-  const [annual, setAnnual] = useState(false);
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -59,97 +61,74 @@ export default function PricingPage() {
           Pricing
         </span>
         <h1 className="mt-5 text-display text-white">
-          One price. The whole job hunt.
+          Pay per resume. No subscription.
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-body-l text-neutral-400">
-          Tailored resumes, cover letters, ATS scoring, outreach, interview
-          prep. Pick the tier that matches how serious you are.
+          Every credit ships 4 tailored resume designs, 3 cover letter
+          variants, an ATS deep-scan, and unlimited chat fine-tune edits.
+          Credits never expire.
         </p>
-
-        {/* Annual toggle */}
-        <div className="mt-10 inline-flex items-center gap-1 rounded-full border border-neutral-800 bg-neutral-950 p-1">
-          <button
-            type="button"
-            onClick={() => setAnnual(false)}
-            aria-pressed={!annual}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-white/40 ${
-              !annual
-                ? "bg-white text-black"
-                : "text-neutral-400 hover:text-white"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            type="button"
-            onClick={() => setAnnual(true)}
-            aria-pressed={annual}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-white/40 ${
-              annual
-                ? "bg-white text-black"
-                : "text-neutral-400 hover:text-white"
-            }`}
-          >
-            Annual <span className="text-xs opacity-70">(-20%)</span>
-          </button>
-        </div>
       </section>
 
-      {/* Tier cards — Hunt centered + scaled.
-          Order on desktop: Apply, Hunt, Try
-          On mobile: Hunt first (most popular), then Apply, then Try */}
-      <section className="mx-auto max-w-6xl px-6 pb-20">
+      {/* Pack cards — 5-pack anchored center on desktop.
+          On mobile we lead with 5-pack so the anchored pack is what the
+          visitor sees first; Single and 20-pack follow. */}
+      <section className="mx-auto max-w-6xl px-6 pb-12">
         <div className="grid gap-6 md:grid-cols-3 md:items-stretch md:gap-5">
-          {/* Apply — left */}
+          {/* Single — left */}
           <div className="order-2 md:order-1">
-            <TierCard
-              name="pro"
-              display="Apply"
-              tagline="Unlimited runs + the tools to dial them in."
-              priceMonthly={15}
-              priceYearly={144}
-              bullets={applyBullets}
-              annual={annual}
-              ctaLabel="Get Apply"
+            <PackCard
+              pack="single"
+              name="Single"
+              tagline="One job in your sights. One purchase, done."
+              price={9}
+              credits={1}
+              perUnit="$9.00 per resume"
+              bullets={SINGLE_BULLETS}
+              voiceLine="One job? One purchase. Done."
+              ctaLabel="Tailor 1 resume — $9"
             />
           </div>
 
-          {/* Hunt — center, anchored */}
+          {/* 5-pack — center, anchored */}
           <div className="order-1 md:order-2">
-            <TierCard
-              name="career"
-              display="Hunt"
-              tagline="The full pipeline. Resume → outreach → interview."
-              priceMonthly={35}
-              priceYearly={336}
-              bullets={huntBullets}
-              annual={annual}
-              mostPopular
-              ctaLabel="Get Hunt"
+            <PackCard
+              pack="5pack"
+              name="5-pack"
+              tagline="Five applications in flight, five tailored runs."
+              price={29}
+              credits={5}
+              perUnit="$5.80 per resume"
+              bullets={FIVE_PACK_BULLETS}
+              voiceLine="For the active job hunt."
+              ctaLabel="Get 5 resumes — $29"
+              anchored
             />
           </div>
 
-          {/* Try — right */}
+          {/* 20-pack — right */}
           <div className="order-3 md:order-3">
-            <TierCard
-              name="free"
-              display="Try"
-              tagline="Kick the tires. No card."
-              priceMonthly={0}
-              priceYearly={0}
-              bullets={tryBullets}
-              annual={annual}
-              ctaLabel="Start free"
+            <PackCard
+              pack="20pack"
+              name="20-pack"
+              tagline="A real hunt — twenty runs and the full stack."
+              price={79}
+              credits={20}
+              perUnit="$3.95 per resume"
+              bullets={TWENTY_PACK_BULLETS}
+              voiceLine="The full job hunt, ammunition included."
+              ctaLabel="Get 20 resumes — $79"
             />
           </div>
         </div>
 
         <p className="mt-10 text-center text-xs text-neutral-500">
-          All plans include the 30-day guarantee. Cancel anytime from Settings.
+          All packs ship with the 30-day no-interview, no-questions refund.
+          Credits never expire.
         </p>
       </section>
 
-      {/* Value stack */}
+      {/* Value stack — 20-pack implied value */}
       <ValueStack />
 
       {/* Guarantee */}
@@ -169,13 +148,13 @@ export default function PricingPage() {
           </p>
           <div className="mt-8">
             {/* Wait for Clerk hydration so signed-in users don't flash a
-                "Start free →" sign-up link. */}
+                "Start free" link when they should see "Go to dashboard". */}
             {isLoaded && (
               <Link
-                href={isSignedIn ? "/dashboard" : "/sign-up?redirect_url=/pricing"}
+                href={isSignedIn ? "/dashboard" : "/"}
                 className="group inline-flex h-12 items-center gap-2 rounded-md bg-white px-7 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
               >
-                {isSignedIn ? "Go to dashboard" : "Start free"}
+                {isSignedIn ? "Go to dashboard" : "Start tailoring"}
                 <ArrowRight
                   className="size-4 transition-transform group-hover:translate-x-0.5"
                   aria-hidden="true"
@@ -183,9 +162,6 @@ export default function PricingPage() {
               </Link>
             )}
           </div>
-          <p className="mt-4 text-xs text-neutral-500">
-            No card for Try. Cancel paid plans anytime.
-          </p>
         </div>
       </section>
 

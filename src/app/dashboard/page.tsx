@@ -1,15 +1,25 @@
 // src/app/dashboard/page.tsx
 "use client";
+import { Suspense } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { RunListItem } from "@/components/dashboard/RunListItem";
 import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
+import { OutOfCreditsCard } from "@/components/dashboard/OutOfCreditsCard";
+import { CreditedBanner } from "@/components/dashboard/CreditedBanner";
 import { SiteNav, NavLink } from "@/components/layout/SiteNav";
 
 export default function DashboardPage() {
   const runs = useQuery(api.dashboard.listMyRuns, {});
+  const balance = useQuery(api.users.getCreditBalance, {});
+
+  // Show the inline out-of-credits card when the user has existing runs
+  // but no credits left. New users (no runs) hit the existing
+  // EmptyDashboard, which now self-routes to /pricing when credits=0.
+  const showOutOfCredits =
+    runs !== undefined && runs.length > 0 && balance === 0;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -19,6 +29,11 @@ export default function DashboardPage() {
       </SiteNav>
 
       <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+        {/* useSearchParams() requires a Suspense boundary in Next 16. */}
+        <Suspense fallback={null}>
+          <CreditedBanner />
+        </Suspense>
+
         {/* Header */}
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
@@ -35,6 +50,8 @@ export default function DashboardPage() {
             New run
           </Link>
         </div>
+
+        {showOutOfCredits && <OutOfCreditsCard />}
 
         {runs === undefined ? (
           <div className="space-y-3" aria-label="Loading runs">

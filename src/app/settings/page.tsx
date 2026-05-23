@@ -1,6 +1,8 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
-import { BillingSection } from "@/components/settings/BillingSection";
+import { CreditBalanceCard } from "@/components/settings/CreditBalanceCard";
+import { PurchaseHistoryCard } from "@/components/settings/PurchaseHistoryCard";
+import { LegacySubscriptionCard } from "@/components/settings/LegacySubscriptionCard";
 import { DangerZone } from "@/components/settings/DangerZone";
 import { SiteNav, NavLink } from "@/components/layout/SiteNav";
 
@@ -24,7 +26,13 @@ export default function SettingsPage() {
             <p className="mt-2 font-mono text-sm text-neutral-500">{email}</p>
           )}
         </div>
-        <BillingSection />
+
+        {/* v4 credit-pack model — balance + purchase history.
+            The LegacySubscriptionCard self-hides unless the user has an
+            actual subscription row, so most users never see it. */}
+        <CreditBalanceCard />
+        <PurchaseHistoryCard />
+        <LegacySubscriptionCard />
         <DangerZone />
       </div>
     </main>

@@ -8,6 +8,10 @@ export default defineSchema({
     name: v.optional(v.string()),
     stripeCustomerId: v.optional(v.string()),
     tier: v.union(v.literal("free"), v.literal("pro"), v.literal("career")),
+    // v4 credit-pack model: resume credits, default 0 / undefined = 0.
+    // `tier` stays for backward compat with any legacy subscription rows
+    // but is no longer used to gate run starts — that's now `credits`.
+    credits: v.optional(v.number()),
   })
     .index("by_clerk_id", ["clerkId"])
     .index("by_stripe_customer", ["stripeCustomerId"]),
@@ -135,6 +139,25 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_stripe_subscription", ["stripeSubscriptionId"]),
+
+  // v4 credit-pack model: one row per Stripe Checkout `payment` session
+  // that grants resume credits. Source-of-truth for purchase history shown
+  // on /settings + audit trail for any support refund questions. The
+  // counterpart `users.credits` field is the running balance.
+  creditTransactions: defineTable({
+    userId: v.id("users"),
+    pack: v.union(
+      v.literal("single"),
+      v.literal("five_pack"),
+      v.literal("twenty_pack"),
+    ),
+    creditsGranted: v.number(), // 1, 5, or 20
+    amountUsd: v.number(),      // 9, 29, or 79 — integer dollar amount
+    stripeSessionId: v.string(),
+    stripePaymentIntentId: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_stripe_session", ["stripeSessionId"]),
 
   usageEvents: defineTable({
     userId: v.optional(v.id("users")),

@@ -4,6 +4,8 @@ import { Hero } from "@/components/landing/Hero";
 import { HeroPreview } from "@/components/landing/HeroPreview";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TheFourAngles } from "@/components/landing/TheFourAngles";
+import { TemplateGallery } from "@/components/landing/TemplateGallery";
+import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { Manifesto } from "@/components/landing/Manifesto";
 import { ClosingCTA } from "@/components/landing/ClosingCTA";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -77,6 +79,8 @@ export default function Home() {
 
       <HowItWorks />
       <TheFourAngles />
+      <TemplateGallery />
+      <BeforeAfter />
       <Manifesto />
       <ClosingCTA />
       <SiteFooter />

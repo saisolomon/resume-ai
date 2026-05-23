@@ -1,21 +1,24 @@
 // src/app/api/stripe/checkout/route.ts
+//
+// v4 credit-pack checkout. The /pricing page POSTs `{ pack }` with one of
+// "single" / "5pack" / "20pack" (or the underscore-style aliases used in
+// the Convex schema, "five_pack" / "twenty_pack" — both accepted for
+// frontend flexibility). Returns the Stripe-hosted checkout URL the
+// client should redirect to.
+//
+// Mode is `payment` (one-time), not `subscription`. The webhook handler
+// in convex/stripeActions.ts watches for `checkout.session.completed`
+// events with `mode === "payment"` and credits the user accordingly.
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 
-// Resolve `tier` + `interval` to a Stripe price ID. Falls back to monthly
-// if interval isn't specified so older clients keep working.
-function priceFor(tier: string, interval: "monthly" | "yearly"): string | undefined {
-  if (tier === "pro") {
-    return interval === "yearly"
-      ? process.env.STRIPE_PRO_YEARLY_PRICE_ID
-      : process.env.STRIPE_PRO_PRICE_ID;
-  }
-  if (tier === "career") {
-    return interval === "yearly"
-      ? process.env.STRIPE_CAREER_YEARLY_PRICE_ID
-      : process.env.STRIPE_CAREER_PRICE_ID;
-  }
+function priceForPack(pack: string): string | undefined {
+  if (pack === "single") return process.env.STRIPE_SINGLE_PRICE_ID;
+  if (pack === "5pack" || pack === "five_pack")
+    return process.env.STRIPE_5PACK_PRICE_ID;
+  if (pack === "20pack" || pack === "twenty_pack")
+    return process.env.STRIPE_20PACK_PRICE_ID;
   return undefined;
 }
 
@@ -24,13 +27,10 @@ export async function POST(req: NextRequest) {
   if (!userId)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const { tier, interval } = (await req.json()) as {
-    tier: "pro" | "career";
-    interval?: "monthly" | "yearly";
-  };
-  const priceId = priceFor(tier, interval ?? "monthly");
+  const body = (await req.json()) as { pack?: string };
+  const priceId = priceForPack(body.pack ?? "");
   if (!priceId)
-    return NextResponse.json({ error: "unknown_tier" }, { status: 400 });
+    return NextResponse.json({ error: "unknown_pack" }, { status: 400 });
 
   const user = await currentUser();
   const email = user?.emailAddresses[0]?.emailAddress;
@@ -38,14 +38,21 @@ export async function POST(req: NextRequest) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2026-02-25.clover",
   });
+
   const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
+    mode: "payment", // one-time, not subscription
     line_items: [{ price: priceId, quantity: 1 }],
     customer_email: email,
     client_reference_id: userId,
-    subscription_data: { metadata: { clerkId: userId } },
-    success_url: `${req.nextUrl.origin}/dashboard?upgraded=1`,
+    // Mirror clerkId into payment_intent metadata so refund tooling /
+    // Stripe Sigma queries can find the originating user without joining
+    // back through the Checkout session.
+    payment_intent_data: { metadata: { clerkId: userId } },
+    success_url: `${req.nextUrl.origin}/dashboard?credited=1`,
     cancel_url: `${req.nextUrl.origin}/pricing?canceled=1`,
+    // Allow promo codes via Stripe's hosted checkout — useful for any
+    // launch-day discount we run.
+    allow_promotion_codes: true,
   });
   return NextResponse.json({ url: session.url });
 }

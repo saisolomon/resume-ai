@@ -101,6 +101,57 @@ export const processStripeEvent = internalAction({
         const session = event.data.object as Stripe.Checkout.Session;
         const clerkId = session.client_reference_id ?? session.metadata?.clerkId;
         if (!clerkId) return deadLetter("no clerkId on checkout session");
+
+        // v4 credit-pack purchase. The new checkout flow runs in
+        // `mode: "payment"`. The legacy subscription path falls through.
+        if (session.mode === "payment") {
+          // The base webhook payload doesn't include line_items — must
+          // expand explicitly to recover the price the user paid for.
+          const sessionWithItems = await stripe.checkout.sessions.retrieve(
+            session.id,
+            { expand: ["line_items"] },
+          );
+          const lineItem = sessionWithItems.line_items?.data[0];
+          if (!lineItem || !lineItem.price) {
+            return deadLetter("payment session has no line item");
+          }
+
+          const priceId = lineItem.price.id;
+          let pack: "single" | "five_pack" | "twenty_pack";
+          let credits: number;
+          let amountUsd: number;
+          if (priceId === process.env.STRIPE_SINGLE_PRICE_ID) {
+            pack = "single";
+            credits = 1;
+            amountUsd = 9;
+          } else if (priceId === process.env.STRIPE_5PACK_PRICE_ID) {
+            pack = "five_pack";
+            credits = 5;
+            amountUsd = 29;
+          } else if (priceId === process.env.STRIPE_20PACK_PRICE_ID) {
+            pack = "twenty_pack";
+            credits = 20;
+            amountUsd = 79;
+          } else {
+            return deadLetter(`unknown pack price id ${priceId}`);
+          }
+
+          await ctx.runMutation(internal.creditTransactions.recordPurchase, {
+            clerkId,
+            pack,
+            creditsGranted: credits,
+            amountUsd,
+            stripeSessionId: session.id,
+            stripePaymentIntentId:
+              typeof session.payment_intent === "string"
+                ? session.payment_intent
+                : undefined,
+          });
+          return { status: 200, body: "credits granted" };
+        }
+
+        // Legacy subscription path — kept for any existing test
+        // subscriptions. The new credit-pack flow doesn't reach here.
         if (!session.subscription) return { status: 200, body: "no subscription" };
         const sub = await stripe.subscriptions.retrieve(
           session.subscription as string,
