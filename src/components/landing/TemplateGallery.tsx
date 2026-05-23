@@ -318,12 +318,9 @@ export function TemplateGallery() {
             {samples.map((tile, i) => (
               <li key={i} className="w-[280px] shrink-0 snap-start">
                 <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover">
-                  <div className="absolute left-3 top-3 z-10 inline-flex items-center rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#3B82F6] shadow-sm">
-                    {tile.angleLabel}
-                  </div>
-                  <div className="absolute right-3 top-3 z-10">
-                    <ScoreBadge score={tile.score} size="sm" />
-                  </div>
+                  {/* Angle + score chrome lives in the caption below the
+                      tile (next sibling) — keeping the tile itself clean
+                      so it doesn't overlap the rendered resume header. */}
                   {/* Scale so the letter-paper proportions render in a
                       280px-wide tile while keeping body text legible. */}
                   <div
@@ -337,16 +334,11 @@ export function TemplateGallery() {
                     />
                   </div>
                 </div>
-                <div className="mt-4 flex items-baseline justify-between gap-2 px-1">
+                <div className="mt-4 flex items-center justify-between gap-2 px-1">
                   <span className="text-[15px] font-medium text-[#1D1D1F]">
                     {tile.angleLabel}
                   </span>
-                  <span className="text-[13px] text-[#86868B]">
-                    Score{" "}
-                    <span className="font-mono tabular-nums text-[#1D1D1F]">
-                      {tile.score}
-                    </span>
-                  </span>
+                  <ScoreBadge score={tile.score} size="sm" />
                 </div>
               </li>
             ))}

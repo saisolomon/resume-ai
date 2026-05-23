@@ -278,13 +278,16 @@ export function HeroPreview() {
         aria-labelledby={`hero-preview-tab-${activeIndex}`}
         className="p-3"
       >
-        <div className="relative aspect-[5/7] overflow-hidden rounded-lg border border-neutral-800 bg-white">
-          <div className="absolute left-3 top-3 z-10 rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-blue-700 shadow-sm">
+        {/* Header strip — angle chip + score badge live ABOVE the white
+            resume tile so they don't overlap the candidate's own name +
+            contact header rendered inside the document. */}
+        <div className="mb-2 flex items-center justify-between px-0.5">
+          <span className="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-blue-400">
             {active.angleLabel}
-          </div>
-          <div className="absolute right-3 top-3 z-10">
-            <ScoreBadge score={active.score} size="md" />
-          </div>
+          </span>
+          <ScoreBadge score={active.score} size="md" />
+        </div>
+        <div className="relative aspect-[5/7] overflow-hidden rounded-lg border border-neutral-800 bg-white">
           {/*
             Scale the rendered preview to fit. The previewer outputs at
             near-letter dimensions; ~52% reads as a recognisable doc

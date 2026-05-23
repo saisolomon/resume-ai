@@ -144,13 +144,15 @@ export function BeforeAfter() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
           {/* Before */}
           <figure className="flex flex-col">
-            <div className="relative aspect-[5/7] overflow-hidden rounded-2xl bg-white shadow-card">
-              <div className="absolute left-4 top-4 z-10 inline-flex items-center rounded-md bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#B91C1C]">
+            {/* Label strip lives ABOVE the white tile so it doesn't cover
+                the candidate's name in the rendered resume header. */}
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="inline-flex items-center rounded-md bg-[#FEF2F2] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#B91C1C]">
                 Before · generic
-              </div>
-              <div className="absolute right-4 top-4 z-10">
-                <ScoreBadge score={64} size="md" />
-              </div>
+              </span>
+              <ScoreBadge score={64} size="md" />
+            </div>
+            <div className="relative aspect-[5/7] overflow-hidden rounded-2xl bg-white shadow-card">
               <div
                 className="absolute inset-0 origin-top-left"
                 style={{ transform: "scale(0.52)", width: "192.3%", height: "192.3%" }}
@@ -167,13 +169,13 @@ export function BeforeAfter() {
 
           {/* After */}
           <figure className="flex flex-col">
-            <div className="relative aspect-[5/7] overflow-hidden rounded-2xl bg-white shadow-card">
-              <div className="absolute left-4 top-4 z-10 inline-flex items-center rounded-md bg-[#F0FDF4] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#1A7F45]">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="inline-flex items-center truncate rounded-md bg-[#F0FDF4] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#1A7F45]">
                 After · tailored to {TARGET_JD_TITLE}
-              </div>
-              <div className="absolute right-4 top-4 z-10">
-                <ScoreBadge score={91} size="md" />
-              </div>
+              </span>
+              <ScoreBadge score={91} size="md" />
+            </div>
+            <div className="relative aspect-[5/7] overflow-hidden rounded-2xl bg-white shadow-card">
               <div
                 className="absolute inset-0 origin-top-left"
                 style={{ transform: "scale(0.52)", width: "192.3%", height: "192.3%" }}
