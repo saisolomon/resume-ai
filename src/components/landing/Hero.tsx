@@ -47,11 +47,30 @@ export function Hero() {
         source: source as "pdf" | "docx",
       });
 
-      const runId = await startRun({
-        resumeId: resumeId as never,
-        jdUrl,
-        fingerprintHash,
-      });
+      // Signed-in users call Convex directly. Anonymous users go through
+      // the Next.js /api/anonymous-run-start route which adds an IP
+      // velocity guard (server can read the request IP; Convex actions
+      // called from the browser can't).
+      let runId: string;
+      if (isSignedIn) {
+        runId = await startRun({
+          resumeId: resumeId as never,
+          jdUrl,
+          fingerprintHash,
+        });
+      } else {
+        const resp = await fetch("/api/anonymous-run-start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ resumeId, jdUrl, fingerprintHash }),
+        });
+        if (!resp.ok) {
+          const data = (await resp.json()) as { error?: string };
+          throw new Error(data.error ?? "start_run_failed");
+        }
+        const data = (await resp.json()) as { runId: string };
+        runId = data.runId;
+      }
 
       // Signed-in users own the run (userId set server-side) — land them on
       // the signed-in gallery. Anonymous users go to /try and can later
@@ -65,6 +84,14 @@ export function Hero() {
       if (raw.includes("run_limit:")) {
         setError(
           "You've hit the Try tier's weekly run limit (3 / week). Upgrade to Apply for unlimited runs.",
+        );
+      } else if (raw.includes("rate_limit_exceeded")) {
+        setError(
+          "You've used your free anonymous runs. Sign up free for unlimited.",
+        );
+      } else if (raw.includes("ip_velocity_exceeded")) {
+        setError(
+          "Too many submissions from your network. Sign up for guaranteed access.",
         );
       } else {
         setError(raw);
