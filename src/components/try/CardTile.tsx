@@ -10,6 +10,7 @@ export function CardTile({
   templateSlug,
   content,
   totalScore,
+  href,
 }: {
   runId: string;
   cardId: string;
@@ -17,10 +18,12 @@ export function CardTile({
   templateSlug: string;
   content: ResumeData;
   totalScore: number;
+  href?: string;
 }) {
+  const linkHref = href ?? `/try/${runId}/cards/${cardId}`;
   return (
     <Link
-      href={`/try/${runId}/cards/${cardId}`}
+      href={linkHref}
       className="block rounded-lg border border-neutral-800 bg-white hover:border-neutral-500 overflow-hidden relative aspect-[3/4]"
     >
       <div className="absolute top-2 right-2 z-10">
