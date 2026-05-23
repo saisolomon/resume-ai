@@ -1,18 +1,19 @@
+"use client";
+import { useState } from "react";
 import { ResumePreviewHtml, TemplateSlug } from "@/components/try/ResumePreviewHtml";
 import { ScoreBadge } from "@/components/try/ScoreBadge";
 import type { ResumeData } from "@/lib/resume/types";
 
 /**
- * Static hero-side preview: shows what the product ships, not a screenshot
- * or a render of "your future resume". Four real-looking resumes scaled
- * down, each labelled with its angle chip and ATS score. The whole panel
- * sits inside a hairline-bordered card so it reads as product chrome, not
- * marketing decoration.
+ * Hero-side product preview. Shows what resume.ai ships — one of four
+ * angles at a time, with tab controls so the visitor can step through
+ * Engineering depth → Leadership → Cross-functional → Specialist. The
+ * panel sits inside a hairline-bordered card so it reads as product
+ * chrome, not marketing decoration.
  *
- * The data is hardcoded (not API'd in) — this is a presentational hero
- * element, not live data. The names + bullets are deliberately
- * believable-engineer ("Ria Patel", AWS / Stripe stack) so the preview
- * doesn't read as lorem.
+ * Data is hardcoded — this is a presentational element, not live data.
+ * Names + bullets are deliberately believable-engineer ("Ria Patel",
+ * Stripe + Datadog stack) so the preview doesn't read as lorem.
  */
 
 type Tile = {
@@ -202,7 +203,12 @@ const SAMPLE: Tile[] = [
   },
 ];
 
+const TOP_ATS = Math.max(...SAMPLE.map((t) => t.score));
+
 export function HeroPreview() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = SAMPLE[activeIndex];
+
   return (
     <div
       className="relative isolate w-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950"
@@ -217,52 +223,128 @@ export function HeroPreview() {
           <span className="size-1.5 rounded-full bg-green-500" aria-hidden="true" />
           <span className="tabular-nums text-neutral-300">27.4s</span>
           <span className="text-neutral-600">·</span>
-          <span className="text-neutral-500">4 / 4 ready</span>
+          <span className="text-neutral-500">
+            <span className="tabular-nums text-neutral-300">{activeIndex + 1}</span>
+            <span className="text-neutral-600"> / </span>
+            <span className="tabular-nums text-neutral-300">{SAMPLE.length}</span>
+            <span> ready</span>
+          </span>
         </span>
       </div>
 
-      {/* 4-tile grid */}
-      <div className="grid grid-cols-2 gap-3 p-3">
-        {SAMPLE.map((tile, i) => (
-          <div
-            key={i}
-            className="relative aspect-[3/4] overflow-hidden rounded-lg border border-neutral-800 bg-white"
-          >
-            <div className="absolute left-2 top-2 z-10 rounded-md bg-white/95 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-blue-700 shadow-sm">
-              {tile.angleLabel}
-            </div>
-            <div className="absolute right-2 top-2 z-10">
-              <ScoreBadge score={tile.score} size="sm" />
-            </div>
-            {/*
-              Scale the rendered preview down to fit. The previewer outputs
-              at near-letter dimensions; scaling to ~30% reads as a
-              recognisable doc thumbnail without bleeding into the chip.
-            */}
-            <div
-              className="absolute inset-0 origin-top-left"
-              style={{ transform: "scale(0.32)", width: "312.5%", height: "312.5%" }}
-              aria-hidden="true"
+      {/* Tab strip — one button per angle. */}
+      <div
+        role="tablist"
+        aria-label="Sample resume angles"
+        className="flex items-stretch border-b border-neutral-900"
+      >
+        {SAMPLE.map((tile, i) => {
+          const isActive = i === activeIndex;
+          return (
+            <button
+              key={tile.angleLabel}
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`hero-preview-panel-${i}`}
+              id={`hero-preview-tab-${i}`}
+              onClick={() => setActiveIndex(i)}
+              className={`relative flex-1 px-3 py-3 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors focus:outline-none focus-visible:bg-neutral-900/60 ${
+                isActive
+                  ? "text-white"
+                  : "text-neutral-500 hover:text-neutral-300"
+              }`}
             >
-              <ResumePreviewHtml data={tile.data} template={tile.templateSlug} />
-            </div>
+              {tile.angleLabel}
+              {isActive && (
+                <span
+                  className="absolute inset-x-3 -bottom-px h-px bg-white"
+                  aria-hidden="true"
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Single preview tile. Aspect ratio is taller than wide (letter
+          paper proportions) so the full resume reads without clipping. */}
+      <div
+        role="tabpanel"
+        id={`hero-preview-panel-${activeIndex}`}
+        aria-labelledby={`hero-preview-tab-${activeIndex}`}
+        className="p-3"
+      >
+        <div className="relative aspect-[5/7] overflow-hidden rounded-lg border border-neutral-800 bg-white">
+          <div className="absolute left-3 top-3 z-10 rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-blue-700 shadow-sm">
+            {active.angleLabel}
           </div>
-        ))}
+          <div className="absolute right-3 top-3 z-10">
+            <ScoreBadge score={active.score} size="md" />
+          </div>
+          {/*
+            Scale the rendered preview to fit. The previewer outputs at
+            near-letter dimensions; ~52% reads as a recognisable doc
+            page while keeping the body text legible.
+          */}
+          <div
+            className="absolute inset-0 origin-top-left"
+            style={{ transform: "scale(0.52)", width: "192.3%", height: "192.3%" }}
+            aria-hidden="true"
+          >
+            <ResumePreviewHtml data={active.data} template={active.templateSlug} />
+          </div>
+        </div>
+
+        {/* Pager hint — keeps the click affordance obvious without
+            adding visual weight. */}
+        <div className="mt-3 flex items-center justify-between font-mono text-[11px] text-neutral-500">
+          <button
+            type="button"
+            onClick={() =>
+              setActiveIndex((i) => (i - 1 + SAMPLE.length) % SAMPLE.length)
+            }
+            className="rounded px-2 py-1 text-neutral-400 transition-colors hover:bg-neutral-900 hover:text-white focus:outline-none focus-visible:bg-neutral-900"
+            aria-label="Previous angle"
+          >
+            ← prev
+          </button>
+          <span className="tabular-nums">
+            <span className="text-neutral-300">
+              {String(activeIndex + 1).padStart(2, "0")}
+            </span>
+            <span className="text-neutral-600"> / </span>
+            <span className="text-neutral-500">
+              {String(SAMPLE.length).padStart(2, "0")}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setActiveIndex((i) => (i + 1) % SAMPLE.length)}
+            className="rounded px-2 py-1 text-neutral-400 transition-colors hover:bg-neutral-900 hover:text-white focus:outline-none focus-visible:bg-neutral-900"
+            aria-label="Next angle"
+          >
+            next →
+          </button>
+        </div>
       </div>
 
       {/* Status row — three monospaced metrics. */}
       <div className="grid grid-cols-3 divide-x divide-neutral-900 border-t border-neutral-900 text-center font-mono text-[11px]">
         <div className="px-3 py-2.5">
           <div className="text-neutral-600">angles</div>
-          <div className="mt-0.5 tabular-nums text-white">04</div>
+          <div className="mt-0.5 tabular-nums text-white">
+            {String(SAMPLE.length).padStart(2, "0")}
+          </div>
         </div>
         <div className="px-3 py-2.5">
           <div className="text-neutral-600">top ATS</div>
-          <div className="mt-0.5 tabular-nums text-green-400">91</div>
+          <div className="mt-0.5 tabular-nums text-green-400">{TOP_ATS}</div>
         </div>
         <div className="px-3 py-2.5">
           <div className="text-neutral-600">templates</div>
-          <div className="mt-0.5 tabular-nums text-white">04</div>
+          <div className="mt-0.5 tabular-nums text-white">
+            {String(SAMPLE.length).padStart(2, "0")}
+          </div>
         </div>
       </div>
     </div>
