@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { Hero } from "@/components/landing/Hero";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
@@ -42,6 +43,8 @@ export default function Home() {
           <Hero />
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

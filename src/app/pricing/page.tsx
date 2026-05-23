@@ -6,6 +6,7 @@ import { TierCard } from "@/components/pricing/TierCard";
 import { ValueStack } from "@/components/pricing/ValueStack";
 import { GuaranteeBlock } from "@/components/pricing/GuaranteeBlock";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 
 const tryBullets = [
   "3 runs / week, last 3 saved",
@@ -199,11 +200,7 @@ export default function PricingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-900 py-8">
-        <div className="mx-auto max-w-6xl px-6 text-center text-xs text-neutral-500">
-          &copy; {new Date().getFullYear()} resume.ai. All rights reserved.
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
