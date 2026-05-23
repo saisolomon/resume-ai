@@ -57,6 +57,22 @@ export const startRun = action({
       url: args.jdUrl,
     })) as Id<"jobDescriptions">;
 
+    // Anonymous result cache: if the same fingerprint already has a run
+    // for this (resume, JD) pair, return it instead of paying for a new
+    // Sonnet × 4 + Haiku × 4 generation. Signed-in users are deliberately
+    // excluded — they may want to regenerate against the same JD/resume
+    // after editing one of the cards.
+    if (!user) {
+      const cached = await ctx.runQuery(api.runs.findByFingerprintAndIds, {
+        fingerprintHash: args.fingerprintHash,
+        resumeId: args.resumeId,
+        jobDescriptionId: jdId,
+      });
+      if (cached) {
+        return cached._id;
+      }
+    }
+
     const runId = (await ctx.runMutation(internal.runs.insertRun, {
       // Attach userId for signed-in callers; fall back to fingerprintHash
       // for anonymous demo users so the claim flow can later migrate them.
