@@ -4,6 +4,37 @@ import { v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { weeklyRunLimit } from "../src/lib/tier";
+import type { FunctionReference } from "convex/server";
+
+// Local references to new convex modules (rateLimit) that are NOT yet in
+// the committed `_generated/api.d.ts`. The runtime `api`/`internal` exports
+// are `anyApi`, so these dispatch fine — we only need types here. After
+// Phase M moves _generated/ to gitignore and CI regenerates, these can be
+// removed in favor of the regenerated typed references.
+const rateLimitApi = {
+  checkFingerprintLimit: (api as unknown as {
+    rateLimit: {
+      checkFingerprintLimit: FunctionReference<
+        "query",
+        "public",
+        { fingerprintHash: string },
+        { isOverLimit: boolean }
+      >;
+    };
+  }).rateLimit.checkFingerprintLimit,
+};
+const rateLimitInternal = {
+  recordAnonymousRun: (internal as unknown as {
+    rateLimit: {
+      recordAnonymousRun: FunctionReference<
+        "mutation",
+        "internal",
+        { fingerprintHash: string; runId: Id<"runs"> },
+        null
+      >;
+    };
+  }).rateLimit.recordAnonymousRun,
+};
 
 export const startRun = action({
   args: {
@@ -39,6 +70,20 @@ export const startRun = action({
       }
     }
 
+    // Anonymous flow — enforce per-fingerprint rate limit:
+    // 1 run / 24h, 3 runs / 7d. Skipped for signed-in users (who have
+    // their own free-tier weekly limit above).
+    if (!user) {
+      const limitCheck = await ctx.runQuery(rateLimitApi.checkFingerprintLimit, {
+        fingerprintHash: args.fingerprintHash,
+      });
+      if (limitCheck.isOverLimit) {
+        throw new Error(
+          "rate_limit_exceeded: You've used your free runs. Sign up free for unlimited.",
+        );
+      }
+    }
+
     const jdId = (await ctx.runAction(api.jobDescriptionsActions.resolveJobDescription, {
       url: args.jdUrl,
     })) as Id<"jobDescriptions">;
@@ -51,6 +96,16 @@ export const startRun = action({
       resumeId: args.resumeId,
       jobDescriptionId: jdId,
     })) as Id<"runs">;
+
+    // For anonymous runs, log the usage event so the next call from this
+    // fingerprint sees the run in its sliding window. Must happen after
+    // insertRun succeeds so we have a valid runId to attach.
+    if (!user) {
+      await ctx.runMutation(rateLimitInternal.recordAnonymousRun, {
+        fingerprintHash: args.fingerprintHash,
+        runId,
+      });
+    }
 
     const cardIds = (await ctx.runMutation(internal.runs.insertInitialCards, {
       runId,
