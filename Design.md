@@ -93,7 +93,7 @@ Apple uses a generous, slightly looser scale than the prior dark version. Bigger
 
 | Level | Size | Line Height | Tracking | Weight | Usage |
 |---|---|---|---|---|---|
-| Display XL | 80px / 5rem (mobile: 56px / 3.5rem) | 1.05 | -0.025em | 700 | Apple-style hero. One per page only. |
+| Display XL | 96px / 6rem (mobile: 56px / 3.5rem) | 1.05 | -0.025em | 700 | Apple-style hero. One per page only. Clamps `3.5rem → 6rem` across 320px → ~1200px+ viewports; ceiling holds on ultrawide / 4K so the headline stays commanding relative to canvas. |
 | Display | 64px / 4rem (mobile: 44px / 2.75rem) | 1.08 | -0.02em | 700 | Major section headlines ("Tailored four ways."). |
 | Display S | 48px / 3rem (mobile: 36px / 2.25rem) | 1.1 | -0.015em | 600 | Sub-section opens, feature page hero. |
 | H1 | 36px / 2.25rem | 1.15 | -0.015em | 600 | Page titles ("Your runs", "Settings"). |
@@ -416,7 +416,14 @@ Preview area:
   Resume preview at ~52% scale, top-aligned
   Angle chip top-left
   Score badge top-right
-  
+
+  Tab swap: TRUE crossfade — two persistent slot panels (A + B) live
+  in the DOM at all times and swap roles on each click. Outgoing fades
+  1→0 while incoming fades 0→1 in lockstep over 450ms on Apple's decel
+  ease cubic-bezier(0.16, 1, 0.3, 1). Both panels exist from first
+  paint so the browser actually runs the opacity transition (no
+  React-mount-transition workarounds needed).
+
   Hover: very subtle scale-[1.002] (basically imperceptible)
 
 Caption below preview:
@@ -434,20 +441,32 @@ OR (alternative): centered single-column with form below the demo. Apple often d
 ```
 Container:   max-w-6xl mx-auto px-8 py-32 sm:py-40
 
-Headline:    Display XL (80px / 1.05 / -0.025em / 700 / text-[#1D1D1F])
+Headline:    Display XL (96px / 1.05 / -0.025em / 700 / text-[#1D1D1F])
              max 2 lines, max-w-4xl, center-aligned
+             (Ceiling reached at ~1200px viewports — stays at 96px
+              through ultrawide and 4K so it reads commanding on all
+              modern monitors. Mobile floors at 56px.)
 
 Subhead:     Body L (19px / 1.55 / text-[#6E6E73])
              max-w-2xl mx-auto mt-6 center-aligned
 
 Demo:        max-w-5xl mx-auto mt-16  (the template browser above)
 
-Form:        max-w-xl mx-auto mt-12
-             Two inputs (JD URL + dropzone) stacked
-             Primary CTA (h-14 px-8 text-[19px]) full width
+Form card:   max-w-xl mx-auto mt-12 rounded-2xl bg-white shadow-card p-8
+             ↑ The form is ALWAYS wrapped in a white card on the mist
+               canvas. A flat form below the TemplateBrowser (itself a
+               white card) reads as visually disconnected. Apple-style
+               UI surfaces — even simple form sections become deliberate
+               elevated cards on canvas.
 
-Trust line:  text-[15px] text-[#6E6E73] mt-6 center
-             "$9 for one job. No subscription. Credits never expire."
+             Inside the card:
+               Two inputs (JD URL + dropzone) stacked
+               Primary CTA (h-14 px-8 text-[19px]) full width
+               Trust line (text-[15px] text-[#6E6E73] center):
+                 "$9 · No subscription · Credits never expire."
+
+Privacy line: text-[13px] text-[#86868B] mt-4 center
+              Lives OUTSIDE the form card — footer to the unit.
 ```
 
 ---
@@ -482,6 +501,7 @@ linear:    linear                            /* Loaders only */
 | Modal / drawer open | 350ms |
 | Modal / drawer close | 250ms |
 | Card hover (shadow change) | 250ms |
+| Tab crossfade between content panels (e.g., TemplateBrowser) | 450ms (decel ease — both panels live in DOM, opacity-driven) |
 | Page section entrances (initial mount, parallax-style fade-up) | 600ms with 80ms stagger |
 | Score badge counter (animating up) | 1200ms (decel ease) |
 | Skeleton pulse | 1800ms infinite |
@@ -645,13 +665,23 @@ section.hero (py-32 sm:py-40, max-w-6xl):
 
   spacer (mt-12)
 
-  Hero form (max-w-xl mx-auto):
-    JD URL input
-    ResumeDropzone
-    Primary CTA: "Tailor my resume" (h-14, rounded-full)
+  Hero form — wrapped in a white card (NOT flat on the mist canvas):
+    div.max-w-xl.mx-auto.rounded-2xl.bg-white.shadow-card.p-8
+      JD URL input
+      ResumeDropzone
+      Primary CTA: "Tailor my resume" (h-14, rounded-full)
+      Trust line (text-[15px] text-[#6E6E73] center):
+        "$9 · No subscription · Credits never expire"
 
-  Trust line (mt-6, center, text-[15px] text-[#6E6E73]):
-    "$9 · No subscription · Credits never expire"
+    The card wrapper is load-bearing: above the form, the TemplateBrowser
+    is ALSO a white-card-on-mist surface. A flat form below it reads as
+    visually disconnected from the page's elevated-card rhythm.
+    Apple-style — even simple form sections sit inside an elevated card
+    so the page reads as a series of deliberate surfaces on canvas.
+
+  Privacy line (mt-4, center, text-[13px] text-[#86868B]):
+    Lives OUTSIDE the form card. Reads as a footer to the form unit,
+    not in-form meta-copy.
 
 section.howItWorks (py-24, bg-white):
   H2 center: "How it works"
