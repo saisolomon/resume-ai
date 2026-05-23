@@ -38,26 +38,32 @@ export function CardTile({
     <Link
       href={linkHref}
       aria-label={`Open ${angleLabel} card`}
-      className="group relative block aspect-[3/4] overflow-hidden rounded-lg border border-neutral-800 bg-white transition-colors hover:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-black"
+      className="focus-ring group relative block aspect-[3/4] overflow-hidden rounded-2xl bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover"
     >
       {/* Angle chip — the editorial-blue moment per Design.md. */}
-      <div className="absolute left-2 top-2 z-10 inline-flex items-center rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-blue-700 shadow-sm">
+      <div className="absolute left-3 top-3 z-10 inline-flex items-center rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#3B82F6] shadow-sm">
         {angleLabel}
       </div>
-      <div className="absolute right-2 top-2 z-10">
+      <div className="absolute right-3 top-3 z-10">
         <ScoreBadge score={totalScore} size="sm" />
       </div>
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 origin-top-left scale-[0.4]" style={{ width: "250%", height: "250%" }}>
-          <ResumePreviewHtml data={content} template={templateSlug as TemplateSlug} />
+        <div
+          className="absolute inset-0 origin-top-left scale-[0.4]"
+          style={{ width: "250%", height: "250%" }}
+        >
+          <ResumePreviewHtml
+            data={content}
+            template={templateSlug as TemplateSlug}
+          />
         </div>
       </div>
 
-      {/* Bottom edit affordance — appears on hover. Keeps the tile clean
-          at rest but signals interactivity for the few seconds a new
-          user spends scanning the gallery. */}
-      <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full bg-gradient-to-t from-black/80 to-transparent px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-white opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-        Open card →
+      {/* Bottom "Open card" affordance — appears on hover. Soft white
+          gradient on the bottom so the label reads against the rendered
+          resume below it. */}
+      <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full bg-gradient-to-t from-white/95 via-white/70 to-transparent px-3 py-3 text-center text-[13px] font-medium text-[#1D1D1F] opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+        Open card
       </div>
     </Link>
   );

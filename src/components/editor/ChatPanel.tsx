@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useMutation, useAction } from "convex/react";
-import { Sparkles, ArrowRight, Lock } from "lucide-react";
+import { Sparkles, Lock } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { MessageBubble } from "./MessageBubble";
@@ -40,29 +40,27 @@ export function ChatPanel({ cardId }: { cardId: string }) {
 
   if (user !== undefined && !canAccessFeature(tier, "fine_tune_editor")) {
     return (
-      <div className="flex h-full flex-col rounded-xl border border-neutral-800 bg-neutral-950">
-        <div className="border-b border-neutral-900 px-4 py-3">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            <Lock className="size-3" aria-hidden="true" />
+      <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-card">
+        <div className="border-b border-[#D2D2D7]/70 px-5 py-3">
+          <div className="flex items-center gap-2 text-[13px] font-medium text-[#86868B]">
+            <Lock className="size-4" aria-hidden="true" />
             Fine-tune editor
           </div>
         </div>
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-          <Sparkles className="size-6 text-neutral-500" aria-hidden="true" />
-          <h3 className="mt-4 text-h3 text-white">Apply+ unlocks the editor.</h3>
-          <p className="mt-3 max-w-xs text-sm text-neutral-400">
+          <Sparkles className="size-7 text-[#86868B]" aria-hidden="true" />
+          <h3 className="mt-4 text-h3 text-[#1D1D1F]">
+            Apply+ unlocks the editor.
+          </h3>
+          <p className="mt-3 max-w-xs text-[15px] leading-relaxed text-[#6E6E73]">
             Edit any card with chat AI. Unlimited rewrites. The AI rescores
             after each change.
           </p>
           <Link
             href="/pricing"
-            className="group mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-black transition-colors hover:bg-neutral-200"
+            className="focus-ring mt-6 inline-flex h-11 items-center rounded-full bg-[#1D1D1F] px-5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-black"
           >
             See pricing
-            <ArrowRight
-              className="size-4 transition-transform group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
           </Link>
         </div>
       </div>
@@ -70,37 +68,43 @@ export function ChatPanel({ cardId }: { cardId: string }) {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
-      <div className="flex items-center justify-between border-b border-neutral-900 px-4 py-3">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
-          <Sparkles className="size-3" aria-hidden="true" />
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-card">
+      <div className="flex items-center justify-between border-b border-[#D2D2D7]/70 px-5 py-3">
+        <div className="flex items-center gap-2 text-[13px] font-medium text-[#1D1D1F]">
+          <Sparkles className="size-4" aria-hidden="true" />
           Fine-tune editor
         </div>
         {thinking && (
-          <span className="flex items-center gap-2 font-mono text-[11px] tabular-nums text-neutral-500">
-            <span className="size-1.5 animate-pulse rounded-full bg-neutral-400" aria-hidden="true" />
-            rewriting + rescoring
+          <span className="flex items-center gap-2 text-[12px] text-[#86868B]">
+            <span
+              className="size-1.5 animate-pulse rounded-full bg-[#86868B]"
+              aria-hidden="true"
+            />
+            Rewriting + rescoring
           </span>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="flex-1 overflow-y-auto px-5 py-5">
         {messages === undefined ? (
-          <div className="text-xs text-neutral-500">Loading…</div>
+          <div className="text-[13px] text-[#86868B]">Loading.</div>
         ) : messages.length === 0 ? (
-          <div className="space-y-3">
-            <p className="text-xs leading-relaxed text-neutral-500">
+          <div className="space-y-4">
+            <p className="text-[14px] leading-relaxed text-[#6E6E73]">
               Tell the editor how to change this card. The card rewrites and
               re-scores after each message.
             </p>
-            <div className="rounded-md border border-neutral-800 bg-neutral-900/60 p-3 text-xs leading-relaxed text-neutral-400">
-              <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+            <div className="rounded-xl bg-[#FAFAFA] p-4 text-[13px] leading-relaxed text-[#6E6E73]">
+              <div className="mb-2 text-[12px] font-medium text-[#86868B]">
                 Try
               </div>
               <ul className="space-y-1.5">
                 <li>&ldquo;Lead with the FAANG experience.&rdquo;</li>
                 <li>&ldquo;Make the bullets more quantitative.&rdquo;</li>
-                <li>&ldquo;Drop the early-career section, keep the last 6 years.&rdquo;</li>
+                <li>
+                  &ldquo;Drop the early-career section, keep the last 6
+                  years.&rdquo;
+                </li>
               </ul>
             </div>
           </div>

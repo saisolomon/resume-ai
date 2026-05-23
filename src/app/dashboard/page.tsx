@@ -16,19 +16,18 @@ export default function DashboardPage() {
   const balance = useQuery(api.users.getCreditBalance, {});
 
   // Show the inline out-of-credits card when the user has existing runs
-  // but no credits left. New users (no runs) hit the existing
-  // EmptyDashboard, which now self-routes to /pricing when credits=0.
+  // but no credits left.
   const showOutOfCredits =
     runs !== undefined && runs.length > 0 && balance === 0;
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
       <SiteNav home="/dashboard">
         <NavLink href="/pricing">Pricing</NavLink>
         <NavLink href="/settings">Settings</NavLink>
       </SiteNav>
 
-      <div className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+      <div className="mx-auto max-w-3xl px-6 py-16 sm:px-8 sm:py-20">
         {/* useSearchParams() requires a Suspense boundary in Next 16. */}
         <Suspense fallback={null}>
           <CreditedBanner />
@@ -36,15 +35,10 @@ export default function DashboardPage() {
 
         {/* Header */}
         <div className="mb-10 flex items-end justify-between gap-4">
-          <div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-              Dashboard
-            </span>
-            <h1 className="mt-3 text-h1 text-white">Your runs</h1>
-          </div>
+          <h1 className="text-h1 text-[#1D1D1F]">Your runs</h1>
           <Link
             href="/"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+            className="focus-ring inline-flex h-11 items-center gap-2 rounded-full bg-[#1D1D1F] px-5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-black"
           >
             <Plus className="size-4" aria-hidden="true" />
             New run
@@ -58,7 +52,7 @@ export default function DashboardPage() {
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="h-24 animate-pulse rounded-xl border border-neutral-900 bg-neutral-950"
+                className="h-24 animate-pulse rounded-2xl bg-white shadow-card"
               />
             ))}
           </div>
@@ -67,7 +61,7 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* meta row above the list — gives the list a header */}
-            <div className="mb-3 flex items-baseline justify-between px-1 text-xs text-neutral-500">
+            <div className="mb-3 flex items-baseline justify-between px-1 text-[13px] text-[#86868B]">
               <span>
                 {runs.length} {runs.length === 1 ? "run" : "runs"}
               </span>

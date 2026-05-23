@@ -1,39 +1,34 @@
 "use client";
 import Link from "next/link";
 import { useQuery } from "convex/react";
-import { ArrowRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 
 /**
- * Settings — Credit balance card.
+ * Settings — Credit balance card, Apple-light.
  *
- * Reads the live balance from `api.users.getCreditBalance` (returns 0 if
- * signed out or no user row yet). Mono numeral, big — the page's "what
- * have I got left" answer at a glance. CTA is contextual:
+ * Reads the live balance from `api.users.getCreditBalance`. Mono numeral,
+ * big. CTA is contextual:
  *
- *  - balance > 0: "Buy more credits →" → /pricing, calm secondary tone
- *  - balance = 0: "Get 5-pack — $29" → /pricing, anchored brand CTA
- *    + the balance numeral flips to red-400 so the empty state reads
- *    as a state, not a value
+ *   balance > 0  → "Buy more credits" secondary pill
+ *   balance = 0  → "Buy 5-pack — $29" primary pill + the numeral flips
+ *                  to score-red so the empty state reads as a state.
  *
- * Per Design.md, credits never expire — we say that under the numeral.
+ * Credits never expire — we say that under the numeral.
  */
 export function CreditBalanceCard() {
   const balance = useQuery(api.users.getCreditBalance, {});
 
-  // Skeleton while Convex resolves so we don't flash "0 credits remaining"
-  // for the half-second between hydration and first query response.
   if (balance === undefined) {
     return (
-      <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+      <div className="rounded-2xl bg-white p-6 shadow-card sm:p-8">
+        <div className="text-[13px] font-medium text-[#86868B]">
           Credits remaining
         </div>
         <div className="mt-4 flex items-center justify-between gap-6">
-          <div className="h-12 w-20 animate-pulse rounded bg-neutral-900" />
-          <div className="h-10 w-32 animate-pulse rounded bg-neutral-900" />
+          <div className="h-12 w-20 animate-pulse rounded bg-[#F5F5F7]" />
+          <div className="h-11 w-32 animate-pulse rounded-full bg-[#F5F5F7]" />
         </div>
-        <div className="mt-3 h-4 w-72 animate-pulse rounded bg-neutral-900" />
+        <div className="mt-3 h-4 w-72 animate-pulse rounded bg-[#F5F5F7]" />
       </div>
     );
   }
@@ -41,56 +36,46 @@ export function CreditBalanceCard() {
   const isEmpty = balance === 0;
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+    <div className="rounded-2xl bg-white p-6 shadow-card sm:p-8">
+      <div className="text-[13px] font-medium text-[#86868B]">
         Credits remaining
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-        {/* Left — big mono numeral. */}
         <div>
           <span
-            className={`font-mono text-5xl font-bold tabular-nums leading-none ${
-              isEmpty ? "text-red-400" : "text-white"
+            className={`font-mono text-[44px] font-semibold leading-none tabular-nums ${
+              isEmpty ? "text-[#B91C1C]" : "text-[#1D1D1F]"
             }`}
           >
             {balance}
           </span>
-          <span className="ml-3 text-sm text-neutral-500">
+          <span className="ml-3 text-[15px] text-[#6E6E73]">
             credit{balance === 1 ? "" : "s"}
           </span>
         </div>
 
-        {/* Right — contextual CTA. */}
         {isEmpty ? (
           <Link
             href="/pricing"
-            className="group inline-flex h-10 items-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+            className="focus-ring inline-flex h-11 items-center rounded-full bg-[#1D1D1F] px-5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-black"
           >
-            Get 5-pack — $29
-            <ArrowRight
-              className="size-4 transition-transform group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
+            Buy 5-pack — $29
           </Link>
         ) : (
           <Link
             href="/pricing"
-            className="group inline-flex h-10 items-center gap-2 rounded-md border border-neutral-800 bg-neutral-900 px-5 text-sm font-semibold text-white transition-colors hover:border-neutral-700 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-white/40"
+            className="focus-ring inline-flex h-11 items-center rounded-full border border-[#D2D2D7] bg-white px-5 text-[15px] font-medium text-[#1D1D1F] transition-colors duration-200 hover:border-[#86868B] hover:bg-[#F5F5F7]"
           >
-            Buy more
-            <ArrowRight
-              className="size-4 transition-transform group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
+            Buy more credits
           </Link>
         )}
       </div>
 
-      <p className="mt-4 text-sm text-neutral-400">
+      <p className="mt-4 text-[15px] leading-relaxed text-[#6E6E73]">
         {isEmpty
           ? "Out of credits. Buy a pack to start a new run."
-          : "Each credit generates 4 resume designs + 3 cover letter variants. Credits never expire."}
+          : "Each credit generates 4 resume designs and 3 cover letter variants. Credits never expire."}
       </p>
     </div>
   );
