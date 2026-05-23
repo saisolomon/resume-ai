@@ -203,16 +203,16 @@ export function TemplateBrowser() {
           aria-label={`${active.label} template preview`}
           className="mt-8"
         >
-          <div className="relative mx-auto aspect-[5/7] w-full max-w-2xl overflow-hidden rounded-2xl border border-[#D2D2D7]/40 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            {/* Angle chip — editorial blue, the lone chromatic moment. */}
-            <div className="absolute left-4 top-4 z-10 inline-flex items-center rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#3B82F6] shadow-sm">
+          {/* Header strip — angle chip + score live ABOVE the white tile
+              so they don't sit on top of the candidate's name + contact
+              line that the rendered resume draws in its own header. */}
+          <div className="mx-auto mb-3 flex w-full max-w-2xl items-center justify-between">
+            <span className="inline-flex items-center rounded-md bg-[#EFF6FF] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-[#3B82F6]">
               {SAMPLE_ANGLE}
-            </div>
-            {/* Score badge */}
-            <div className="absolute right-4 top-4 z-10">
-              <ScoreBadge score={SAMPLE_SCORE} size="md" />
-            </div>
-
+            </span>
+            <ScoreBadge score={SAMPLE_SCORE} size="md" />
+          </div>
+          <div className="relative mx-auto aspect-[5/7] w-full max-w-2xl overflow-hidden rounded-2xl border border-[#D2D2D7]/40 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
             {/* ─── Crossfade slots ───
                 Two persistent panels (A + B) render as absolute-positioned
                 siblings. Both nodes exist from first paint, so the CSS
