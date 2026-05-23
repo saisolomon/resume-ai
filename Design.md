@@ -145,8 +145,8 @@ Mobile values in parens where they shift. All sizes use rem; line-height is unit
 | `sm` | 4px | `rounded` (default) | Inline tags, score chips. |
 | `md` | 6px | `rounded-md` | Inputs, secondary buttons, badges. |
 | `lg` | 8px | `rounded-lg` | Default — cards, primary buttons, modals. |
-| `xl` | 12px | `rounded-xl` | Pricing tier cards, hero CTAs, large feature surfaces. |
-| `2xl` | 16px | `rounded-2xl` | Reserved — only for the "Most popular" Hunt tier card to break the visual rhythm. |
+| `xl` | 12px | `rounded-xl` | Pricing pack cards, hero CTAs, large feature surfaces. |
+| `2xl` | 16px | `rounded-2xl` | Reserved — only for the "Most popular" 5-pack tier card to break the visual rhythm. |
 | `full` | 9999px | `rounded-full` | Pills, score badges, the "Most popular" inline pill. |
 
 ### Shadows
@@ -158,7 +158,7 @@ We use shadows **sparingly**. The dark canvas means shadows have to be inverted 
 | `none` | none | Default. Most surfaces use a 1px border instead of a shadow. |
 | `sm` | `0 1px 2px rgb(0 0 0 / 0.5)` | Subtle lift on hover for inline lists. |
 | `md` | `0 4px 16px rgb(0 0 0 / 0.6)` | Modal/dropdown shadow against the page. |
-| `glow` | `0 0 0 1px rgb(255 255 255 / 0.4)` | The "Most popular" Hunt card ring. Outline-glow, NOT a blur. |
+| `glow` | `0 0 0 1px rgb(255 255 255 / 0.4)` | The "Most popular" 5-pack card ring. Outline-glow, NOT a blur. |
 | `focus` | `0 0 0 2px rgb(255 255 255 / 0.6)` | Focus ring on interactive elements (always white-on-black for max visibility). |
 
 ---
@@ -206,7 +206,7 @@ Hover:      hover:border-neutral-700 transition-colors duration-200
             (no scale, no lift, no shadow — just a border-shade shift)
 
 Featured:   bg-neutral-950 border border-white shadow-[0_0_0_1px_rgba(255,255,255,0.4)]
-            (the "Most popular" Hunt pricing card — outline-glow at 40% white)
+            (the "Most popular" 5-pack pricing card — outline-glow at 40% white)
 
 Failed:     bg-red-950/30 border border-red-900 rounded-lg
             (failed-card states in the run gallery)
@@ -291,6 +291,176 @@ Close:      top-right "X" icon, text-neutral-500 hover:text-white
 ```
 
 **Confirmation dialogs (delete, destructive actions):** Always use double-confirm pattern — first `confirm()` asks the question, second `confirm()` asks "Are you absolutely sure?". Inline error state below the button if the action fails (don't use alert() for failures — use `<p role="alert" className="mt-2 text-xs text-red-400">`).
+
+### Pack Card (pricing-specific card variant)
+
+The pricing page uses a specialized card pattern that diverges from the generic Card spec — bigger price numerals, value-stack bullet list, anchored center variant.
+
+```
+Default:     bg-neutral-950 border border-neutral-800 rounded-xl
+             p-7 (28px) flex flex-col gap-4
+
+Anchored:    + md:scale-105 + border-white +
+             shadow-[0_0_0_1px_rgba(255,255,255,0.4)]
+             + "Most popular" pill absolute -top-3 left-1/2
+
+Pack name:    Label (12px / 600 / uppercase / tracking-[0.08em] / text-neutral-400)
+Tagline:      Body S (14px / text-neutral-500), 1 line
+Price:        Display (48px / 700 / tracking-tight / text-white)
+              + "/$" prefix in text-neutral-500 size-h2
+Per-unit math: Mono (12px / text-neutral-500) below price
+              e.g. "$5.80 per resume"
+Hairline:     h-px bg-neutral-800 between price + bullets
+
+Value bullets:
+  ul.space-y-3 text-sm text-neutral-300
+  li:        flex items-start gap-2
+    Icon:    Check size-4 mt-0.5 text-white (anchored) | text-neutral-500
+    Text:    text-neutral-300 (anchored: text-white)
+
+CTA:         Primary button on anchored card (bg-white text-black)
+             Secondary button on others (bg-neutral-900 border)
+             Full width, text-sm font-semibold, "Get 5-pack — $29"
+```
+
+### Template Gallery (landing page pattern)
+
+A horizontal scroll-rail of mini template thumbnails (real rendered samples, not stock images). Each thumbnail is a clickable `ResumePreviewHtml` at a small scale.
+
+```
+Container:   horizontal scroll, snap-x snap-mandatory
+             overflow-x-auto py-4 (with mask-image edges at left/right
+             to fade scroll affordance)
+
+Tile:        aspect-[3/4] w-48 (192px wide) rounded-lg border-neutral-800
+             snap-start flex-shrink-0
+             bg-white (the rendered resume)
+             relative: angle chip + score badge top corners
+
+Hover:       border-neutral-700, no lift, no shadow
+
+Label below: text-[11px] uppercase tracking-[0.08em] text-neutral-400 mt-2
+             Center-aligned, e.g. "Engineering depth · 91"
+
+Tab strip ABOVE the rail (optional):
+             ["All angles" | "Engineering depth" | "Leadership" | "..."]
+             Filters which tiles render. Same tab-button styling as the
+             HeroPreview component.
+```
+
+Use the gallery in two places:
+1. **Landing — below the hero**, after `<HowItWorks>`. Header: "What real output looks like" or "8 tailored samples from real job descriptions". Shows 6–8 tiles, scroll-revealed.
+2. **Pricing — above the FAQ**, as social proof. Header: "Sample output."
+
+### Trust Strip (landing + pricing)
+
+A horizontal strip of credibility signals. Replaces the generic "trusted by N users" line with concrete, verifiable badges.
+
+```
+Container:   w-full border-y border-neutral-900 bg-neutral-950/40
+             py-8 (compact) | py-12 (full)
+
+Layout:      max-w-6xl mx-auto px-6
+             grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6
+             items-center text-center
+
+Rating tile: Star icon (size-5 text-amber-400) + "4.8 / 5"
+             (Mono numeral, text-h3 white) + caption "out of N reviews"
+             text-xs text-neutral-500
+             ONLY include if we actually have a rating
+
+Media-logo tile:
+             greyscale logo SVG, opacity-60, hover:opacity-100
+             max-h-6 each
+             ONLY include real attributions ("As seen in: Anthropic eng
+             blog, Y Combinator, ..." — never invented)
+
+Statistic tile:
+             Big mono numeral (Display, text-white) + small caption
+             text-xs text-neutral-500 uppercase tracking-wide
+             e.g. "3,184  resumes tailored this week"
+             ONLY surface real metrics — pull from Convex usageEvents
+```
+
+**Rule:** Never invent social proof. If we don't yet have testimonials, ratings, or media mentions, leave the section out of the live page or replace with **demonstrable numbers** pulled from Convex (e.g., "Generated 12,743 resumes this month") which we can substantiate.
+
+### Before / After Comparison
+
+A two-column compare block showing a "before" (template-resume) and "after" (resume.ai-tailored) version side by side. Used on the landing as proof; on pricing as the implicit-value sell.
+
+```
+Container:   grid grid-cols-1 md:grid-cols-2 gap-6
+             max-w-5xl mx-auto py-12
+
+Each column: bg-white rounded-lg border border-neutral-800 p-6
+             aspect-[5/7] (letter paper)
+             Renders a ResumePreviewHtml or a frozen sample
+
+Before label: top-left chip
+              bg-red-950 text-red-400 px-2.5 py-0.5 text-[10px]
+              uppercase tracking-[0.08em] rounded-md
+              text "Before — template resume"
+
+After label:  top-left chip
+              bg-green-950 text-green-400 px-2.5 py-0.5 text-[10px]
+              uppercase tracking-[0.08em] rounded-md
+              text "After — tailored to {JDTitle}"
+
+ATS badge top-right on both: shows the score delta visibly
+              (e.g. Before: 64 (amber/red) → After: 91 (green))
+
+Caption below: text-sm text-neutral-400 italic center
+              "Same person. Same resume. Same job. 27 points of ATS
+               headroom from one credit."
+```
+
+### Credit Balance Card (settings page)
+
+```
+Container:   bg-neutral-950 border border-neutral-800 rounded-lg p-6
+
+Layout:      grid grid-cols-[1fr_auto] gap-6 items-center
+
+Left side:
+  Label:     "CREDITS REMAINING" — Label (12px / 600 / uppercase /
+             tracking-[0.08em] / text-neutral-500)
+  Big num:   Display (48px / 700 / Geist Mono / tabular-nums / text-white)
+             — e.g. "12"
+  Caption:   Body S (text-neutral-400 mt-2)
+             "Each credit generates 4 resume angles + 3 cover letter
+              variants. Credits never expire."
+
+Right side:
+  Primary CTA: "Buy more →" (h-10 px-5 bg-white text-black)
+
+Empty state (credits = 0):
+  Big num is text-red-400, no italics, no badge
+  Caption becomes "Out of credits. Buy a pack to start a new run."
+  CTA: "Get 5-pack — $29" (anchored brand CTA)
+```
+
+### Purchase History Row (settings page)
+
+```
+Container:   bg-neutral-950 border border-neutral-800 rounded-lg
+             overflow-hidden
+
+Header row:  grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3
+             border-b border-neutral-900 text-[11px] uppercase
+             tracking-[0.08em] text-neutral-500
+             columns: Date · Pack · Amount · Invoice
+
+Data row:    same grid, px-5 py-3 border-b border-neutral-900
+             (last row has no border-b)
+             font-mono text-sm tabular-nums text-neutral-300
+             Date:    "May 23, 2026" (mono)
+             Pack:    "5-pack" (sans, text-white)
+             Amount:  "$29.00" (mono, text-white)
+             Invoice: link with ExternalLink size-3 icon,
+                      text-neutral-400 hover:text-white
+
+Empty state: "No purchases yet." text-sm text-neutral-500 px-5 py-6
+```
 
 ### Dividers
 
@@ -403,38 +573,80 @@ spring:    cubic-bezier(0.16, 1, 0.3, 1)  /* page entrances, modal pop-in */
 
 - Plain language. Short paragraphs (1–3 sentences). No "leverage", "utilize", "in order to" — say "use", "use", "to".
 - Don't write "AI" as a noun in product copy unless the reader needs to know it's AI for a decision (e.g., "the AI will rewrite this card" — fine; "AI-powered" — never).
-- Specific over abstract. "Sub-10s priority queue" > "fast generation". "$144/yr billed annually" > "save 20%".
+- Specific over abstract. "Sub-10s priority queue" > "fast generation". "5 resumes for $29 ($5.80 each)" > "save big".
 - Anti-pattern: "We use Claude under the hood." Readers don't care about the LLM brand. We say "Sonnet rewrites the card" inside developer-facing docs only.
 
 ### CTAs
 
 - Action verbs only. No "Submit", no "Click here", no "Get started today!"
 - Approved CTAs:
-  - "See my 4 designs →" (hero submit)
-  - "Get Apply" / "Get Hunt" (pricing — never "Buy" or "Subscribe")
-  - "Start free" (free tier)
-  - "Manage subscription"
-  - "Upgrade →" (in-product upsell)
+  - "See my 4 designs →" (hero submit, anonymous)
+  - "Tailor 1 resume — $9" / "Get 5 resumes — $29" / "Get 20 resumes — $79" (pricing — never "Buy" or "Subscribe")
+  - "Unlock download — $9" (post-generation paywall, single-pack)
+  - "Get more credits →" (in-product upsell when credits = 0)
   - "Delete account" (destructive)
 - Arrow suffix (` →`) is allowed on directional CTAs (hero submit, upgrade). Never on destructive or neutral CTAs.
+- **Never** the word "Subscribe", "Subscription", "Sign up free for unlimited" — we're not a subscription anymore. The model is one-time purchase of resume credits.
 
-### Pricing copy (Hormozi GSO, voice-aligned)
+### Pricing copy (Hormozi Grand Slam Offer, per-unit anchored)
 
-Tier names:
+The model is **one-time purchase of resume credits**, not subscription. Every unit (1 credit) generates the full 4-angle resume gallery + 3 cover letter variants + ATS scoring. Credits don't expire.
 
-- **Try ($0)** — "Free forever. No card."
-- **Apply ($15/mo)** — Implied stack: $40+ of tooling. Voice: "Get unlimited runs and the chat-fine-tune editor."
-- **Hunt ($35/mo)** — Implied stack: $100+. Voice: "The full job hunt." Hunt is anchored center + scaled up + "Most popular" badge.
+Three tiers, anchored center:
+
+- **Single — $9** (1 credit)
+  - 4 tailored resume angles
+  - 3 cover letter variants
+  - ATS deep-scan
+  - PDF + DOCX downloads
+  - Chat fine-tune editor (unlimited edits on this run)
+  - Voice: *"One job? One purchase. Done."*
+
+- **5-pack — $29** (5 credits) ← **MOST POPULAR**, anchored center, scaled up
+  - Everything in Single, × 5
+  - LinkedIn profile rewrite (1× included)
+  - Implied per-unit: $5.80 (vs $9 single) — **36% off**, but we don't shout the discount, we let the math show
+  - Voice: *"For the active job hunt."*
+
+- **20-pack — $79** (20 credits)
+  - Everything in 5-pack, × 4
+  - Cover letter generator works in both English and Spanish
+  - Interview prep — Sonnet-generated likely questions + practice mode (10 sessions)
+  - Outreach templates — DMs for hiring managers per JD (20 generations)
+  - 1 human review credit — a certified recruiter reviews your top card
+  - Implied per-unit: $3.95 — **56% off** single price
+  - Voice: *"The full job hunt, ammunition included."*
+
+**Anchoring rules (per Hormozi GSO, voice-aligned):**
+
+1. **Anchor the 5-pack as default.** It sits CENTER on desktop, `md:scale-105`, white-border-ring glow. "Most popular" pill above the card. The user's eye lands here first.
+2. **Single is the loss-leader.** $9 is a low-friction entry — the user who's between jobs and just needs ONE resume buys it without thinking. We don't make money on it; we make money when they come back for the 5-pack.
+3. **20-pack is the over-deliverer.** Hormozi GSO Step 2: identify the dream outcome, list every obstacle, deliver a stack that solves all of them. The 20-pack is where the cover-letter languages / interview prep / human review live.
+4. **Stack math, never on stickers.** The per-unit math ($5.80 each, $3.95 each) is the discount story. **No** "Save 67%" red badges. **No** crossed-out prices.
+5. **Credits never expire.** This is a brand commitment, not a fine-print exception. The 20-pack user knows they can stockpile for the next career move.
 
 Guarantee block copy (do not change without re-review):
 > **30 days. No interview, full refund.**
 > One email, no support hoops.
 
 Anti-patterns in pricing:
-- No "Save 67%" stickers. No fake red badges.
-- No "Only 3 left at this price". No fake countdowns.
-- No "Most expensive plan is $99 (crossed out) → now $35!" anchoring.
-- The annual toggle is real (20% off). It MUST charge the user the yearly price if they pick it. Don't fake it.
+- No "Save 67%" stickers. No fake red badges. No crossed-out original prices.
+- No "Only 3 left at this price". No fake countdowns. No fake scarcity.
+- No "limited time bundle" / "today only" / "doors close" theatrics. Hormozi-true ≠ Hormozi-cliché.
+- No re-subscription nag. If a user runs out of credits, the upsell is calm: "Out of credits. Get more →"
+- No annual toggle. The model is per-unit credits, not recurring billing.
+
+### Cover letter copy
+
+Each credit ALWAYS includes the cover letter as part of the bundle. We never sell cover letters separately at this stage. Reasons:
+
+1. Hormozi value-stack: bundle = higher perceived value at the same price point.
+2. Implementation cost is one extra Sonnet call per run, ~$0.02 marginal AI cost.
+3. Selling cover letter separately makes the resume offer feel anemic.
+
+When we describe the offer, always lead with the resume + cover letter together, never resume alone. E.g.:
+- ✓ "4 resume angles + 3 cover letter variants — $9"
+- ✗ "Resume builder. Cover letters $3 add-on."
 
 ### Error messages
 
@@ -497,27 +709,53 @@ grid (grid-cols-2 md:grid-cols-4 gap-4):
 ```
 nav:       resume.ai                      Pricing  Dashboard  Sign in/UserButton
 hero (py-20 max-w-3xl text-center):
-  H1 Display: "One price. The whole job hunt."
-  Body L:     "Tailored resumes, cover letters, ATS scoring, outreach,
-              interview prep. Pick the tier that matches how serious you are."
-  Pill toggle: [ Monthly | Annual (-20%) ]
+  Eyebrow:  "PRICING"
+  H1:       "Pay per resume. No subscription."
+  Body L:   "Every credit gets you 4 tailored resume angles, 3 cover
+            letter variants, ATS scoring, and unlimited fine-tune
+            edits. Credits never expire."
 
-grid (3-col, max-w-6xl, order on mobile: Hunt first):
-  TierCard "Try"  (left)
-  TierCard "Hunt" (CENTER, md:scale-105, border-white, "Most popular" pill)
-  TierCard "Apply" (right)
+grid (3-col, max-w-6xl, order on mobile: 5-pack first):
+  PackCard "Single"  (left)        — $9 / 1 credit
+  PackCard "5-pack"  (CENTER, md:scale-105, border-white,
+                      "Most popular" pill) — $29 / 5 credits
+  PackCard "20-pack" (right)       — $79 / 20 credits + bonuses
 
 ValueStack section (max-w-3xl):
-  H2:      "Everything that's in Hunt"
-  9 rows × $-value, strikethrough total
-  CTA → Get Hunt
+  H2:      "Everything that's in the 20-pack"
+  Implied-value rows:
+    - 20 × 4-angle resume gallery        ($180)
+    - 20 × 3-variant cover letter        ($60)
+    - 20 × ATS deep-scan + per-bullet    ($80)
+    - 1 × LinkedIn profile rewrite        ($40)
+    - 10 × interview prep sessions        ($150)
+    - 20 × outreach templates             ($60)
+    - 1 × human review by certified recruiter ($150)
+    - Cover letter ES/EN bilingual        ($20)
+  Total implied value: $740 — strikethrough
+  Price: $79
+  CTA → Get 20-pack ($79)
 
 GuaranteeBlock (max-w-2xl):
   Shield icon (size-8 text-white)
   H2: "30 days. No interview, full refund."
-  Body: "One email, no support hoops."
+  Body: "One email, no support hoops. Credits never expire."
+
+TrustStrip (max-w-6xl, full bleed, py-12):
+  Optional once we have it: Trustpilot-style rating + media-logo strip
+  ("As seen in: Y Combinator, Anthropic engineering blog, ..." or
+   similar — must be real attributions; no fake logos.)
 
 PricingFAQ (max-w-3xl, native <details>/<summary>)
+  FAQs MUST cover:
+    - "Do credits expire?" — No. Ever.
+    - "What if I don't land an interview?" — 30-day refund, no questions.
+    - "What's in a credit?" — 4 angles + 3 cover letters + ATS scoring.
+    - "What if I want to refine after generation?" — Unlimited fine-tune
+       edits per run, included with every credit.
+    - "Why per-credit and not subscription?" — We don't want to optimize
+       for the customer paying us when they're NOT applying. Pay when
+       you use it.
 
 SiteFooter
 ```
@@ -565,10 +803,19 @@ section (py-12 max-w-2xl space-y-6):
   H1: "Settings"
   Body S (text-neutral-500): user.email
 
-  BillingSection (Card):
-    H3: "Billing"
-    "Current plan: {tier}" + sub.currentPeriodEnd renewal line
-    Right: Primary button "Manage subscription" (paid) | "Upgrade" link (free)
+  CreditBalanceSection (Card):
+    H3: "Credits"
+    Big mono number: e.g. "12 credits remaining"
+    Body S (text-neutral-500): "Each credit generates 4 resume angles + 3 cover letter variants. Credits never expire."
+    Right: Primary button "Buy more credits →" → /pricing
+
+  PurchaseHistorySection (Card):
+    H3: "Purchase history"
+    List of past purchases:
+      [Date]  5-pack         $29.00   →  invoice
+      [Date]  Single         $9.00    →  invoice
+    If empty: "No purchases yet."
+    Invoice links open Stripe-hosted PDF receipts.
 
   DangerZone (Card, border-red-900 bg-red-950/30):
     H3 (text-red-400): "Danger zone"
@@ -610,11 +857,13 @@ import { UserButton, useUser } from "@clerk/nextjs";
 
 When redesigning the live pages, the following business behaviors must NOT change:
 
-1. **Pricing tier names + amounts**: Try $0 / Apply $15 / Hunt $35. Annual is real (Apply $144/yr, Hunt $336/yr). Hunt anchored center.
-2. **The Hormozi 30-day guarantee copy**: "30 days. No interview, full refund. One email, no support hoops."
-3. **Anonymous → signed-in flow**: Hero submit → /try/<runId> (signed-out) or /run/<runId> (signed-in). Download button on /try lands user at /sign-up?redirect_url=... then auto-resumes claim + download.
-4. **ATS score band colors**: green ≥85 / amber 70–84 / red <70. Don't change thresholds without explicit go-ahead.
-5. **The 4-angle output structure**: Engineering depth / Leadership / Cross-functional / Specialist. Names stay. Templates: Classic / Modern / Creative / Minimal.
+1. **Pricing pack structure + amounts**: Single $9 (1 credit) / 5-pack $29 (5 credits) / 20-pack $79 (20 credits + bonuses). 5-pack anchored center. Subscription is dead. Credits never expire.
+2. **Bundled cover letter**: every credit = 4 resume angles + 3 cover letter variants. Never sell cover letter as separate add-on.
+3. **The Hormozi 30-day guarantee copy**: "30 days. No interview, full refund. One email, no support hoops."
+4. **Anonymous → signed-in flow**: Hero submit → /try/<runId> (signed-out) or /run/<runId> (signed-in). Anonymous flow generates a preview (low-res watermarked) but the high-res PDF/DOCX download requires sign-up + credit purchase.
+5. **ATS score band colors**: green ≥85 / amber 70–84 / red <70. Don't change thresholds without explicit go-ahead.
+6. **The 4-angle output structure**: Engineering depth / Leadership / Cross-functional / Specialist. Names stay. Templates: Classic / Modern / Creative / Minimal.
+7. **NYU bullet-writing rules (applied to AI prompts)**: action verbs only (use the NYU action verb list at `docs/nyu-action-verbs.md` as guidance), no first person (no I/Me/We/My), quantified results when possible, "what did I do / why / what was the result / what value did I add" framing, skill-based not task-based, present tense for current roles + past tense for prior.
 
 ### What Aura is allowed to change
 
