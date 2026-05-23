@@ -98,13 +98,17 @@ export const regenerateCard = action({
       });
 
       // Record Sonnet token spend BEFORE parsing — see runAngle for the
-      // rationale. The user already paid for the tokens whether the JSON
-      // parses or not.
-      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
-        model: "sonnet",
-        inputTokens: resp.usage.input_tokens,
-        outputTokens: resp.usage.output_tokens,
-      });
+      // rationale. Best-effort: don't break the chat reply if accounting
+      // has a transient failure.
+      try {
+        await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+          model: "sonnet",
+          inputTokens: resp.usage.input_tokens,
+          outputTokens: resp.usage.output_tokens,
+        });
+      } catch (logErr) {
+        console.error("recordTokenSpend failed (regenerateCard sonnet)", logErr);
+      }
 
       const c = resp.content[0];
       if (c.type !== "text") throw new Error("non-text edit response");
@@ -116,11 +120,16 @@ export const regenerateCard = action({
       const updated = parsed;
 
       const jdMerged: JDParsed = { ...jd.parsed, title: jd.title, company: jd.company };
-      const { ats, narrativeTokens } = await scoreCard(updated, jdMerged);
-      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
-        model: "haiku",
-        inputTokens: narrativeTokens.input,
-        outputTokens: narrativeTokens.output,
+      const { ats } = await scoreCard(updated, jdMerged, async (tokens) => {
+        try {
+          await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+            model: "haiku",
+            inputTokens: tokens.input,
+            outputTokens: tokens.output,
+          });
+        } catch (logErr) {
+          console.error("recordTokenSpend failed (regenerateCard haiku)", logErr);
+        }
       });
 
       await ctx.runMutation(internal.cards.patchCard, {

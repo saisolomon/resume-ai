@@ -102,12 +102,17 @@ export const runAngle = internalAction({
       });
       // Record Sonnet token spend BEFORE parsing/throwing so a malformed
       // response still counts against the budget — we paid for those
-      // tokens whether the JSON parsed or not.
-      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
-        model: "sonnet",
-        inputTokens: resp.usage.input_tokens,
-        outputTokens: resp.usage.output_tokens,
-      });
+      // tokens whether the JSON parsed or not. Best-effort: never break
+      // a card render if accounting has a transient failure.
+      try {
+        await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+          model: "sonnet",
+          inputTokens: resp.usage.input_tokens,
+          outputTokens: resp.usage.output_tokens,
+        });
+      } catch (logErr) {
+        console.error("recordTokenSpend failed (runAngle sonnet)", logErr);
+      }
 
       const c = resp.content[0];
       if (c.type !== "text") throw new Error("non-text gen response");
@@ -115,11 +120,19 @@ export const runAngle = internalAction({
       if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
       const content = JSON.parse(json) as ResumeData;
 
-      const { ats, narrativeTokens } = await scoreCard(content, jdMerged);
-      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
-        model: "haiku",
-        inputTokens: narrativeTokens.input,
-        outputTokens: narrativeTokens.output,
+      // scoreCard records the Haiku narrative tokens via the callback
+      // immediately after the Anthropic response — covers the "malformed
+      // narrative JSON" case that the prior bubbled-tokens shape missed.
+      const { ats } = await scoreCard(content, jdMerged, async (tokens) => {
+        try {
+          await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+            model: "haiku",
+            inputTokens: tokens.input,
+            outputTokens: tokens.output,
+          });
+        } catch (logErr) {
+          console.error("recordTokenSpend failed (runAngle haiku)", logErr);
+        }
       });
 
       await ctx.runMutation(internal.cards.patchCard, {

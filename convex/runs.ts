@@ -21,9 +21,19 @@ export const findByFingerprintAndIds = query({
       .query("runs")
       .withIndex("by_fingerprint", (q) => q.eq("fingerprintHash", args.fingerprintHash))
       .collect();
-    return runs.find(
-      (r) => r.resumeId === args.resumeId && r.jobDescriptionId === args.jobDescriptionId,
-    ) ?? null;
+    // Exclude failed runs — a transient Anthropic/Firecrawl failure would
+    // otherwise poison this (resume, JD) triple until the user's rate-limit
+    // window resets. In-flight runs (status "scraping" / "generating") ARE
+    // returned: that's the "user double-submitted, dedupe" case the cache
+    // is designed for.
+    return (
+      runs.find(
+        (r) =>
+          r.resumeId === args.resumeId &&
+          r.jobDescriptionId === args.jobDescriptionId &&
+          r.status !== "failed",
+      ) ?? null
+    );
   },
 });
 

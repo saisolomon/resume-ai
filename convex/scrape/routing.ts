@@ -2,7 +2,7 @@
 import { firecrawlScrape } from "./firecrawl";
 import { directScrape } from "./direct";
 import { canonicalizeJobUrl } from "./canonicalize";
-import { extractJDFields, ExtractedJD } from "./extract";
+import { extractJDFields, ExtractedJD, RecordTokens } from "./extract";
 
 export interface ScrapeResult {
   sourceUrl: string;
@@ -10,11 +10,6 @@ export interface ScrapeResult {
   rawText: string;
   parsed: ExtractedJD;
   scraper: "firecrawl" | "direct";
-  // Tokens consumed by the Haiku JD-extraction step. Bubbled up so the
-  // calling action (resolveJobDescription) can record them via the
-  // costGuard internal mutation — extract.ts is a plain helper without
-  // a Convex ctx of its own.
-  extractTokens: { input: number; output: number };
 }
 
 // Threshold below which we consider direct fetch's output insufficient
@@ -22,7 +17,10 @@ export interface ScrapeResult {
 const DIRECT_OK_LEN = 800;
 const FINAL_MIN_LEN = 400;
 
-export async function scrapeJD(url: string): Promise<ScrapeResult> {
+export async function scrapeJD(
+  url: string,
+  recordTokens?: RecordTokens,
+): Promise<ScrapeResult> {
   const canonicalUrl = canonicalizeJobUrl(url);
 
   let text: string;
@@ -50,13 +48,14 @@ export async function scrapeJD(url: string): Promise<ScrapeResult> {
     throw new Error(`scrape_failed: insufficient content (${text.length} chars)`);
   }
 
-  const extracted = await extractJDFields(text);
+  // extractJDFields records the Haiku tokens via recordTokens immediately
+  // after the Anthropic response — covers parse-throws.
+  const parsed = await extractJDFields(text, recordTokens);
   return {
     sourceUrl: url,
     canonicalUrl,
     rawText: text,
-    parsed: extracted.parsed,
+    parsed,
     scraper,
-    extractTokens: extracted.tokens,
   };
 }

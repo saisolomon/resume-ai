@@ -16,14 +16,20 @@ export const resolveJobDescription = action({
     });
     if (existing) return existing._id;
 
-    const scraped = await scrapeJD(url);
-    // Record the Haiku token spend from JD extraction against the daily
-    // budget. Happens AFTER the call returns (we paid for those tokens
-    // whether we end up using the result or not).
-    await ctx.runMutation(internal.costGuard.recordTokenSpend, {
-      model: "haiku",
-      inputTokens: scraped.extractTokens.input,
-      outputTokens: scraped.extractTokens.output,
+    // scrapeJD records Haiku tokens via the callback IMMEDIATELY after
+    // the extract Anthropic call returns — so even a malformed-JSON
+    // response still counts against the daily breaker. Best-effort: never
+    // break the scrape if accounting has a transient failure.
+    const scraped = await scrapeJD(url, async (tokens) => {
+      try {
+        await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+          model: "haiku",
+          inputTokens: tokens.input,
+          outputTokens: tokens.output,
+        });
+      } catch (logErr) {
+        console.error("recordTokenSpend failed (jd extract)", logErr);
+      }
     });
     // strip title/company from parsed — they're top-level schema fields, not nested
     const { title, company, ...parsedRest } = scraped.parsed;

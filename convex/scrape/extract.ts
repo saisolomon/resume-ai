@@ -29,12 +29,14 @@ Rules:
 - responsibilities: what the role does, paraphrased tightly. Up to 8.
 - Return raw JSON. No markdown fences, no preamble.`;
 
-export interface ExtractJDResult {
-  parsed: ExtractedJD;
-  tokens: { input: number; output: number };
-}
+// See score.ts — record-tokens callback fires immediately after the
+// Anthropic response so spend gets counted even when parsing throws.
+export type RecordTokens = (tokens: { input: number; output: number }) => Promise<void>;
 
-export async function extractJDFields(rawText: string): Promise<ExtractJDResult> {
+export async function extractJDFields(
+  rawText: string,
+  recordTokens?: RecordTokens,
+): Promise<ExtractedJD> {
   const client = getAnthropic();
   const resp = await client.messages.create({
     model: MODELS.haiku,
@@ -42,12 +44,17 @@ export async function extractJDFields(rawText: string): Promise<ExtractJDResult>
     system: SYSTEM,
     messages: [{ role: "user", content: rawText.slice(0, 12000) }],
   });
+  // Record IMMEDIATELY — tokens are billed regardless of what we do
+  // with the response.
+  if (recordTokens) {
+    await recordTokens({
+      input: resp.usage.input_tokens,
+      output: resp.usage.output_tokens,
+    });
+  }
   const content = resp.content[0];
   if (content.type !== "text") throw new Error("non-text response from Haiku");
   let json = content.text.trim();
   if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  return {
-    parsed: JSON.parse(json) as ExtractedJD,
-    tokens: { input: resp.usage.input_tokens, output: resp.usage.output_tokens },
-  };
+  return JSON.parse(json) as ExtractedJD;
 }
