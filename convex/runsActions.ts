@@ -39,9 +39,51 @@ export const startRun = action({
       }
     }
 
+    // Anonymous flow — enforce per-fingerprint rate limit:
+    // 1 run / 24h, 3 runs / 7d. Skipped for signed-in users (who have
+    // their own free-tier weekly limit above).
+    if (!user) {
+      const limitCheck = await ctx.runQuery(api.rateLimit.checkFingerprintLimit, {
+        fingerprintHash: args.fingerprintHash,
+      });
+      if (limitCheck.isOverLimit) {
+        throw new Error(
+          "rate_limit_exceeded: You've used your free runs. Sign up free for unlimited.",
+        );
+      }
+    }
+
     const jdId = (await ctx.runAction(api.jobDescriptionsActions.resolveJobDescription, {
       url: args.jdUrl,
     })) as Id<"jobDescriptions">;
+
+    // Anonymous result cache: if the same fingerprint already has a run
+    // for this (resume, JD) pair, return it instead of paying for a new
+    // Sonnet × 4 + Haiku × 4 generation. Signed-in users are deliberately
+    // excluded — they may want to regenerate against the same JD/resume
+    // after editing one of the cards.
+    if (!user) {
+      const cached = await ctx.runQuery(api.runs.findByFingerprintAndIds, {
+        fingerprintHash: args.fingerprintHash,
+        resumeId: args.resumeId,
+        jobDescriptionId: jdId,
+      });
+      if (cached) {
+        return cached._id;
+      }
+    }
+
+    // Daily cost circuit breaker — anonymous only. Signed-in users
+    // (especially paying tiers) bypass this so a flood of anonymous
+    // traffic can't lock out paying customers.
+    if (!user) {
+      const breaker = await ctx.runQuery(api.costGuard.isCircuitOpen, {});
+      if (breaker.open) {
+        throw new Error(
+          `circuit_open: We're experiencing high demand ($${breaker.todaysUsd.toFixed(2)}/$${breaker.capUsd}). Sign up for guaranteed access.`,
+        );
+      }
+    }
 
     const runId = (await ctx.runMutation(internal.runs.insertRun, {
       // Attach userId for signed-in callers; fall back to fingerprintHash
@@ -51,6 +93,16 @@ export const startRun = action({
       resumeId: args.resumeId,
       jobDescriptionId: jdId,
     })) as Id<"runs">;
+
+    // For anonymous runs, log the usage event so the next call from this
+    // fingerprint sees the run in its sliding window. Must happen after
+    // insertRun succeeds so we have a valid runId to attach.
+    if (!user) {
+      await ctx.runMutation(internal.rateLimit.recordAnonymousRun, {
+        fingerprintHash: args.fingerprintHash,
+        runId,
+      });
+    }
 
     const cardIds = (await ctx.runMutation(internal.runs.insertInitialCards, {
       runId,

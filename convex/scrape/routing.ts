@@ -2,7 +2,7 @@
 import { firecrawlScrape } from "./firecrawl";
 import { directScrape } from "./direct";
 import { canonicalizeJobUrl } from "./canonicalize";
-import { extractJDFields, ExtractedJD } from "./extract";
+import { extractJDFields, ExtractedJD, RecordTokens } from "./extract";
 
 export interface ScrapeResult {
   sourceUrl: string;
@@ -17,7 +17,10 @@ export interface ScrapeResult {
 const DIRECT_OK_LEN = 800;
 const FINAL_MIN_LEN = 400;
 
-export async function scrapeJD(url: string): Promise<ScrapeResult> {
+export async function scrapeJD(
+  url: string,
+  recordTokens?: RecordTokens,
+): Promise<ScrapeResult> {
   const canonicalUrl = canonicalizeJobUrl(url);
 
   let text: string;
@@ -45,7 +48,9 @@ export async function scrapeJD(url: string): Promise<ScrapeResult> {
     throw new Error(`scrape_failed: insufficient content (${text.length} chars)`);
   }
 
-  const parsed = await extractJDFields(text);
+  // extractJDFields records the Haiku tokens via recordTokens immediately
+  // after the Anthropic response — covers parse-throws.
+  const parsed = await extractJDFields(text, recordTokens);
   return {
     sourceUrl: url,
     canonicalUrl,

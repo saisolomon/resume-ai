@@ -23,9 +23,20 @@ export interface AtsScore {
   };
 }
 
+// Callers supply this to be notified of token usage AS SOON AS the
+// Anthropic call returns — before any parsing or validation that could
+// throw. Critical for the cost circuit breaker: even malformed responses
+// still cost money, so the breaker must see the spend or the cap drifts.
+export type RecordTokens = (tokens: { input: number; output: number }) => Promise<void>;
+
+export interface ScoreCardResult {
+  ats: AtsScore;
+}
+
 async function scoreNarrative(
   resume: ResumeData,
   jd: JDParsed,
+  recordTokens?: RecordTokens,
 ): Promise<NarrativeScoreResult> {
   const client = getAnthropic();
   const resp = await client.messages.create({
@@ -34,6 +45,13 @@ async function scoreNarrative(
     system: NARRATIVE_SYSTEM,
     messages: [{ role: "user", content: buildNarrativePrompt(resume, jd) }],
   });
+  // Record IMMEDIATELY — we paid for the tokens even if parsing throws below.
+  if (recordTokens) {
+    await recordTokens({
+      input: resp.usage.input_tokens,
+      output: resp.usage.output_tokens,
+    });
+  }
   const c = resp.content[0];
   if (c.type !== "text") throw new Error("non-text narrative response");
   let json = c.text.trim();
@@ -41,25 +59,31 @@ async function scoreNarrative(
   return JSON.parse(json) as NarrativeScoreResult;
 }
 
-export async function scoreCard(resume: ResumeData, jd: JDParsed): Promise<AtsScore> {
+export async function scoreCard(
+  resume: ResumeData,
+  jd: JDParsed,
+  recordTokens?: RecordTokens,
+): Promise<ScoreCardResult> {
   const keyword = scoreKeywords(resume, jd.keywords);
   const format = scoreFormat(resume);
-  const narrative = await scoreNarrative(resume, jd);
+  const narrative = await scoreNarrative(resume, jd, recordTokens);
 
   const total = Math.round(
     0.4 * keyword.score + 0.2 * format.score + 0.4 * narrative.score,
   );
 
   return {
-    total,
-    keywordMatch: keyword.score,
-    formatSafety: format.score,
-    narrativeFit: narrative.score,
-    breakdown: {
-      keywordsFound: keyword.found,
-      keywordsMissing: keyword.missing,
-      formatIssues: format.issues,
-      narrativeRationale: narrative.rationale,
+    ats: {
+      total,
+      keywordMatch: keyword.score,
+      formatSafety: format.score,
+      narrativeFit: narrative.score,
+      breakdown: {
+        keywordsFound: keyword.found,
+        keywordsMissing: keyword.missing,
+        formatIssues: format.issues,
+        narrativeRationale: narrative.rationale,
+      },
     },
   };
 }

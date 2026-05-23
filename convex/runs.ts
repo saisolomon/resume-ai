@@ -6,6 +6,37 @@ export const getRun = query({
   handler: async (ctx, args) => await ctx.db.get(args.runId),
 });
 
+// Result cache lookup for the anonymous flow. Same fingerprint asking for
+// the same (resume, JD) triple — return the existing run instead of paying
+// for another full Sonnet × 4 + Haiku × 4 generation. Uses by_fingerprint
+// to scope the scan; per-fingerprint history is small.
+export const findByFingerprintAndIds = query({
+  args: {
+    fingerprintHash: v.string(),
+    resumeId: v.id("resumes"),
+    jobDescriptionId: v.id("jobDescriptions"),
+  },
+  handler: async (ctx, args) => {
+    const runs = await ctx.db
+      .query("runs")
+      .withIndex("by_fingerprint", (q) => q.eq("fingerprintHash", args.fingerprintHash))
+      .collect();
+    // Exclude failed runs — a transient Anthropic/Firecrawl failure would
+    // otherwise poison this (resume, JD) triple until the user's rate-limit
+    // window resets. In-flight runs (status "scraping" / "generating") ARE
+    // returned: that's the "user double-submitted, dedupe" case the cache
+    // is designed for.
+    return (
+      runs.find(
+        (r) =>
+          r.resumeId === args.resumeId &&
+          r.jobDescriptionId === args.jobDescriptionId &&
+          r.status !== "failed",
+      ) ?? null
+    );
+  },
+});
+
 // Dedicated count query for the free-tier weekly limit check. Replaces the
 // previous use of listMyRuns (which fans out to JD + cards reads per run)
 // inside runsActions.startRun. Uses .take(limit + 1) so the worst case is

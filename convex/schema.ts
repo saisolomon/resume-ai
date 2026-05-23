@@ -144,5 +144,9 @@ export default defineSchema({
     metadata: v.optional(v.any()),
   })
     .index("by_user_type", ["userId", "type"])
-    .index("by_fingerprint_type", ["fingerprintHash", "type"]),
+    .index("by_fingerprint_type", ["fingerprintHash", "type"])
+    // Needed by ipVelocity.checkIpVelocity so we don't full-table-scan
+    // every anonymous submit. _creationTime is implicitly the secondary
+    // sort key in every Convex index.
+    .index("by_type", ["type"]),
 });

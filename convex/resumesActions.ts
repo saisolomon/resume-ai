@@ -1,7 +1,7 @@
 "use node";
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import mammoth from "mammoth";
 import { getAnthropic, MODELS } from "./ai/anthropic";
@@ -21,10 +21,19 @@ function arrayBufferToBase64(buf: ArrayBuffer): string {
   return Buffer.from(buf).toString("base64");
 }
 
-async function structureFromDocxBuffer(buf: ArrayBuffer): Promise<{
+interface StructureResult {
   rawText: string;
   parsed: unknown;
-}> {
+}
+
+// See ai/score.ts — record-tokens callback fires immediately after the
+// Anthropic response so spend gets counted even when JSON parsing throws.
+type RecordTokens = (tokens: { input: number; output: number }) => Promise<void>;
+
+async function structureFromDocxBuffer(
+  buf: ArrayBuffer,
+  recordTokens: RecordTokens,
+): Promise<StructureResult> {
   const r = await mammoth.extractRawText({ buffer: Buffer.from(buf) });
   const rawText = r.value;
 
@@ -35,6 +44,11 @@ async function structureFromDocxBuffer(buf: ArrayBuffer): Promise<{
     system: STRUCTURING_PROMPT,
     messages: [{ role: "user", content: `Parse this resume:\n\n${rawText}` }],
   });
+  // Record IMMEDIATELY — we paid for the tokens whether the JSON parsed or not.
+  await recordTokens({
+    input: resp.usage.input_tokens,
+    output: resp.usage.output_tokens,
+  });
   const c = resp.content[0];
   if (c.type !== "text") throw new Error("non-text response from sonnet");
   let json = c.text.trim();
@@ -42,10 +56,10 @@ async function structureFromDocxBuffer(buf: ArrayBuffer): Promise<{
   return { rawText, parsed: JSON.parse(json) };
 }
 
-async function structureFromPdfBuffer(buf: ArrayBuffer): Promise<{
-  rawText: string;
-  parsed: unknown;
-}> {
+async function structureFromPdfBuffer(
+  buf: ArrayBuffer,
+  recordTokens: RecordTokens,
+): Promise<StructureResult> {
   const client = getAnthropic();
   const resp = await client.messages.create({
     model: MODELS.sonnet,
@@ -71,6 +85,10 @@ async function structureFromPdfBuffer(buf: ArrayBuffer): Promise<{
       },
     ],
   });
+  await recordTokens({
+    input: resp.usage.input_tokens,
+    output: resp.usage.output_tokens,
+  });
   const c = resp.content[0];
   if (c.type !== "text") throw new Error("non-text response from sonnet");
   let json = c.text.trim();
@@ -92,10 +110,25 @@ export const parseAndStoreResume = action({
     if (!blob) throw new Error("uploaded_file_missing");
     const buffer = await blob.arrayBuffer();
 
+    // Best-effort spend recording — never break the user's run if the
+    // accounting mutation has a transient failure. The cap can drift by
+    // pennies on rare write failures; that's better than a 500.
+    const recordSonnet: RecordTokens = async (tokens) => {
+      try {
+        await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+          model: "sonnet",
+          inputTokens: tokens.input,
+          outputTokens: tokens.output,
+        });
+      } catch (err) {
+        console.error("recordTokenSpend failed (resume parse)", err);
+      }
+    };
+
     const { rawText, parsed } =
       args.source === "pdf"
-        ? await structureFromPdfBuffer(buffer)
-        : await structureFromDocxBuffer(buffer);
+        ? await structureFromPdfBuffer(buffer, recordSonnet)
+        : await structureFromDocxBuffer(buffer, recordSonnet);
 
     const resumeId = await ctx.runMutation(api.resumes.finalizeAnonymousResume, {
       storageId: args.storageId,
