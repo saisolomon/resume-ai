@@ -3,107 +3,115 @@ import { SiteNav } from "@/components/layout/SiteNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
 /**
- * Privacy policy — editorial article layout.
+ * Privacy policy — Apple-light editorial article.
  *
- * Uses the prose-style spacing (h2 + paragraph + bulleted list) but the
- * surface itself is a hairline-bordered article column inside the
- * dark canvas. Section headers get tracking + tone consistent with
- * the rest of the site (no underlines, no nav-style large headings).
+ * Calm prose on the mist canvas. Generous line-height, near-black body,
+ * Apple-blue inline links. Hairline divider below the header.
  */
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
       <SiteNav home="/" />
 
-      <article className="mx-auto max-w-2xl px-6 py-16">
-        <header className="border-b border-neutral-900 pb-8">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            Legal
-          </span>
-          <h1 className="mt-3 text-h1 text-white">Privacy policy</h1>
-          <p className="mt-2 font-mono text-xs tabular-nums text-neutral-500">
+      <article className="mx-auto max-w-2xl px-6 py-16 sm:px-8 sm:py-24">
+        <header className="border-b border-[#D2D2D7]/70 pb-8">
+          <h1 className="text-h1 text-[#1D1D1F]">Privacy policy</h1>
+          <p className="mt-3 font-mono text-[13px] tabular-nums text-[#86868B]">
             Last updated · 2026-05-23
           </p>
         </header>
 
-        <div className="mt-12 space-y-10 text-neutral-300">
+        <div className="mt-12 space-y-12 text-[17px] leading-relaxed text-[#1D1D1F]">
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">What we collect</h2>
-            <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">What we collect</h2>
+            <ul className="space-y-3 text-[16px] leading-relaxed text-[#1D1D1F]">
               <li>
-                <strong className="text-neutral-200">Anonymous users.</strong>{" "}
-                A hashed browser fingerprint (no PII), the job URL you submit,
-                and your uploaded resume content. We retain anonymous data for
-                30 days, then hard-delete it.
+                <strong>Anonymous users.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  A hashed browser fingerprint (no PII), the job URL you submit,
+                  and your uploaded resume content. We retain anonymous data
+                  for 30 days, then hard-delete it.
+                </span>
               </li>
               <li>
-                <strong className="text-neutral-200">Signed-in users.</strong>{" "}
-                The above plus your email (via Clerk) and, if you subscribe,
-                your Stripe customer ID. We retain this until you delete your
-                account.
+                <strong>Signed-in users.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  The above plus your email (via Clerk) and, if you subscribe,
+                  your Stripe customer ID. We retain this until you delete your
+                  account.
+                </span>
               </li>
               <li>
-                <strong className="text-neutral-200">Job descriptions.</strong>{" "}
-                We cache the scraped text by URL, shared across all users —
-                they&apos;re public postings.
+                <strong>Job descriptions.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  We cache the scraped text by URL, shared across all users —
+                  they&apos;re public postings.
+                </span>
               </li>
             </ul>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">What we share</h2>
-            <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">What we share</h2>
+            <ul className="space-y-3 text-[16px] leading-relaxed text-[#1D1D1F]">
               <li>
-                <strong className="text-neutral-200">Anthropic.</strong> Your
-                resume + JD content is sent to Anthropic&apos;s Claude API to
-                generate the tailored output. Anthropic does not retain or
-                train on your data per their API terms.
+                <strong>Anthropic.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  Your resume and JD content is sent to Anthropic&apos;s Claude
+                  API to generate the tailored output. Anthropic does not
+                  retain or train on your data per their API terms.
+                </span>
               </li>
               <li>
-                <strong className="text-neutral-200">Firecrawl.</strong> The
-                job URL is sent to Firecrawl to scrape the JD.
+                <strong>Firecrawl.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  The job URL is sent to Firecrawl to scrape the JD.
+                </span>
               </li>
               <li>
-                <strong className="text-neutral-200">Clerk.</strong> Handles
-                authentication.
+                <strong>Clerk.</strong>{" "}
+                <span className="text-[#6E6E73]">Handles authentication.</span>
               </li>
               <li>
-                <strong className="text-neutral-200">Stripe.</strong> Handles
-                payment.
+                <strong>Stripe.</strong>{" "}
+                <span className="text-[#6E6E73]">Handles payment.</span>
               </li>
               <li>
-                <strong className="text-neutral-200">Convex / Vercel.</strong>{" "}
-                Infrastructure providers (database, hosting).
+                <strong>Convex / Vercel.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  Infrastructure providers (database, hosting).
+                </span>
               </li>
             </ul>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Your rights</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Your rights</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               Sign in and visit{" "}
               <Link
                 href="/settings"
-                className="text-white underline decoration-neutral-700 underline-offset-4 transition-colors hover:decoration-white"
+                className="text-[#0071E3] underline-offset-4 hover:underline"
               >
                 Settings → Danger zone
               </Link>{" "}
               to permanently delete your account and all your data. The
-              deletion cascades to Stripe (cancels any active subscription)
-              and Convex (removes all runs, resumes, and chat history).
+              deletion cascades to Stripe (cancels any active subscription) and
+              Convex (removes all runs, resumes, and chat history).
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Contact</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Contact</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               Questions about this policy:{" "}
               <a
                 href="mailto:hi@resume.ai"
-                className="text-white underline decoration-neutral-700 underline-offset-4 transition-colors hover:decoration-white"
+                className="text-[#0071E3] underline-offset-4 hover:underline"
               >
                 hi@resume.ai
               </a>
+              .
             </p>
           </section>
         </div>
