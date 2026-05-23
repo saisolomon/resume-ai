@@ -73,6 +73,18 @@ export const startRun = action({
       }
     }
 
+    // Daily cost circuit breaker — anonymous only. Signed-in users
+    // (especially paying tiers) bypass this so a flood of anonymous
+    // traffic can't lock out paying customers.
+    if (!user) {
+      const breaker = await ctx.runQuery(api.costGuard.isCircuitOpen, {});
+      if (breaker.open) {
+        throw new Error(
+          `circuit_open: We're experiencing high demand ($${breaker.todaysUsd.toFixed(2)}/$${breaker.capUsd}). Sign up for guaranteed access.`,
+        );
+      }
+    }
+
     const runId = (await ctx.runMutation(internal.runs.insertRun, {
       // Attach userId for signed-in callers; fall back to fingerprintHash
       // for anonymous demo users so the claim flow can later migrate them.

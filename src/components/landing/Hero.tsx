@@ -93,6 +93,10 @@ export function Hero() {
         setError(
           "Too many submissions from your network. Sign up for guaranteed access.",
         );
+      } else if (raw.includes("circuit_open")) {
+        setError(
+          "We're experiencing unusually high demand right now. Sign up for guaranteed access, or try again later.",
+        );
       } else if (raw === "start_run_failed" || raw === "bad_request") {
         setError("Something went wrong starting your run. Please try again.");
       } else {

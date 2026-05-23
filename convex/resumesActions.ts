@@ -1,7 +1,7 @@
 "use node";
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import mammoth from "mammoth";
 import { getAnthropic, MODELS } from "./ai/anthropic";
@@ -21,10 +21,15 @@ function arrayBufferToBase64(buf: ArrayBuffer): string {
   return Buffer.from(buf).toString("base64");
 }
 
-async function structureFromDocxBuffer(buf: ArrayBuffer): Promise<{
+interface StructureResult {
   rawText: string;
   parsed: unknown;
-}> {
+  // Sonnet tokens used to parse the resume. Bubbled up so the action
+  // handler can record them via the costGuard internal mutation.
+  tokens: { input: number; output: number };
+}
+
+async function structureFromDocxBuffer(buf: ArrayBuffer): Promise<StructureResult> {
   const r = await mammoth.extractRawText({ buffer: Buffer.from(buf) });
   const rawText = r.value;
 
@@ -39,13 +44,14 @@ async function structureFromDocxBuffer(buf: ArrayBuffer): Promise<{
   if (c.type !== "text") throw new Error("non-text response from sonnet");
   let json = c.text.trim();
   if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  return { rawText, parsed: JSON.parse(json) };
+  return {
+    rawText,
+    parsed: JSON.parse(json),
+    tokens: { input: resp.usage.input_tokens, output: resp.usage.output_tokens },
+  };
 }
 
-async function structureFromPdfBuffer(buf: ArrayBuffer): Promise<{
-  rawText: string;
-  parsed: unknown;
-}> {
+async function structureFromPdfBuffer(buf: ArrayBuffer): Promise<StructureResult> {
   const client = getAnthropic();
   const resp = await client.messages.create({
     model: MODELS.sonnet,
@@ -77,7 +83,11 @@ async function structureFromPdfBuffer(buf: ArrayBuffer): Promise<{
   if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
   const parsed = JSON.parse(json);
   const rawText = JSON.stringify(parsed);
-  return { rawText, parsed };
+  return {
+    rawText,
+    parsed,
+    tokens: { input: resp.usage.input_tokens, output: resp.usage.output_tokens },
+  };
 }
 
 export const parseAndStoreResume = action({
@@ -92,10 +102,19 @@ export const parseAndStoreResume = action({
     if (!blob) throw new Error("uploaded_file_missing");
     const buffer = await blob.arrayBuffer();
 
-    const { rawText, parsed } =
+    const { rawText, parsed, tokens } =
       args.source === "pdf"
         ? await structureFromPdfBuffer(buffer)
         : await structureFromDocxBuffer(buffer);
+
+    // Record Sonnet token spend against the daily breaker. Happens after
+    // the call returns so we count actual usage even if the downstream
+    // mutation fails.
+    await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+      model: "sonnet",
+      inputTokens: tokens.input,
+      outputTokens: tokens.output,
+    });
 
     const resumeId = await ctx.runMutation(api.resumes.finalizeAnonymousResume, {
       storageId: args.storageId,

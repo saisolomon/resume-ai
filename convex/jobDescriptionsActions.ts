@@ -17,6 +17,14 @@ export const resolveJobDescription = action({
     if (existing) return existing._id;
 
     const scraped = await scrapeJD(url);
+    // Record the Haiku token spend from JD extraction against the daily
+    // budget. Happens AFTER the call returns (we paid for those tokens
+    // whether we end up using the result or not).
+    await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+      model: "haiku",
+      inputTokens: scraped.extractTokens.input,
+      outputTokens: scraped.extractTokens.output,
+    });
     // strip title/company from parsed — they're top-level schema fields, not nested
     const { title, company, ...parsedRest } = scraped.parsed;
     return await ctx.runMutation(internal.jobDescriptions.insertJD, {

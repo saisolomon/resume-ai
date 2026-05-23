@@ -29,7 +29,12 @@ Rules:
 - responsibilities: what the role does, paraphrased tightly. Up to 8.
 - Return raw JSON. No markdown fences, no preamble.`;
 
-export async function extractJDFields(rawText: string): Promise<ExtractedJD> {
+export interface ExtractJDResult {
+  parsed: ExtractedJD;
+  tokens: { input: number; output: number };
+}
+
+export async function extractJDFields(rawText: string): Promise<ExtractJDResult> {
   const client = getAnthropic();
   const resp = await client.messages.create({
     model: MODELS.haiku,
@@ -41,5 +46,8 @@ export async function extractJDFields(rawText: string): Promise<ExtractedJD> {
   if (content.type !== "text") throw new Error("non-text response from Haiku");
   let json = content.text.trim();
   if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  return JSON.parse(json) as ExtractedJD;
+  return {
+    parsed: JSON.parse(json) as ExtractedJD,
+    tokens: { input: resp.usage.input_tokens, output: resp.usage.output_tokens },
+  };
 }

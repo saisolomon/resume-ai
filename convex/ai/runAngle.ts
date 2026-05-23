@@ -100,13 +100,27 @@ export const runAngle = internalAction({
           },
         ],
       });
+      // Record Sonnet token spend BEFORE parsing/throwing so a malformed
+      // response still counts against the budget — we paid for those
+      // tokens whether the JSON parsed or not.
+      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+        model: "sonnet",
+        inputTokens: resp.usage.input_tokens,
+        outputTokens: resp.usage.output_tokens,
+      });
+
       const c = resp.content[0];
       if (c.type !== "text") throw new Error("non-text gen response");
       let json = c.text.trim();
       if (json.startsWith("```")) json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
       const content = JSON.parse(json) as ResumeData;
 
-      const ats = await scoreCard(content, jdMerged);
+      const { ats, narrativeTokens } = await scoreCard(content, jdMerged);
+      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+        model: "haiku",
+        inputTokens: narrativeTokens.input,
+        outputTokens: narrativeTokens.output,
+      });
 
       await ctx.runMutation(internal.cards.patchCard, {
         cardId,

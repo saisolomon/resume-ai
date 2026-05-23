@@ -73,10 +73,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ runId });
   } catch (err) {
     const msg = (err as Error).message;
-    // Map server-thrown error markers to clean responses.
-    if (msg.includes("rate_limit_exceeded")) {
-      return NextResponse.json({ error: msg }, { status: 429 });
-    }
+    // Map server-thrown error markers to clean 429 responses. circuit_open
+    // is added by Phase H — the daily $50 breaker rejects anonymous traffic
+    // once the cap is hit. ip_velocity_exceeded is also a 429 surface, but
+    // it short-circuits earlier in this route — see the velocity check above.
+    const knownMarkers = ["rate_limit_exceeded", "circuit_open"];
+    const matched = knownMarkers.find((m) => msg.includes(m));
+    if (matched) return NextResponse.json({ error: msg }, { status: 429 });
     return NextResponse.json({ error: "start_run_failed", detail: msg }, { status: 500 });
   }
 }

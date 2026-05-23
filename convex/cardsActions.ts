@@ -97,6 +97,15 @@ export const regenerateCard = action({
         ],
       });
 
+      // Record Sonnet token spend BEFORE parsing — see runAngle for the
+      // rationale. The user already paid for the tokens whether the JSON
+      // parses or not.
+      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+        model: "sonnet",
+        inputTokens: resp.usage.input_tokens,
+        outputTokens: resp.usage.output_tokens,
+      });
+
       const c = resp.content[0];
       if (c.type !== "text") throw new Error("non-text edit response");
       let json = c.text.trim();
@@ -107,7 +116,12 @@ export const regenerateCard = action({
       const updated = parsed;
 
       const jdMerged: JDParsed = { ...jd.parsed, title: jd.title, company: jd.company };
-      const ats = await scoreCard(updated, jdMerged);
+      const { ats, narrativeTokens } = await scoreCard(updated, jdMerged);
+      await ctx.runMutation(internal.costGuard.recordTokenSpend, {
+        model: "haiku",
+        inputTokens: narrativeTokens.input,
+        outputTokens: narrativeTokens.output,
+      });
 
       await ctx.runMutation(internal.cards.patchCard, {
         cardId,

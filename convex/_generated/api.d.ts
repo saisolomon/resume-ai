@@ -16,6 +16,7 @@ import type * as cardsActions from "../cardsActions.js";
 import type * as chatMessages from "../chatMessages.js";
 import type * as claim from "../claim.js";
 import type * as cleanup from "../cleanup.js";
+import type * as costGuard from "../costGuard.js";
 import type * as dashboard from "../dashboard.js";
 import type * as http from "../http.js";
 import type * as ipVelocity from "../ipVelocity.js";
@@ -51,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   chatMessages: typeof chatMessages;
   claim: typeof claim;
   cleanup: typeof cleanup;
+  costGuard: typeof costGuard;
   dashboard: typeof dashboard;
   http: typeof http;
   ipVelocity: typeof ipVelocity;

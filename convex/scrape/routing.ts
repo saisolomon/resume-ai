@@ -10,6 +10,11 @@ export interface ScrapeResult {
   rawText: string;
   parsed: ExtractedJD;
   scraper: "firecrawl" | "direct";
+  // Tokens consumed by the Haiku JD-extraction step. Bubbled up so the
+  // calling action (resolveJobDescription) can record them via the
+  // costGuard internal mutation — extract.ts is a plain helper without
+  // a Convex ctx of its own.
+  extractTokens: { input: number; output: number };
 }
 
 // Threshold below which we consider direct fetch's output insufficient
@@ -45,12 +50,13 @@ export async function scrapeJD(url: string): Promise<ScrapeResult> {
     throw new Error(`scrape_failed: insufficient content (${text.length} chars)`);
   }
 
-  const parsed = await extractJDFields(text);
+  const extracted = await extractJDFields(text);
   return {
     sourceUrl: url,
     canonicalUrl,
     rawText: text,
-    parsed,
+    parsed: extracted.parsed,
     scraper,
+    extractTokens: extracted.tokens,
   };
 }
