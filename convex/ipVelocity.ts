@@ -24,18 +24,15 @@ export const checkIpVelocity = query({
   args: { ipHash: v.string(), fingerprintHash: v.string() },
   handler: async (ctx, { ipHash, fingerprintHash }) => {
     const cutoff = Date.now() - HOUR;
-    // We can't index by ipHash without adding to usageEvents schema.
-    // Workaround: filter all anonymous_ip_seen events from the last hour
-    // and count distinct fps for matching ipHash. For v1 abuse loads this
-    // is fine; a dedicated index can come in a perf pass.
+    // Use the by_type index to scope the scan to only anonymous_ip_seen
+    // events, then filter by _creationTime. We still post-filter by
+    // ipHash (no index on metadata.ipHash) but the scan is bounded by
+    // the recent window of one event type — should stay sub-1k docs
+    // even under abuse load.
     const events = await ctx.db
       .query("usageEvents")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("type"), "anonymous_ip_seen"),
-          q.gte(q.field("_creationTime"), cutoff),
-        ),
-      )
+      .withIndex("by_type", (q) => q.eq("type", "anonymous_ip_seen"))
+      .filter((q) => q.gte(q.field("_creationTime"), cutoff))
       .collect();
     const matching = events.filter(
       (e) => (e.metadata as { ipHash?: string } | undefined)?.ipHash === ipHash,

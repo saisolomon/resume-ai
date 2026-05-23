@@ -15,11 +15,19 @@ function clientIp(req: NextRequest): string {
 }
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as {
-    resumeId: string;
-    jdUrl: string;
-    fingerprintHash: string;
-  };
+  let body: { resumeId: string; jdUrl: string; fingerprintHash: string };
+  try {
+    body = await req.json();
+    if (
+      typeof body.resumeId !== "string" ||
+      typeof body.jdUrl !== "string" ||
+      typeof body.fingerprintHash !== "string"
+    ) {
+      throw new Error("missing required field");
+    }
+  } catch {
+    return NextResponse.json({ error: "bad_request" }, { status: 400 });
+  }
 
   const salt = process.env.FINGERPRINT_SALT;
   if (!salt) {
