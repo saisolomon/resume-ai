@@ -4,37 +4,6 @@ import { v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { weeklyRunLimit } from "../src/lib/tier";
-import type { FunctionReference } from "convex/server";
-
-// Local references to new convex modules (rateLimit) that are NOT yet in
-// the committed `_generated/api.d.ts`. The runtime `api`/`internal` exports
-// are `anyApi`, so these dispatch fine — we only need types here. After
-// Phase M moves _generated/ to gitignore and CI regenerates, these can be
-// removed in favor of the regenerated typed references.
-const rateLimitApi = {
-  checkFingerprintLimit: (api as unknown as {
-    rateLimit: {
-      checkFingerprintLimit: FunctionReference<
-        "query",
-        "public",
-        { fingerprintHash: string },
-        { isOverLimit: boolean }
-      >;
-    };
-  }).rateLimit.checkFingerprintLimit,
-};
-const rateLimitInternal = {
-  recordAnonymousRun: (internal as unknown as {
-    rateLimit: {
-      recordAnonymousRun: FunctionReference<
-        "mutation",
-        "internal",
-        { fingerprintHash: string; runId: Id<"runs"> },
-        null
-      >;
-    };
-  }).rateLimit.recordAnonymousRun,
-};
 
 export const startRun = action({
   args: {
@@ -74,7 +43,7 @@ export const startRun = action({
     // 1 run / 24h, 3 runs / 7d. Skipped for signed-in users (who have
     // their own free-tier weekly limit above).
     if (!user) {
-      const limitCheck = await ctx.runQuery(rateLimitApi.checkFingerprintLimit, {
+      const limitCheck = await ctx.runQuery(api.rateLimit.checkFingerprintLimit, {
         fingerprintHash: args.fingerprintHash,
       });
       if (limitCheck.isOverLimit) {
@@ -101,7 +70,7 @@ export const startRun = action({
     // fingerprint sees the run in its sliding window. Must happen after
     // insertRun succeeds so we have a valid runId to attach.
     if (!user) {
-      await ctx.runMutation(rateLimitInternal.recordAnonymousRun, {
+      await ctx.runMutation(internal.rateLimit.recordAnonymousRun, {
         fingerprintHash: args.fingerprintHash,
         runId,
       });

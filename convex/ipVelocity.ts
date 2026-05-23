@@ -1,16 +1,12 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { createHash } from "crypto";
 
 const HOUR = 60 * 60 * 1000;
 const MAX_DISTINCT_FPS = 5;
 
-// Daily-rotating IP hash. The salt is (FINGERPRINT_SALT + YYYY-MM-DD)
-// so the hash changes daily — limits long-term ability to track IPs but
-// preserves correlation within a single day for abuse detection.
-export function hashIp(ip: string, dateUTC: string, salt: string): string {
-  return createHash("sha256").update(`${salt}:${dateUTC}:${ip}`).digest("hex");
-}
+// hashIp lives in src/lib/ipHash.ts (Node `crypto` isn't available in
+// Convex's default V8 isolate, and the Next.js API route is the only
+// place that needs to hash an IP — Convex only ever sees the hash).
 
 // Pure helper — exported for unit testing. Returns true if accepting one
 // more fingerprint from this IP would exceed MAX_DISTINCT_FPS distinct

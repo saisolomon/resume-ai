@@ -1,44 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
-import { createHash } from "crypto";
-import type { FunctionReference } from "convex/server";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
-
-// Local references to new convex modules (ipVelocity) that are NOT yet in
-// the committed `_generated/api.d.ts`. The runtime `api` export is
-// `anyApi`, so these dispatch fine — we only need types here. After
-// Phase M moves _generated/ to gitignore and CI regenerates, these can be
-// removed in favor of the regenerated typed references.
-const ipVelocityApi = {
-  checkIpVelocity: (api as unknown as {
-    ipVelocity: {
-      checkIpVelocity: FunctionReference<
-        "query",
-        "public",
-        { ipHash: string; fingerprintHash: string },
-        { isOverIpVelocity: boolean }
-      >;
-    };
-  }).ipVelocity.checkIpVelocity,
-  recordIpSeen: (api as unknown as {
-    ipVelocity: {
-      recordIpSeen: FunctionReference<
-        "mutation",
-        "public",
-        { ipHash: string; fingerprintHash: string },
-        null
-      >;
-    };
-  }).ipVelocity.recordIpSeen,
-};
-
-function todayUTC(): string {
-  const d = new Date();
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(
-    d.getUTCDate(),
-  ).padStart(2, "0")}`;
-}
+import { hashIp, todayUTC } from "@/lib/ipHash";
 
 function clientIp(req: NextRequest): string {
   // Vercel and most proxies set x-forwarded-for as a comma-separated list
@@ -62,16 +26,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "server_misconfigured" }, { status: 500 });
   }
 
-  const ipHash = createHash("sha256")
-    .update(`${salt}:${todayUTC()}:${clientIp(req)}`)
-    .digest("hex");
+  const ipHash = hashIp(clientIp(req), todayUTC(), salt);
 
   const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
   // IP velocity gate (anonymous only — sign-in skips this path entirely).
   // Throttles >5 distinct fingerprints/hour/IP to defeat trivial
   // fingerprint-rotation attacks against the per-fingerprint rate limit.
-  const velocity = await convex.query(ipVelocityApi.checkIpVelocity, {
+  const velocity = await convex.query(api.ipVelocity.checkIpVelocity, {
     ipHash,
     fingerprintHash: body.fingerprintHash,
   });
@@ -87,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   // Record BEFORE kicking off the run so the next request from this IP
   // sees the updated count even if startRun is slow.
-  await convex.mutation(ipVelocityApi.recordIpSeen, {
+  await convex.mutation(api.ipVelocity.recordIpSeen, {
     ipHash,
     fingerprintHash: body.fingerprintHash,
   });
