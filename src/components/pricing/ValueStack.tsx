@@ -34,62 +34,55 @@ export function ValueStack() {
   );
 
   return (
-    <section className="border-t border-neutral-900 bg-neutral-950/60 py-20 sm:py-24">
-      <div className="mx-auto max-w-3xl px-6">
+    <section className="bg-[#FAFAFA] py-24 sm:py-32">
+      <div className="mx-auto max-w-3xl px-6 sm:px-8">
         <div className="text-center">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            20-pack — value stack
-          </span>
-          <h2 className="mt-4 text-h1 text-white sm:text-3xl">
-            Everything in the 20-pack.
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-neutral-400">
-            Priced separately on the open market, this stack runs $
-            {total}+. You pay $79 once. Credits never expire.
+          <h2 className="text-h1 text-[#1D1D1F]">Everything in the 20-pack.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-[#6E6E73]">
+            Priced separately on the open market, this stack runs ${total}+.
+            You pay $79 once. Credits never expire.
           </p>
         </div>
 
-        <div className="mt-12 overflow-hidden rounded-xl border border-neutral-800 bg-black">
+        <div className="mt-12 overflow-hidden rounded-2xl bg-white shadow-card">
           {twentyPackStack.map((row, i) => (
             <div
               key={i}
-              className={`flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-neutral-950/60 ${
+              className={`flex items-center justify-between gap-4 px-6 py-4 sm:px-8 ${
                 i !== twentyPackStack.length - 1
-                  ? "border-b border-neutral-900"
+                  ? "border-b border-[#D2D2D7]/70"
                   : ""
               }`}
             >
               <div className="flex items-start gap-3">
                 <Check
-                  className="size-4 shrink-0 translate-y-0.5 text-white"
+                  className="mt-0.5 size-5 shrink-0 text-[#1A7F45]"
                   aria-hidden="true"
                 />
-                <span className="text-sm text-neutral-200">{row.item}</span>
+                <span className="text-[15px] text-[#1D1D1F]">{row.item}</span>
               </div>
-              <span className="font-mono text-sm font-medium tabular-nums text-neutral-500">
+              <span className="font-mono text-[15px] font-medium tabular-nums text-[#86868B]">
                 {row.value}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-neutral-800 bg-neutral-800 text-center">
-          <div className="bg-black p-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl bg-white p-8 text-center shadow-card">
+            <p className="text-[13px] font-medium text-[#6E6E73]">
               Total open-market value
             </p>
-            <p className="mt-3 font-mono text-2xl font-medium tabular-nums text-neutral-500">
+            <p className="mt-3 font-mono text-[36px] font-medium leading-none tabular-nums text-[#86868B] line-through decoration-[#86868B]/40">
               ${total}
             </p>
           </div>
-          <div className="bg-black p-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-              You pay
-            </p>
-            <p className="mt-3 font-mono text-3xl font-bold tabular-nums text-white sm:text-4xl">
+          <div className="rounded-2xl bg-white p-8 text-center shadow-card">
+            <p className="text-[13px] font-medium text-[#6E6E73]">You pay</p>
+            <p className="mt-3 font-mono text-[44px] font-semibold leading-none tracking-tight tabular-nums text-[#1D1D1F]">
               $79
             </p>
-            <p className="mt-1 text-xs text-neutral-500">
+            <p className="mt-2 text-[13px] text-[#86868B]">
               Once. Credits don&apos;t expire.
             </p>
           </div>
