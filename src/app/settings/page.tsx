@@ -1,26 +1,28 @@
 "use client";
-import Link from "next/link";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { BillingSection } from "@/components/settings/BillingSection";
 import { DangerZone } from "@/components/settings/DangerZone";
+import { SiteNav, NavLink } from "@/components/layout/SiteNav";
 
 export default function SettingsPage() {
   const { user } = useUser();
+  const email = user?.emailAddresses[0]?.emailAddress;
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <nav className="flex h-14 items-center justify-between border-b border-neutral-900 px-6">
-        <Link href="/dashboard" className="text-lg font-semibold tracking-tight">resume.ai</Link>
-        <div className="flex items-center gap-4 text-sm">
-          <Link href="/dashboard" className="text-neutral-400 hover:text-white">Dashboard</Link>
-          <UserButton afterSignOutUrl="/" />
-        </div>
-      </nav>
+      <SiteNav home="/dashboard">
+        <NavLink href="/dashboard">Dashboard</NavLink>
+      </SiteNav>
 
-      <div className="max-w-2xl mx-auto px-6 py-12 space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold">Settings</h1>
-          <p className="text-sm text-neutral-500 mt-1">{user?.emailAddresses[0]?.emailAddress}</p>
+      <div className="mx-auto max-w-2xl space-y-6 px-6 py-12 sm:py-16">
+        <div className="border-b border-neutral-900 pb-6">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+            Account
+          </span>
+          <h1 className="mt-3 text-h1 text-white">Settings</h1>
+          {email && (
+            <p className="mt-2 font-mono text-sm text-neutral-500">{email}</p>
+          )}
         </div>
         <BillingSection />
         <DangerZone />

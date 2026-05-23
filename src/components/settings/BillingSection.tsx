@@ -1,9 +1,14 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
-const TIER_LABEL: Record<string, string> = { free: "Try", pro: "Apply", career: "Hunt" };
+const TIER_LABEL: Record<string, string> = {
+  free: "Try",
+  pro: "Apply",
+  career: "Hunt",
+};
 
 export function BillingSection() {
   const sub = useQuery(api.stripe.getMySubscription, {});
@@ -40,46 +45,69 @@ export function BillingSection() {
   // rendering a skeleton until the user row resolves.
   if (user === undefined) {
     return (
-      <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-5">
-        <h3 className="font-semibold mb-3">Billing</h3>
-        <div className="flex items-center justify-between text-sm">
-          <div className="h-4 w-32 rounded bg-neutral-800 animate-pulse" />
-          <div className="h-8 w-32 rounded bg-neutral-800 animate-pulse" />
+      <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+          Billing
+        </div>
+        <div className="mt-5 flex items-center justify-between">
+          <div className="h-5 w-32 animate-pulse rounded bg-neutral-800" />
+          <div className="h-10 w-40 animate-pulse rounded bg-neutral-800" />
         </div>
       </div>
     );
   }
 
   const tier = user?.tier ?? "free";
+  const isFree = tier === "free";
 
   return (
-    <div className="rounded-lg border border-neutral-800 bg-neutral-950 p-5">
-      <h3 className="font-semibold mb-3">Billing</h3>
-      <div className="flex items-center justify-between text-sm">
-        <div>
-          <div>Current plan: <span className="font-semibold">{TIER_LABEL[tier]}</span></div>
-          {sub && (
-            <div className="text-xs text-neutral-500 mt-1">
-              Renews {new Date(sub.currentPeriodEnd).toLocaleDateString()}
-              {sub.cancelAtPeriodEnd && " — canceling at period end"}
-            </div>
-          )}
+    <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6">
+      <div className="flex items-baseline justify-between">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+          Billing
         </div>
-        {tier !== "free" ? (
+        {sub && (
+          <div className="font-mono text-[11px] tabular-nums text-neutral-600">
+            renews{" "}
+            {new Date(sub.currentPeriodEnd).toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+            {sub.cancelAtPeriodEnd && " · canceling"}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="text-xs text-neutral-500">Current plan</div>
+          <div className="mt-1 text-2xl font-semibold tracking-tight text-white">
+            {TIER_LABEL[tier]}
+          </div>
+        </div>
+        {!isFree ? (
           <button
             onClick={openPortal}
             disabled={loading}
-            className="rounded bg-white text-black px-4 py-2 font-semibold disabled:opacity-60"
+            className="inline-flex h-10 items-center rounded-md bg-white px-5 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-60"
           >
-            {loading ? "…" : "Manage subscription"}
+            {loading ? "Loading…" : "Manage subscription"}
           </button>
         ) : (
-          <a href="/pricing" className="rounded bg-white text-black px-4 py-2 font-semibold">
+          <Link
+            href="/pricing"
+            className="inline-flex h-10 items-center rounded-md bg-white px-5 text-sm font-semibold text-black transition-colors hover:bg-neutral-200"
+          >
             Upgrade
-          </a>
+          </Link>
         )}
       </div>
-      {error && <p role="alert" className="mt-2 text-xs text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-3 text-xs text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

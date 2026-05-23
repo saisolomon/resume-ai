@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { Download, ArrowRight } from "lucide-react";
 import { getFingerprint } from "@/lib/fingerprint";
 
 // Stash the card the user wanted to download before sign-up so we can
@@ -12,9 +13,11 @@ export function DownloadButton({ cardId }: { cardId: string }) {
   const router = useRouter();
   const { isSignedIn, isLoaded } = useUser();
   const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function triggerDownload() {
     setDownloading(true);
+    setError(null);
     try {
       const resp = await fetch(`/api/download/${cardId}?format=docx`);
       if (!resp.ok) throw new Error(`download_failed_${resp.status}`);
@@ -26,6 +29,8 @@ export function DownloadButton({ cardId }: { cardId: string }) {
       a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
+    } catch {
+      setError("Download failed. Try again in a moment.");
     } finally {
       setDownloading(false);
     }
@@ -77,12 +82,39 @@ export function DownloadButton({ cardId }: { cardId: string }) {
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={downloading || !isLoaded}
-      className="w-full rounded bg-white text-black px-6 py-3 font-semibold disabled:opacity-50"
-    >
-      {downloading ? "Downloading…" : "Download DOCX →"}
-    </button>
+    <div>
+      <button
+        onClick={handleClick}
+        disabled={downloading || !isLoaded}
+        className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-white px-6 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50"
+      >
+        {downloading ? (
+          "Downloading…"
+        ) : isSignedIn ? (
+          <>
+            <Download className="size-4" aria-hidden="true" />
+            Download DOCX
+          </>
+        ) : (
+          <>
+            Sign up to download
+            <ArrowRight
+              className="size-4 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </>
+        )}
+      </button>
+      {error && (
+        <p role="alert" className="mt-2 text-xs text-red-400">
+          {error}
+        </p>
+      )}
+      {!isSignedIn && isLoaded && (
+        <p className="mt-2 text-[11px] text-neutral-500">
+          Free. Your runs get saved to your account.
+        </p>
+      )}
+    </div>
   );
 }
