@@ -146,9 +146,14 @@
 /* ------------------------------------------------------------------ */
 
 @layer utilities {
-  /* Display XL — 80/56px, line 1.05, tracking -0.025em, weight 700. Hero only. */
+  /* Display XL — Apple-style hero headline. Hero only.
+     Scales 56px (mobile) → 96px (≥1200px viewports, including ultrawide / 4K).
+     The clamp peaks at 96px around 1200px and holds — without a ceiling
+     the prior 80px ceiling kicked in at ~800px, leaving the headline
+     visually small relative to canvas on 1920+ monitors.
+     Line 1.05, tracking -0.025em, weight 700. */
   .text-display-xl {
-    font-size: clamp(3.5rem, 2rem + 6vw, 5rem);
+    font-size: clamp(3.5rem, 1.5rem + 6vw, 6rem);
     line-height: 1.05;
     letter-spacing: -0.025em;
     font-weight: 700;

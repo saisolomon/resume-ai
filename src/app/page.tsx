@@ -71,21 +71,26 @@ export default function Home() {
             <TemplateBrowser />
           </div>
 
-          {/* Form sits below the demo on a narrow column. The Hero form
-              already renders its own trust line; the privacy link below is
-              the only extra "after the form" affordance. */}
-          <div className="mt-16 sm:mt-20">
+          {/* Form sits below the demo in a narrow white card. The card
+              wrapper visually closes the loop with the TemplateBrowser
+              card above — both white surfaces elevated off the mist
+              canvas, both Apple-style soft-shadow rectangles. Flat-on-
+              canvas read as disconnected against the white card above.
+              The Hero form already renders its own trust line; the
+              privacy link below sits outside the card so it reads as a
+              footer to the form unit, not in-form copy. */}
+          <div className="mx-auto mt-16 max-w-xl rounded-2xl bg-white shadow-card p-8 sm:mt-20">
             <Hero />
-            <p className="mx-auto mt-3 max-w-xl text-center text-[13px] text-[#86868B]">
-              We never sell your resume or train on it.{" "}
-              <Link
-                href="/privacy"
-                className="text-[#0071E3] underline-offset-4 hover:underline"
-              >
-                Privacy
-              </Link>
-            </p>
           </div>
+          <p className="mx-auto mt-4 max-w-xl text-center text-[13px] text-[#86868B]">
+            We never sell your resume or train on it.{" "}
+            <Link
+              href="/privacy"
+              className="text-[#0071E3] underline-offset-4 hover:underline"
+            >
+              Privacy
+            </Link>
+          </p>
         </div>
       </section>
 

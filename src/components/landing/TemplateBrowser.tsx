@@ -15,10 +15,16 @@ import type { ResumeData } from "@/lib/resume/types";
  * rendered in each one.
  *
  * Visual: Apple-grade. White card on the mist canvas, soft xl shadow, pill
- * tab strip above, white-paper preview area below at ~52% scale, calm
- * crossfade between tabs (Apple decel ease, 350ms). No typewriter, no
- * counter, no chip-light-up — those animations read as marketing pyrotechnics
- * against an Apple-quiet canvas. The tab change IS the animation.
+ * tab strip above, white-paper preview area below at ~52% scale. Tab swaps
+ * are a TRUE crossfade — two persistent slots (A + B) render as absolute-
+ * positioned siblings and swap roles on each click. The outgoing fades 1→0
+ * while the incoming fades 0→1 in lockstep over 450ms, both running Apple's
+ * signature decel ease cubic-bezier(0.16, 1, 0.3, 1). No flash of empty
+ * surface, no DOM-pop unmount, no mount-transition workaround — both nodes
+ * exist from first paint so the browser actually transitions the opacity.
+ * No typewriter, no counter, no chip-light-up — those animations read as
+ * marketing pyrotechnics against an Apple-quiet canvas. The tab change IS
+ * the animation.
  *
  * The angle stays "Engineering depth" across all four templates because the
  * point we're making is template difference, not angle difference (that's
@@ -114,9 +120,47 @@ const SAMPLE_DATA: ResumeData = {
 const SAMPLE_SCORE = 91;
 const SAMPLE_ANGLE = "Engineering depth";
 
+/** Crossfade duration in ms. Matches the inline style transition below and
+ *  Design.md's modal-open / card-hover band (Apple's 250–400ms range).
+ *  We sit at the upper edge — 450ms — because crossfading a content-rich
+ *  surface needs a beat longer to feel intentional rather than abrupt. */
+const CROSSFADE_MS = 450;
+const CROSSFADE_EASE = "cubic-bezier(0.16, 1, 0.3, 1)"; // Apple decel
+
 export function TemplateBrowser() {
   const [activeSlug, setActiveSlug] = useState<TemplateSlug>("classic");
+  /** The slot architecture: two persistent panels (A + B) that swap roles
+   *  on each tab click. Whichever holds the active slug is opacity-1;
+   *  the other holds the previous slug at opacity-0 (fading out from
+   *  whatever it was showing). On the very first render both slots show
+   *  the initial slug and `slotB.slug` matches A — no crossfade yet. */
+  const [slotA, setSlotA] = useState<{ slug: TemplateSlug; visible: boolean }>(
+    { slug: "classic", visible: true },
+  );
+  const [slotB, setSlotB] = useState<{ slug: TemplateSlug; visible: boolean }>(
+    { slug: "classic", visible: false },
+  );
+  /** Which slot holds the currently active slug. Flips on every swap so
+   *  the slots crossfade without the freshly-mounted DOM mount-transition
+   *  problem — both nodes exist from first paint. */
+  const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
+
   const active = TEMPLATES.find((t) => t.slug === activeSlug) ?? TEMPLATES[0];
+
+  function handleSelect(next: TemplateSlug) {
+    if (next === activeSlug) return;
+    setActiveSlug(next);
+    if (activeSlot === "A") {
+      // Promote B to active with the new slug; A becomes the outgoing fader.
+      setSlotB({ slug: next, visible: true });
+      setSlotA((prev) => ({ ...prev, visible: false }));
+      setActiveSlot("B");
+    } else {
+      setSlotA({ slug: next, visible: true });
+      setSlotB((prev) => ({ ...prev, visible: false }));
+      setActiveSlot("A");
+    }
+  }
 
   return (
     <section
@@ -139,7 +183,7 @@ export function TemplateBrowser() {
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`template-panel-${tpl.slug}`}
-                onClick={() => setActiveSlug(tpl.slug)}
+                onClick={() => handleSelect(tpl.slug)}
                 className={`focus-ring h-10 rounded-full px-5 text-[15px] font-medium transition-colors duration-200 ${
                   isActive
                     ? "bg-[#1D1D1F] text-white"
@@ -169,16 +213,43 @@ export function TemplateBrowser() {
               <ScoreBadge score={SAMPLE_SCORE} size="md" />
             </div>
 
-            {/* Scaled resume preview. Each template re-renders on slug change;
-                the key ensures React mounts a fresh tree so transitions
-                inside the preview (if any) restart cleanly. */}
+            {/* ─── Crossfade slots ───
+                Two persistent panels (A + B) render as absolute-positioned
+                siblings. Both nodes exist from first paint, so the CSS
+                opacity transition has a real previous value to transition
+                from — no mount-transition workaround required. On each
+                tab click the slots swap roles: the previously-active fades
+                from 1 → 0 while the other holds the new slug and fades
+                from 0 → 1. Both run the same Apple decel ease in lockstep. */}
+
             <div
-              key={activeSlug}
-              className="absolute inset-0 origin-top-left animate-in fade-in duration-350"
-              style={{ transform: "scale(0.52)", width: "192.3%", height: "192.3%" }}
+              key="slot-A"
+              className="absolute inset-0 origin-top-left pointer-events-none"
+              style={{
+                transform: "scale(0.52)",
+                width: "192.3%",
+                height: "192.3%",
+                opacity: slotA.visible ? 1 : 0,
+                transition: `opacity ${CROSSFADE_MS}ms ${CROSSFADE_EASE}`,
+              }}
               aria-hidden="true"
             >
-              <ResumePreviewHtml data={SAMPLE_DATA} template={activeSlug} />
+              <ResumePreviewHtml data={SAMPLE_DATA} template={slotA.slug} />
+            </div>
+
+            <div
+              key="slot-B"
+              className="absolute inset-0 origin-top-left pointer-events-none"
+              style={{
+                transform: "scale(0.52)",
+                width: "192.3%",
+                height: "192.3%",
+                opacity: slotB.visible ? 1 : 0,
+                transition: `opacity ${CROSSFADE_MS}ms ${CROSSFADE_EASE}`,
+              }}
+              aria-hidden="true"
+            >
+              <ResumePreviewHtml data={SAMPLE_DATA} template={slotB.slug} />
             </div>
           </div>
 
