@@ -3,18 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 
-const TIER_PRICE: Record<string, string | undefined> = {
-  pro: process.env.STRIPE_PRO_PRICE_ID,
-  career: process.env.STRIPE_CAREER_PRICE_ID,
-};
+// Resolve `tier` + `interval` to a Stripe price ID. Falls back to monthly
+// if interval isn't specified so older clients keep working.
+function priceFor(tier: string, interval: "monthly" | "yearly"): string | undefined {
+  if (tier === "pro") {
+    return interval === "yearly"
+      ? process.env.STRIPE_PRO_YEARLY_PRICE_ID
+      : process.env.STRIPE_PRO_PRICE_ID;
+  }
+  if (tier === "career") {
+    return interval === "yearly"
+      ? process.env.STRIPE_CAREER_YEARLY_PRICE_ID
+      : process.env.STRIPE_CAREER_PRICE_ID;
+  }
+  return undefined;
+}
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const { tier } = (await req.json()) as { tier: "pro" | "career" };
-  const priceId = TIER_PRICE[tier];
+  const { tier, interval } = (await req.json()) as {
+    tier: "pro" | "career";
+    interval?: "monthly" | "yearly";
+  };
+  const priceId = priceFor(tier, interval ?? "monthly");
   if (!priceId)
     return NextResponse.json({ error: "unknown_tier" }, { status: 400 });
 

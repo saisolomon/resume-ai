@@ -49,7 +49,12 @@ export function TierCard({
       const resp = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier: name }),
+        body: JSON.stringify({
+          tier: name,
+          // Honor the annual toggle so users billed yearly are actually
+          // charged the yearly price, not 12× monthly.
+          interval: annual ? "yearly" : "monthly",
+        }),
       });
       if (!resp.ok) {
         const body = await resp.text().catch(() => "");
