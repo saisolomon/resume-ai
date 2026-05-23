@@ -9,7 +9,7 @@ export default async function SignUpPage({
 }) {
   const { redirect_url } = await searchParams;
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-[#F5F5F7] px-6 py-16">
       <SignUp fallbackRedirectUrl={redirect_url || "/dashboard"} />
     </div>
   );

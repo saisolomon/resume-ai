@@ -55,19 +55,19 @@ export function LegacySubscriptionCard() {
   }
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+    <div className="rounded-2xl bg-white p-6 shadow-card sm:p-8">
+      <div className="text-[13px] font-medium text-[#86868B]">
         Legacy subscription
       </div>
-      <p className="mt-3 max-w-md text-sm text-neutral-400">
+      <p className="mt-3 max-w-md text-[15px] leading-relaxed text-[#1D1D1F]">
         You have an active{" "}
-        <span className="font-medium text-white">{TIER_LABEL[sub.tier]}</span>{" "}
+        <span className="font-semibold">{TIER_LABEL[sub.tier]}</span>{" "}
         subscription from before we moved to per-resume pricing. You can keep
         it, or cancel any time from the Stripe portal.
       </p>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-        <div className="font-mono text-[11px] tabular-nums text-neutral-500">
-          renews{" "}
+        <div className="font-mono text-[13px] tabular-nums text-[#86868B]">
+          Renews{" "}
           {new Date(sub.currentPeriodEnd).toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
@@ -78,13 +78,13 @@ export function LegacySubscriptionCard() {
         <button
           onClick={openPortal}
           disabled={loading}
-          className="inline-flex h-10 items-center rounded-md border border-neutral-800 bg-neutral-900 px-5 text-sm font-semibold text-white transition-colors hover:border-neutral-700 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-60"
+          className="focus-ring inline-flex h-11 items-center rounded-full border border-[#D2D2D7] bg-white px-5 text-[15px] font-medium text-[#1D1D1F] transition-colors duration-200 hover:border-[#86868B] hover:bg-[#F5F5F7] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Loading…" : "Manage subscription"}
+          {loading ? "Loading." : "Manage subscription"}
         </button>
       </div>
       {error && (
-        <p role="alert" className="mt-3 text-xs text-red-400">
+        <p role="alert" className="mt-3 text-[13px] text-[#B91C1C]">
           {error}
         </p>
       )}

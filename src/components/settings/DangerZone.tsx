@@ -33,26 +33,26 @@ export function DangerZone() {
   }
 
   return (
-    <div className="rounded-xl border border-red-900 bg-red-950/30 p-6">
-      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-red-400">
-        <AlertTriangle className="size-3" aria-hidden="true" />
+    <div className="rounded-2xl border border-[#FCA5A5] bg-[#FEF2F2] p-6 sm:p-8">
+      <div className="flex items-center gap-2 text-[13px] font-medium text-[#B91C1C]">
+        <AlertTriangle className="size-4" aria-hidden="true" />
         Danger zone
       </div>
-      <h3 className="mt-3 text-h3 text-white">Delete your account.</h3>
-      <p className="mt-2 max-w-md text-sm text-neutral-400">
+      <h3 className="mt-3 text-h3 text-[#1D1D1F]">Delete your account.</h3>
+      <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#6E6E73]">
         Permanently erases every run, resume, and chat message tied to your
         account. Cancels any active subscription. This cannot be undone.
       </p>
       <button
         onClick={deleteAccount}
         disabled={loading}
-        className="mt-5 inline-flex h-10 items-center gap-2 rounded-md border border-red-900 bg-transparent px-4 text-sm font-semibold text-red-400 transition-colors hover:border-red-800 hover:bg-red-950/30 focus:outline-none focus:ring-2 focus:ring-red-900/50 disabled:opacity-60"
+        className="focus-ring mt-6 inline-flex h-11 items-center gap-2 rounded-full border border-[#FCA5A5] bg-white px-5 text-[15px] font-medium text-[#B91C1C] transition-colors duration-200 hover:border-[#B91C1C] hover:bg-[#FEF2F2] disabled:cursor-not-allowed disabled:opacity-60"
       >
         <Trash2 className="size-4" aria-hidden="true" />
-        {loading ? "Deleting…" : "Delete account"}
+        {loading ? "Deleting." : "Delete account"}
       </button>
       {error && (
-        <p role="alert" className="mt-3 text-xs text-red-400">
+        <p role="alert" className="mt-3 text-[13px] text-[#B91C1C]">
           {error}
         </p>
       )}

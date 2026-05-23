@@ -1,24 +1,21 @@
 import { Shield } from "lucide-react";
 
 /**
- * 30-day guarantee block.
- *
- * Copy is locked verbatim per Design.md. The shield icon sits in a
- * hairline-bordered tile — no glow, no badge — matching the developer-
- * tool restraint elsewhere on the page.
+ * 30-day guarantee — Apple-light. Shield tile on white, soft shadow,
+ * generous whitespace. Headline copy is locked verbatim per Design.md.
  */
 export function GuaranteeBlock() {
   return (
-    <section className="py-20 sm:py-24">
-      <div className="mx-auto max-w-2xl px-6 text-center">
-        <div className="mx-auto mb-6 flex size-14 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950">
-          <Shield className="size-7 text-white" aria-hidden="true" />
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-2xl px-6 text-center sm:px-8">
+        <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-white shadow-card">
+          <Shield className="size-7 text-[#1D1D1F]" aria-hidden="true" />
         </div>
-        <h2 className="text-h1 text-white sm:text-3xl">
+        <h2 className="text-display text-[#1D1D1F]">
           30 days. No interview, full refund.
         </h2>
-        <p className="mt-4 text-base text-neutral-400">
-          One email, no support hoops.
+        <p className="mt-5 text-[19px] leading-relaxed text-[#6E6E73]">
+          One email. No support hoops.
         </p>
       </div>
     </section>

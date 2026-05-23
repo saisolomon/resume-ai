@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "resume.ai — Stop letting AI decide your job for you",
+  title: "resume.ai — Four resumes. One application.",
   description:
-    "Paste a job. Drop your resume. See four ways to win it — with real ATS scores.",
+    "One job. Four angles. Thirty seconds. We tailor your resume four ways so you can pick the one that lands.",
 };
 
 export default function RootLayout({

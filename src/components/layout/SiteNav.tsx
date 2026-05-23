@@ -4,16 +4,15 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import type { ReactNode } from "react";
 
 /**
- * Single source of truth for the top nav.
+ * Top nav — Apple-style sticky blur bar.
  *
- * Design.md mandates: h-14 (56px), border-b border-neutral-900, px-6,
- * lowercase wordmark in Geist Sans semibold, links text-neutral-400 →
- * text-white on hover. Auth slot right-aligned with a single hydration
- * placeholder so signed-in users never see a "Sign in" flash.
+ * Design.md spec: h-16 (64px) backdrop-blur bg-white/72, hairline bottom
+ * border, sentence-case nav links at 15px text-[#1D1D1F], more breathing
+ * room between items (gap-x-8) than the prior dev-tool nav. The lowercase
+ * "resume.ai" wordmark is the only thing in the left slot.
  *
- * Pages provide their own link set via children. The logo is canonical and
- * always points to `home` (override per page — dashboard sends signed-in
- * users to `/dashboard` instead of `/`).
+ * The auth slot has a single hydration placeholder so signed-in users never
+ * see a "Sign in" flash on first paint.
  */
 export function SiteNav({
   home = "/",
@@ -25,23 +24,23 @@ export function SiteNav({
   const { isSignedIn, isLoaded } = useUser();
 
   return (
-    <nav className="flex h-14 items-center justify-between border-b border-neutral-900 bg-black/80 px-6 backdrop-blur supports-[backdrop-filter]:bg-black/60">
+    <nav className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-[#D2D2D7]/60 apple-nav-blur px-6 sm:px-8">
       <Link
         href={home}
-        className="text-lg font-semibold tracking-tight text-white transition-colors hover:text-neutral-200"
+        className="text-[20px] font-semibold tracking-tight text-[#1D1D1F] transition-colors hover:text-[#6E6E73]"
       >
         resume.ai
       </Link>
-      <div className="flex items-center gap-x-6 text-sm">
+      <div className="flex items-center gap-x-8 text-[15px]">
         {children}
         {!isLoaded ? (
-          <span className="h-6 w-16" aria-hidden="true" />
+          <span className="h-7 w-16" aria-hidden="true" />
         ) : isSignedIn ? (
           <UserButton afterSignOutUrl="/" />
         ) : (
           <Link
             href="/sign-in"
-            className="text-neutral-400 transition-colors hover:text-white"
+            className="font-medium text-[#1D1D1F] transition-colors hover:text-[#6E6E73]"
           >
             Sign in
           </Link>
@@ -51,7 +50,7 @@ export function SiteNav({
   );
 }
 
-/** Reusable nav link — matches Design.md's nav anchor style. */
+/** Reusable nav link — sentence case, calm color shift on hover. */
 export function NavLink({
   href,
   children,
@@ -62,7 +61,7 @@ export function NavLink({
   return (
     <Link
       href={href}
-      className="text-neutral-400 transition-colors hover:text-white"
+      className="font-medium text-[#1D1D1F] transition-colors hover:text-[#6E6E73]"
     >
       {children}
     </Link>
@@ -71,8 +70,7 @@ export function NavLink({
 
 /**
  * Conditional nav link — shows only when signed in / signed out.
- * Renders nothing until Clerk hydrates so the dashboard link doesn't
- * appear-then-disappear on first paint.
+ * Returns null while Clerk hydrates so the link doesn't appear-then-disappear.
  */
 export function AuthAwareNavLink({
   href,

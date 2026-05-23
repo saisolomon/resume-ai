@@ -1,40 +1,35 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 /**
- * "Out of credits" nudge — surfaces on /dashboard when a user with
- * prior runs has spent all their credits. Replaces the "/" CTA that
- * would otherwise be a dead-end submit (Hero form would just throw
- * `no_credits`). Calm, brand-anchored — single white CTA, no urgency,
- * matches the Hormozi "calm upsell" rule.
+ * "Out of credits" nudge — Apple-light.
+ *
+ * Surfaces on /dashboard when a user with prior runs has spent all
+ * their credits. Light card on the mist canvas with a calm, declarative
+ * voice and one pill CTA.
  */
 export function OutOfCreditsCard() {
   return (
-    <div className="mb-6 rounded-xl border border-neutral-800 bg-neutral-950 p-6">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+    <div className="mb-6 rounded-2xl bg-white p-6 shadow-card sm:p-8">
+      <div className="text-[13px] font-medium text-[#86868B]">
         Credits remaining
       </div>
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span className="font-mono text-3xl font-bold tabular-nums leading-none text-red-400">
+          <span className="font-mono text-[44px] font-semibold leading-none tabular-nums text-[#B91C1C]">
             0
           </span>
-          <span className="ml-3 text-sm text-neutral-500">credits</span>
-          <p className="mt-2 max-w-md text-sm text-neutral-400">
-            You&apos;ve used all your credits. Buy a pack to tailor your next
+          <span className="ml-3 text-[15px] text-[#6E6E73]">credits</span>
+          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-[#6E6E73]">
+            You&apos;ve used all your credits. Pick a pack to tailor your next
             resume — credits never expire.
           </p>
         </div>
         <Link
           href="/pricing"
-          className="group inline-flex h-10 items-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+          className="focus-ring inline-flex h-11 items-center rounded-full bg-[#1D1D1F] px-5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-black"
         >
-          Get 5-pack — $29
-          <ArrowRight
-            className="size-4 transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
+          Buy 5-pack — $29
         </Link>
       </div>
     </div>

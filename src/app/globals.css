@@ -47,73 +47,84 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* ------------------------------------------------------------------ */
+/* resume.ai — light brand (Apple-grade).                              */
+/* All page surfaces resolve to off-white #F5F5F7; cards float white   */
+/* with soft shadow; near-black #1D1D1F is the type color. Dark theme  */
+/* is intentionally not shipped in v1 — see Design.md.                  */
+/* ------------------------------------------------------------------ */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+
+  /* Page surfaces — Apple's mist canvas + alternating cloud band */
+  --bg-page: #F5F5F7;     /* Mist — main page background */
+  --bg-alt:  #FAFAFA;     /* Cloud — alternating section */
+  --bg-card: #FFFFFF;     /* White — elevated surface */
+
+  /* Text */
+  --text-primary:    #1D1D1F;  /* Onyx — body + headlines */
+  --text-secondary:  #6E6E73;  /* Slate */
+  --text-tertiary:   #86868B;  /* Mist gray */
+  --text-quaternary: #A1A1A6;  /* Pale gray */
+
+  /* Borders */
+  --border-hairline: #D2D2D7;  /* Fog */
+  --border-strong:   #86868B;  /* Steel */
+
+  /* Brand accents */
+  --brand-onyx:      #1D1D1F;  /* Primary CTA fill */
+  --brand-blue:      #0071E3;  /* Apple blue — links, focus rings */
+  --editorial-blue:  #3B82F6;  /* Angle chips */
+
+  /* Score palette — calibrated for light surfaces */
+  --score-good:      #1A7F45;  /* Match green ≥85 */
+  --score-warn:      #B45309;  /* Caution amber 70-84 */
+  --score-bad:       #B91C1C;  /* Reject red <70 */
+  --surface-success: #F0FDF4;  /* Mint wash */
+  --surface-warning: #FFFBEB;  /* Amber wash */
+  --surface-error:   #FEF2F2;  /* Rose wash */
+  --border-error:    #FCA5A5;  /* Rose edge */
+
+  /* shadcn legacy tokens — kept for shadcn primitives if they remount.
+     The brand only consumes the explicit hex values above. */
+  --background: var(--bg-page);
+  --foreground: var(--text-primary);
+  --card: var(--bg-card);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-card);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--brand-onyx);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--bg-alt);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-alt);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--bg-alt);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--score-bad);
+  --border: var(--border-hairline);
+  --input: var(--border-hairline);
+  --ring: var(--brand-blue);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--brand-onyx);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--bg-alt);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-hairline);
+  --sidebar-ring: var(--brand-blue);
 }
 
+/* Dark mode is intentionally NOT shipped in v1. The .dark scope is kept
+   in case a shadcn primitive checks for it, but we never apply it. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--bg-page);
+  --foreground: var(--text-primary);
 }
 
 @layer base {
@@ -121,92 +132,161 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 /* ------------------------------------------------------------------ */
-/* resume.ai design system — tightening utilities                      */
+/* resume.ai design system — Apple-grade typography utilities.         */
+/* Bigger displays, looser tracking on display, generous line-height.  */
+/* Apple uses body 17px (NOT 16px) — that's the .text-body rule.       */
 /* ------------------------------------------------------------------ */
-/* These map Design.md's type rules to single-class utilities so we    */
-/* don't drift on tracking / weight / line-height across surfaces.     */
-/* Tailwind's `text-5xl/6xl/7xl` get us in the ballpark; these lock    */
-/* in the brand's tightened tracking + the line-heights from the spec. */
 
 @layer utilities {
-  /* Display XL — 72/48px, line 1.02, tracking -0.04em, weight 700. Hero only. */
+  /* Display XL — Apple-style hero headline. Hero only.
+     Scales 56px (mobile) → 96px (≥1200px viewports, including ultrawide / 4K).
+     The clamp peaks at 96px around 1200px and holds — without a ceiling
+     the prior 80px ceiling kicked in at ~800px, leaving the headline
+     visually small relative to canvas on 1920+ monitors.
+     Line 1.05, tracking -0.025em, weight 700. */
   .text-display-xl {
-    font-size: clamp(2.75rem, 1.5rem + 5.6vw, 4.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.04em;
-    font-weight: 700;
-  }
-
-  /* Display — 56/40px, line 1.05, tracking -0.03em, weight 700. */
-  .text-display {
-    font-size: clamp(2.25rem, 1.5rem + 3.4vw, 3.5rem);
+    font-size: clamp(3.5rem, 1.5rem + 6vw, 6rem);
     line-height: 1.05;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.025em;
     font-weight: 700;
+    color: var(--text-primary);
   }
 
-  /* H1 — 32px, line 1.1, tracking -0.02em, weight 700. Product page titles. */
-  .text-h1 {
-    font-size: 2rem;
-    line-height: 1.1;
+  /* Display — 64/44px, line 1.08, tracking -0.02em, weight 700. */
+  .text-display {
+    font-size: clamp(2.75rem, 2rem + 3vw, 4rem);
+    line-height: 1.08;
     letter-spacing: -0.02em;
     font-weight: 700;
+    color: var(--text-primary);
   }
 
-  /* H2 — 24px, line 1.2, tracking -0.015em, weight 600. */
-  .text-h2 {
-    font-size: 1.5rem;
-    line-height: 1.2;
+  /* Display S — 48/36px, line 1.1, tracking -0.015em, weight 600. */
+  .text-display-s {
+    font-size: clamp(2.25rem, 1.75rem + 2vw, 3rem);
+    line-height: 1.1;
     letter-spacing: -0.015em;
     font-weight: 600;
+    color: var(--text-primary);
   }
 
-  /* H3 — 20px, line 1.3, tracking -0.01em, weight 600. Card / modal titles. */
-  .text-h3 {
-    font-size: 1.25rem;
-    line-height: 1.3;
+  /* H1 — 36px, line 1.15, tracking -0.015em, weight 600. */
+  .text-h1 {
+    font-size: 2.25rem;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* H2 — 28px, line 1.2, tracking -0.01em, weight 600. */
+  .text-h2 {
+    font-size: 1.75rem;
+    line-height: 1.2;
     letter-spacing: -0.01em;
     font-weight: 600;
+    color: var(--text-primary);
   }
 
-  /* Body L — 18px, line 1.5. Hero subhead, marketing paragraphs. */
-  .text-body-l {
+  /* H3 — 22px, line 1.3, tracking -0.005em, weight 600. */
+  .text-h3 {
+    font-size: 1.375rem;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* H4 — 18px, line 1.4, weight 600. */
+  .text-h4 {
     font-size: 1.125rem;
-    line-height: 1.5;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--text-primary);
   }
 
-  /* Label — 11px, weight 600, uppercase, tracking 0.08em. */
-  /* The angle chips, "Most popular" pill, kicker eyebrows. */
-  .text-label {
-    font-size: 0.6875rem;
+  /* Body L — 19px, line 1.55. Hero subheads, marketing paragraphs. */
+  .text-body-l {
+    font-size: 1.1875rem;
+    line-height: 1.55;
+    font-weight: 400;
+  }
+
+  /* Body — 17px, line 1.55. Apple's default body. */
+  .text-body {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    font-weight: 400;
+  }
+
+  /* Body S — 15px, line 1.5. */
+  .text-body-s {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* Caption — 13px. Timestamps, helper text. */
+  .text-caption {
+    font-size: 0.8125rem;
     line-height: 1.4;
-    letter-spacing: 0.08em;
+    font-weight: 400;
+  }
+
+  /* Label — 12px / weight 600 / UPPERCASE / tracking 0.04em.
+     Less aggressive tracking than the prior 0.08em — Apple labels are tighter. */
+  .text-label {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
     font-weight: 600;
     text-transform: uppercase;
   }
 
-  /* Caption — 12px, line 1.4, tracking 0.01em. Timestamps, hints. */
-  .text-caption {
-    font-size: 0.75rem;
-    line-height: 1.4;
-    letter-spacing: 0.01em;
-  }
-
-  /* Mono ATS score — Geist Mono, tabular figures, weight 500. */
+  /* Mono — ATS score numerals + monospaced metadata. */
   .text-score {
     font-family: var(--font-geist-mono), ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
     font-weight: 500;
   }
+
+  /* Apple-style backdrop blur for sticky nav.
+     Uses fallback when backdrop-filter isn't supported. */
+  .apple-nav-blur {
+    background-color: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  /* Soft two-layer shadow used on the default white card.
+     Matches Design.md `shadow-md` token. */
+  .shadow-card {
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-card-hover {
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.08),
+      0 4px 8px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-card-xl {
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.10),
+      0 8px 16px rgba(0, 0, 0, 0.06);
+  }
 }
 
 /* ------------------------------------------------------------------ */
-/* Focus rings — Design.md says white-on-black for max visibility.     */
+/* Focus rings — Apple blue at 20% opacity, 4px ring. */
 /* ------------------------------------------------------------------ */
 
 @layer base {
@@ -214,6 +294,9 @@
     outline: none;
   }
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black;
+    @apply focus-visible:outline-none;
+  }
+  .focus-ring:focus-visible {
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.20);
   }
 }

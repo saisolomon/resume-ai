@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { Download, ArrowRight } from "lucide-react";
+import { Download } from "lucide-react";
 import { getFingerprint } from "@/lib/fingerprint";
 
 // Stash the card the user wanted to download before sign-up so we can
@@ -86,32 +86,26 @@ export function DownloadButton({ cardId }: { cardId: string }) {
       <button
         onClick={handleClick}
         disabled={downloading || !isLoaded}
-        className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-white px-6 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50"
+        className="focus-ring inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1D1D1F] px-6 text-[17px] font-medium text-white transition-colors duration-200 hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
       >
         {downloading ? (
-          "Downloading…"
+          "Downloading."
         ) : isSignedIn ? (
           <>
             <Download className="size-4" aria-hidden="true" />
             Download DOCX
           </>
         ) : (
-          <>
-            Sign up to download
-            <ArrowRight
-              className="size-4 transition-transform group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
-          </>
+          <>Sign up to download</>
         )}
       </button>
       {error && (
-        <p role="alert" className="mt-2 text-xs text-red-400">
+        <p role="alert" className="mt-2 text-[13px] text-[#B91C1C]">
           {error}
         </p>
       )}
       {!isSignedIn && isLoaded && (
-        <p className="mt-2 text-[11px] text-neutral-500">
+        <p className="mt-2 text-[13px] text-[#86868B]">
           Free. Your runs get saved to your account.
         </p>
       )}

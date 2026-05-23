@@ -2,28 +2,25 @@ import { SiteNav } from "@/components/layout/SiteNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
 /**
- * Terms of service — same editorial layout as /privacy.
+ * Terms of service — Apple-light editorial, paired with /privacy.
  */
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
       <SiteNav home="/" />
 
-      <article className="mx-auto max-w-2xl px-6 py-16">
-        <header className="border-b border-neutral-900 pb-8">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            Legal
-          </span>
-          <h1 className="mt-3 text-h1 text-white">Terms of service</h1>
-          <p className="mt-2 font-mono text-xs tabular-nums text-neutral-500">
+      <article className="mx-auto max-w-2xl px-6 py-16 sm:px-8 sm:py-24">
+        <header className="border-b border-[#D2D2D7]/70 pb-8">
+          <h1 className="text-h1 text-[#1D1D1F]">Terms of service</h1>
+          <p className="mt-3 font-mono text-[13px] tabular-nums text-[#86868B]">
             Last updated · 2026-05-23
           </p>
         </header>
 
-        <div className="mt-12 space-y-10 text-neutral-300">
+        <div className="mt-12 space-y-12 text-[17px] leading-relaxed text-[#1D1D1F]">
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">What this is</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">What this is</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               resume.ai is a resume tailoring tool powered by Claude
               (Anthropic). You give us a job posting and your resume; we
               generate tailored versions, ATS scores, and related job-hunt
@@ -32,8 +29,8 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Your responsibilities</h2>
-            <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Your responsibilities</h2>
+            <ul className="space-y-3 text-[16px] leading-relaxed text-[#6E6E73]">
               <li>Only upload resumes you own. Don&apos;t paste someone else&apos;s.</li>
               <li>
                 Submit real job postings. Pasting random URLs will burn through
@@ -51,8 +48,8 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Our service</h2>
-            <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Our service</h2>
+            <ul className="space-y-3 text-[16px] leading-relaxed text-[#6E6E73]">
               <li>
                 We try to keep resume.ai running, but this is not a critical
                 service. Outages happen. Plan accordingly.
@@ -73,13 +70,13 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Refunds</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Refunds</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               30-day refund guarantee. If you&apos;re not happy with a paid
               plan within 30 days of purchase, email{" "}
               <a
                 href="mailto:hi@resume.ai"
-                className="text-white underline decoration-neutral-700 underline-offset-4 transition-colors hover:decoration-white"
+                className="text-[#0071E3] underline-offset-4 hover:underline"
               >
                 hi@resume.ai
               </a>{" "}
@@ -88,8 +85,8 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Liability</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Liability</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               We are not liable for any career outcome — good or bad — that
               results from using resume.ai. We provide a tool. You decide how
               to use it, what to send, and where to apply. Our total liability
@@ -99,8 +96,8 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Governing law</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Governing law</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               These terms are governed by the laws of the State of Delaware,
               USA. Any dispute will be resolved in the state or federal courts
               located in Delaware.
@@ -108,15 +105,16 @@ export default function TermsPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-white">Contact</h2>
-            <p className="text-sm leading-relaxed text-neutral-400">
+            <h2 className="text-h2 text-[#1D1D1F]">Contact</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               Questions or disputes:{" "}
               <a
                 href="mailto:hi@resume.ai"
-                className="text-white underline decoration-neutral-700 underline-offset-4 transition-colors hover:decoration-white"
+                className="text-[#0071E3] underline-offset-4 hover:underline"
               >
                 hi@resume.ai
               </a>
+              .
             </p>
           </section>
         </div>

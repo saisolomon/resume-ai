@@ -111,79 +111,73 @@ export function PackCard({
   return (
     <div
       aria-label={`${name} — $${price}`}
-      className={`relative flex h-full flex-col rounded-xl border p-7 transition-colors ${
+      className={`relative flex h-full min-h-[500px] flex-col gap-5 rounded-[20px] bg-white p-8 transition-shadow duration-300 ${
         anchored
-          ? "border-white bg-neutral-950 shadow-[0_0_0_1px_rgba(255,255,255,0.4)] md:rounded-2xl md:scale-105"
-          : "border-neutral-800 bg-neutral-950 hover:border-neutral-700"
+          ? "shadow-card-xl md:scale-[1.02]"
+          : "shadow-card hover:shadow-card-hover"
       }`}
     >
       {anchored && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-black">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#1D1D1F] px-3 py-1 text-[12px] font-medium text-white">
           Most popular
         </div>
       )}
 
-      {/* Pack name — uppercase label */}
-      <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
-        {name}
-      </div>
-      <p className="mt-3 min-h-[2.5rem] text-sm leading-relaxed text-neutral-500">
+      {/* Pack name — sentence case, slate secondary */}
+      <div className="text-[15px] font-semibold text-[#6E6E73]">{name}</div>
+      <p className="min-h-[2.5rem] text-[17px] leading-snug text-[#1D1D1F]">
         {tagline}
       </p>
 
-      {/* Price block — display weight, mono per-unit math below */}
-      <div className="mt-7">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-5xl font-bold tracking-tight text-white tabular-nums">
+      {/* Price block — large display weight, per-unit math below */}
+      <div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-[64px] font-semibold leading-none tracking-tight tabular-nums text-[#1D1D1F]">
             ${price}
           </span>
-          <span className="text-sm text-neutral-500 tabular-nums">
-            · {credits} credit{credits === 1 ? "" : "s"}
-          </span>
+          <span className="text-[19px] text-[#6E6E73]">/ pack</span>
         </div>
-        <div className="mt-2 font-mono text-xs text-neutral-500 tabular-nums">
-          {perUnit}
+        <div className="mt-3 text-[15px] text-[#6E6E73] tabular-nums">
+          {credits} credit{credits === 1 ? "" : "s"} · {perUnit}
         </div>
       </div>
 
-      {/* Hairline divider above the bullets — visual rhythm break */}
-      <div className="mt-6 h-px bg-neutral-900" aria-hidden="true" />
+      {/* Hairline divider above the bullets */}
+      <div className="my-2 h-px bg-[#D2D2D7]" aria-hidden="true" />
 
       {/* Feature list */}
-      <ul className="mt-6 flex-1 space-y-3 text-sm">
+      <ul className="flex-1 space-y-3 text-[15px]">
         {bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-2.5">
+          <li key={i} className="flex items-start gap-3">
             <Check
-              className={`size-4 shrink-0 translate-y-[3px] ${
-                anchored ? "text-white" : "text-neutral-500"
+              className={`mt-0.5 size-5 shrink-0 ${
+                anchored ? "text-[#1A7F45]" : "text-[#6E6E73]"
               }`}
               aria-hidden="true"
             />
-            <span className={anchored ? "text-white" : "text-neutral-300"}>
-              {b}
-            </span>
+            <span className="text-[#1D1D1F]">{b}</span>
           </li>
         ))}
       </ul>
 
-      {/* Brand voice line — italic, low-key */}
-      <p className="mt-6 text-xs italic text-neutral-500">{voiceLine}</p>
+      {/* Brand voice line — quiet caption */}
+      <p className="text-[13px] text-[#86868B]">{voiceLine}</p>
 
       <button
         type="button"
         onClick={pick}
         disabled={loading || !isLoaded}
         aria-label={`${ctaLabel} — ${name}`}
-        className={`mt-6 inline-flex h-11 w-full items-center justify-center rounded-md px-5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black disabled:opacity-60 ${
+        className={`focus-ring inline-flex h-12 w-full items-center justify-center rounded-full px-6 text-[17px] font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
           anchored
-            ? "bg-white text-black hover:bg-neutral-200"
-            : "border border-neutral-800 bg-neutral-900 text-white hover:border-neutral-700 hover:bg-neutral-800"
+            ? "bg-[#1D1D1F] text-white hover:bg-black"
+            : "border border-[#D2D2D7] bg-white text-[#1D1D1F] hover:border-[#86868B] hover:bg-[#F5F5F7]"
         }`}
       >
-        {loading ? "Loading…" : ctaLabel}
+        {loading ? "Loading." : ctaLabel}
       </button>
       {error && (
-        <p role="alert" className="mt-2 text-xs text-red-400">
+        <p role="alert" className="text-[13px] text-[#B91C1C]">
           {error}
         </p>
       )}

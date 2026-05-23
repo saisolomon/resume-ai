@@ -297,52 +297,38 @@ const samples: Tile[] = [
 
 export function TemplateGallery() {
   return (
-    <section className="border-t border-neutral-900 py-16 sm:py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-10 flex items-end justify-between gap-6">
-          <div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-              Sample output
-            </span>
-            <h2 className="mt-3 text-h1 text-white">
-              Eight angles from one JD.
-            </h2>
-            <p className="mt-3 max-w-xl text-sm text-neutral-400">
-              Same person. Same resume. Four angles × four templates — eight
-              real designs, every one ATS-scored against the job posting.
-            </p>
-          </div>
-          <span className="hidden font-mono text-[11px] tabular-nums text-neutral-600 sm:inline">
-            {String(samples.length).padStart(2, "0")} / samples
-          </span>
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-6 sm:px-8">
+        <div className="mb-14 max-w-2xl">
+          <h2 className="text-h1 text-[#1D1D1F]">Eight samples.</h2>
+          <p className="mt-4 text-[17px] leading-relaxed text-[#6E6E73]">
+            Real output. Real JDs. Same person, four angles, four templates —
+            every one ATS-scored against the job posting.
+          </p>
         </div>
 
-        {/* Horizontal scroll-rail. mask-image edges fade the rail in/out so
-            the affordance is implicit without a gradient overlay element. */}
+        {/* Horizontal scroll-rail with mask-image edges that fade to the page
+            background so the affordance is implicit without an overlay. */}
         <div
-          className="relative -mx-6 overflow-x-auto px-6 [mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)]"
+          className="relative -mx-6 overflow-x-auto px-6 [mask-image:linear-gradient(to_right,transparent,black_2rem,black_calc(100%-2rem),transparent)] sm:-mx-8 sm:px-8"
           role="region"
           aria-label="Template gallery"
         >
-          <ul className="flex snap-x snap-mandatory gap-4 pb-4">
+          <ul className="flex snap-x snap-mandatory gap-6 pb-8 pt-2">
             {samples.map((tile, i) => (
-              <li
-                key={i}
-                className="w-48 shrink-0 snap-start"
-              >
-                <div className="relative aspect-[3/4] overflow-hidden rounded-lg border border-neutral-800 bg-white transition-colors hover:border-neutral-700">
-                  <div className="absolute left-2 top-2 z-10 rounded-md bg-white/95 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-blue-700 shadow-sm">
+              <li key={i} className="w-[280px] shrink-0 snap-start">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover">
+                  <div className="absolute left-3 top-3 z-10 inline-flex items-center rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#3B82F6] shadow-sm">
                     {tile.angleLabel}
                   </div>
-                  <div className="absolute right-2 top-2 z-10">
+                  <div className="absolute right-3 top-3 z-10">
                     <ScoreBadge score={tile.score} size="sm" />
                   </div>
-                  {/* Scale so the full letter-paper proportions render in
-                      a 192px-wide tile. Numbers picked so body text stays
-                      legible even at this scale. */}
+                  {/* Scale so the letter-paper proportions render in a
+                      280px-wide tile while keeping body text legible. */}
                   <div
                     className="absolute inset-0 origin-top-left"
-                    style={{ transform: "scale(0.27)", width: "370.4%", height: "370.4%" }}
+                    style={{ transform: "scale(0.36)", width: "277.8%", height: "277.8%" }}
                     aria-hidden="true"
                   >
                     <ResumePreviewHtml
@@ -351,9 +337,17 @@ export function TemplateGallery() {
                     />
                   </div>
                 </div>
-                <p className="mt-2 text-center text-[11px] uppercase tracking-[0.08em] text-neutral-400">
-                  {tile.angleLabel} · <span className="font-mono tabular-nums">{tile.score}</span>
-                </p>
+                <div className="mt-4 flex items-baseline justify-between gap-2 px-1">
+                  <span className="text-[15px] font-medium text-[#1D1D1F]">
+                    {tile.angleLabel}
+                  </span>
+                  <span className="text-[13px] text-[#86868B]">
+                    Score{" "}
+                    <span className="font-mono tabular-nums text-[#1D1D1F]">
+                      {tile.score}
+                    </span>
+                  </span>
+                </div>
               </li>
             ))}
           </ul>

@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
-import { ArrowRight } from "lucide-react";
 import { PackCard } from "@/components/pricing/PackCard";
 import { ValueStack } from "@/components/pricing/ValueStack";
 import { GuaranteeBlock } from "@/components/pricing/GuaranteeBlock";
@@ -37,7 +36,7 @@ const FIVE_PACK_BULLETS = [
 const TWENTY_PACK_BULLETS = [
   "20 × everything in 5-pack",
   "Cover letters in English + Spanish",
-  "Interview prep — likely Qs + practice (10 sessions)",
+  "Interview prep — 10 sessions",
   "Outreach templates for hiring managers",
   "1 × human review by a certified recruiter",
   "Credits never expire",
@@ -47,7 +46,7 @@ export default function PricingPage() {
   const { isSignedIn, isLoaded } = useUser();
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
       <SiteNav home="/">
         <NavLink href="/">Home</NavLink>
         <AuthAwareNavLink href="/dashboard" when="signed-in">
@@ -56,37 +55,34 @@ export default function PricingPage() {
       </SiteNav>
 
       {/* Hero */}
-      <section className="mx-auto max-w-3xl px-6 pt-20 pb-12 text-center sm:pt-24">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-          Pricing
-        </span>
-        <h1 className="mt-5 text-display text-white">
+      <section className="mx-auto max-w-3xl px-6 pt-24 pb-12 text-center sm:px-8 sm:pt-32">
+        <h1 className="text-display text-[#1D1D1F]">
           Pay per resume. No subscription.
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-body-l text-neutral-400">
-          Every credit ships 4 tailored resume designs, 3 cover letter
-          variants, an ATS deep-scan, and unlimited chat fine-tune edits.
-          Credits never expire.
+        <p className="mx-auto mt-5 max-w-xl text-body-l text-[#6E6E73]">
+          Every credit ships 4 tailored resume designs, 3 cover letter variants,
+          an ATS deep-scan, and unlimited chat fine-tune edits. Credits never
+          expire.
         </p>
       </section>
 
-      {/* Pack cards — 5-pack anchored center on desktop.
-          On mobile we lead with 5-pack so the anchored pack is what the
-          visitor sees first; Single and 20-pack follow. */}
-      <section className="mx-auto max-w-6xl px-6 pb-12">
-        <div className="grid gap-6 md:grid-cols-3 md:items-stretch md:gap-5">
+      {/* Pack cards — 5-pack anchored center on desktop. On mobile we lead
+          with 5-pack so the anchored pack is what the visitor sees first;
+          Single and 20-pack follow. */}
+      <section className="mx-auto max-w-6xl px-6 pb-16 sm:px-8">
+        <div className="grid gap-6 md:grid-cols-3 md:items-stretch md:gap-8">
           {/* Single — left */}
           <div className="order-2 md:order-1">
             <PackCard
               pack="single"
               name="Single"
-              tagline="One job in your sights. One purchase, done."
+              tagline="Tailored for one job. One purchase. Done."
               price={9}
               credits={1}
               perUnit="$9.00 per resume"
               bullets={SINGLE_BULLETS}
               voiceLine="One job? One purchase. Done."
-              ctaLabel="Tailor 1 resume — $9"
+              ctaLabel="Buy 1 resume — $9"
             />
           </div>
 
@@ -95,13 +91,13 @@ export default function PricingPage() {
             <PackCard
               pack="5pack"
               name="5-pack"
-              tagline="Five applications in flight, five tailored runs."
+              tagline="For the active job hunt."
               price={29}
               credits={5}
               perUnit="$5.80 per resume"
               bullets={FIVE_PACK_BULLETS}
               voiceLine="For the active job hunt."
-              ctaLabel="Get 5 resumes — $29"
+              ctaLabel="Buy 5-pack — $29"
               anchored
             />
           </div>
@@ -111,18 +107,18 @@ export default function PricingPage() {
             <PackCard
               pack="20pack"
               name="20-pack"
-              tagline="A real hunt — twenty runs and the full stack."
+              tagline="The full job hunt, ammunition included."
               price={79}
               credits={20}
               perUnit="$3.95 per resume"
               bullets={TWENTY_PACK_BULLETS}
               voiceLine="The full job hunt, ammunition included."
-              ctaLabel="Get 20 resumes — $79"
+              ctaLabel="Buy 20-pack — $79"
             />
           </div>
         </div>
 
-        <p className="mt-10 text-center text-xs text-neutral-500">
+        <p className="mt-10 text-center text-[13px] text-[#86868B]">
           All packs ship with the 30-day no-interview, no-questions refund.
           Credits never expire.
         </p>
@@ -138,27 +134,23 @@ export default function PricingPage() {
       <PricingFAQ />
 
       {/* Footer CTA */}
-      <section className="border-t border-neutral-900 bg-neutral-950/60 py-20">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="text-h1 text-white">
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-2xl px-6 text-center sm:px-8">
+          <h2 className="text-h1 text-[#1D1D1F]">
             Stop tweaking resumes by hand.
           </h2>
-          <p className="mt-4 text-sm text-neutral-400">
+          <p className="mt-4 text-[17px] text-[#6E6E73]">
             Drop a JD, get four designs, ship the one that gets the call.
           </p>
-          <div className="mt-8">
+          <div className="mt-10">
             {/* Wait for Clerk hydration so signed-in users don't flash a
                 "Start free" link when they should see "Go to dashboard". */}
             {isLoaded && (
               <Link
                 href={isSignedIn ? "/dashboard" : "/"}
-                className="group inline-flex h-12 items-center gap-2 rounded-md bg-white px-7 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+                className="focus-ring inline-flex h-14 items-center rounded-full bg-[#1D1D1F] px-8 text-[17px] font-medium text-white transition-colors duration-200 hover:bg-black"
               >
                 {isSignedIn ? "Go to dashboard" : "Start tailoring"}
-                <ArrowRight
-                  className="size-4 transition-transform group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
               </Link>
             )}
           </div>

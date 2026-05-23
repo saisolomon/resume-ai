@@ -41,25 +41,25 @@ const faqs = [
  */
 export function PricingFAQ() {
   return (
-    <section className="border-t border-neutral-900 py-20 sm:py-24">
-      <div className="mx-auto max-w-3xl px-6">
+    <section className="bg-[#FAFAFA] py-24 sm:py-32">
+      <div className="mx-auto max-w-3xl px-6 sm:px-8">
         <div className="text-center">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            Objections, handled
-          </span>
-          <h2 className="mt-4 text-h1 text-white sm:text-3xl">Questions</h2>
+          <h2 className="text-h1 text-[#1D1D1F]">Questions.</h2>
+          <p className="mt-4 text-[17px] text-[#6E6E73]">
+            Common ones, handled directly.
+          </p>
         </div>
-        <div className="mt-12 divide-y divide-neutral-900 border-y border-neutral-900">
+        <div className="mt-12 divide-y divide-[#D2D2D7]/70 overflow-hidden rounded-2xl bg-white shadow-card">
           {faqs.map((f, i) => (
-            <details key={i} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-medium text-white transition-colors hover:text-neutral-200">
+            <details key={i} className="group">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-[17px] font-medium text-[#1D1D1F] transition-colors hover:bg-[#FAFAFA] sm:px-8">
                 {f.q}
                 <Plus
                   aria-hidden="true"
-                  className="size-4 shrink-0 text-neutral-500 transition-transform duration-200 group-open:rotate-45"
+                  className="size-5 shrink-0 text-[#86868B] transition-transform duration-200 group-open:rotate-45"
                 />
               </summary>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">
+              <p className="px-6 pb-5 text-[15px] leading-relaxed text-[#6E6E73] sm:px-8">
                 {f.a}
               </p>
             </details>

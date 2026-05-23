@@ -5,15 +5,19 @@ import { ScoreBadge } from "@/components/try/ScoreBadge";
 import type { ResumeData } from "@/lib/resume/types";
 
 /**
- * Hero-side product preview. Shows what resume.ai ships — one of four
- * angles at a time, with tab controls so the visitor can step through
- * Engineering depth → Leadership → Cross-functional → Specialist. The
- * panel sits inside a hairline-bordered card so it reads as product
- * chrome, not marketing decoration.
+ * @deprecated — not imported by the landing page in v6 (Apple-light).
  *
- * Data is hardcoded — this is a presentational element, not live data.
- * Names + bullets are deliberately believable-engineer ("Ria Patel",
- * Stripe + Datadog stack) so the preview doesn't read as lorem.
+ * The angle-tab preview pattern was superseded by:
+ *   - `TemplateBrowser` (hero centerpiece — picks template, not angle)
+ *   - `TemplateGallery` (horizontal scroll-rail of 8 samples)
+ *
+ * Keep the file for a release in case we want the "tab through four
+ * angles" affordance back on a future surface. If we ship a follow-up
+ * page that needs it, restyle for the light brand (white card, soft
+ * shadow, sentence-case tabs) before importing it.
+ *
+ * Hero-side product preview. Shows what resume.ai ships — one of four
+ * angles at a time. Data is hardcoded — this is a presentational element.
  */
 
 type Tile = {
