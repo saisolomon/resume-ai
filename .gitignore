@@ -50,3 +50,7 @@ next-env.d.ts
 # convex/_generated is committed so Vercel can build without CONVEX_DEPLOY_KEY.
 # Regenerate locally with `npx convex deploy` when the schema changes.
 .convex
+
+# Playwright MCP scratch — page snapshots / console logs the tool writes
+# during diagnostic sessions. Never useful to commit.
+.playwright-mcp/
