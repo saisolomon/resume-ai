@@ -81,7 +81,7 @@ export function ResumeDropzone({
       role="button"
       tabIndex={0}
       aria-label="Drop a resume file or click to browse"
-      className={`focus-ring flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border px-4 py-8 text-center transition-colors duration-150 ${
+      className={`focus-ring flex flex-col items-center justify-center gap-2 rounded-xl border px-4 py-8 text-center transition-colors duration-150 ${
         dragOver
           ? "border-solid border-[#0071E3] bg-[#0071E3]/5"
           : "border-dashed border-[#D2D2D7] bg-white hover:border-[#86868B]"

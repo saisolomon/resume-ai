@@ -300,3 +300,41 @@
     box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.20);
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Cursor language — keep the default arrow on clickable chrome      */
+/* (links, buttons, summary, select, label) instead of the browser    */
+/* default "pointer" hand. Calmer, matches the way Apple's own        */
+/* marketing surfaces feel. Cursors with real semantic meaning stay:  */
+/* not-allowed on disabled controls, grab/grabbing on drag handles,   */
+/* text on editable fields.                                           */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  a,
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  select,
+  summary,
+  label[for],
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="submit"],
+  input[type="button"] {
+    cursor: default;
+  }
+
+  /* Disabled controls keep the not-allowed semantic — important
+     feedback that the user can't act here. Wins over the default
+     rule above via more-specific selectors. */
+  a[aria-disabled="true"],
+  button:disabled,
+  button[aria-disabled="true"],
+  [role="button"][aria-disabled="true"],
+  select:disabled,
+  input:disabled {
+    cursor: not-allowed;
+  }
+}
