@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { PackCard } from "@/components/pricing/PackCard";
 import { ValueStack } from "@/components/pricing/ValueStack";
-import { GuaranteeBlock } from "@/components/pricing/GuaranteeBlock";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import {
@@ -119,16 +118,12 @@ export default function PricingPage() {
         </div>
 
         <p className="mt-10 text-center text-[13px] text-[#86868B]">
-          All packs ship with the 30-day no-interview, no-questions refund.
-          Credits never expire.
+          No subscription. No auto-renew. Credits never expire.
         </p>
       </section>
 
       {/* Value stack — 20-pack implied value */}
       <ValueStack />
-
-      {/* Guarantee */}
-      <GuaranteeBlock />
 
       {/* FAQ */}
       <PricingFAQ />

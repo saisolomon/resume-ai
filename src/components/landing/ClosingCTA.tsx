@@ -1,14 +1,12 @@
 import Link from "next/link";
-import { Shield } from "lucide-react";
 
 /**
- * Closing CTA — repeat the offer + 30-day guarantee, Apple-light.
+ * Closing CTA — repeat the offer, Apple-light.
  *
  * Three white cards on the mist canvas (anchored center, scale 1.02,
- * shadow-xl), then the Hormozi guarantee block below in its own pocket
- * of whitespace. Pill primary CTA. Sentence-case throughout.
- *
- * Guarantee copy preserved verbatim per the business invariants.
+ * shadow-xl). Pill primary CTA. Sentence-case throughout. No refund or
+ * guarantee language — credits are consumed on generation and we don't
+ * promise career outcomes.
  */
 
 const PRICING = [
@@ -42,11 +40,11 @@ export function ClosingCTA() {
   return (
     <section
       className="py-32 sm:py-40"
-      aria-label="Pricing and 30-day guarantee"
+      aria-label="Pricing"
     >
       <div className="mx-auto max-w-6xl px-6 sm:px-8">
         {/* ─── Pricing trio ─── */}
-        <div className="mb-24 text-center sm:mb-32">
+        <div className="text-center">
           <h2 className="text-display text-[#1D1D1F]">Start with one.</h2>
           <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-[#6E6E73]">
             Pay once. Credits never expire. Every credit gets you 4 tailored
@@ -93,19 +91,10 @@ export function ClosingCTA() {
           <p className="mt-8 text-[13px] text-[#86868B]">
             No subscription. No auto-renew. Credits never expire.
           </p>
-        </div>
 
-        {/* ─── Guarantee ─── */}
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-white shadow-card">
-            <Shield className="size-7 text-[#1D1D1F]" aria-hidden="true" />
-          </div>
-          <h3 className="text-display text-[#1D1D1F]">
-            30 days. No interview, full refund.
-          </h3>
-          <p className="mt-5 text-[19px] leading-relaxed text-[#6E6E73]">
-            One email. No support hoops.
-          </p>
+          {/* CTA row — sits directly below pricing now that the guarantee
+              block is gone. Same pair: primary into the start flow,
+              secondary to full pricing. */}
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="#start"
