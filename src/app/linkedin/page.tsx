@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAction, useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
@@ -55,10 +55,27 @@ export default function LinkedinRewritePage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  if (isLoaded && !isSignedIn) {
-    router.replace("/sign-in?redirect_url=/linkedin");
-    return null;
+  // Auth gate via effect rather than during-render router.replace.
+  // Calling router.replace synchronously in the render body throws
+  // "Cannot update a component while rendering" under React 19 / Next 16
+  // and surfaces in production as the client-side exception overlay.
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.replace("/sign-in?redirect_url=/linkedin");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  if (!isLoaded) {
+    return (
+      <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
+        <SiteNav home="/dashboard" />
+        <div className="mx-auto max-w-2xl px-6 py-16 text-[15px] text-[#6E6E73] sm:px-8">
+          Loading.
+        </div>
+      </main>
+    );
   }
+  if (!isSignedIn) return null;
 
   const updateForm = (
     field: keyof typeof form,
