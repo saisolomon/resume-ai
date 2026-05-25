@@ -155,7 +155,7 @@ export default function RunPage({
                 templateSlug={card.templateSlug}
                 content={card.content}
                 totalScore={card.atsScore.total}
-                href={`/run/${runId}/edit/${card._id}`}
+                href={`/workspace/${card._id}`}
               />
             ) : card.status === "failed" ? (
               <div

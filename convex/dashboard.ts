@@ -1,5 +1,5 @@
 // convex/dashboard.ts
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 export const listMyRuns = query({
@@ -105,5 +105,50 @@ export const getMyCard = query({
     const run = await ctx.db.get(card.runId);
     if (!run || run.userId !== user._id) return null;
     return card;
+  },
+});
+
+// Owner-gated card content / template update for the /workspace editor.
+// Direct-manipulation edits (name, bullets, reorders, template switch)
+// route through here. internalMutation patchCard is reserved for AI /
+// system writes; this mutation is the only client-facing write path.
+//
+// Throws on auth failures so the client can surface a clear error (vs.
+// silent no-op). Validation is intentionally light at the boundary —
+// the editor is the only caller and shapes the payload itself; if a
+// malformed `content` lands in storage the render-time defensive coding
+// in ResumePreviewHtml handles it.
+export const updateMyCardContent = mutation({
+  args: {
+    cardId: v.id("cards"),
+    content: v.optional(v.any()),
+    templateSlug: v.optional(
+      v.union(
+        v.literal("classic"),
+        v.literal("modern"),
+        v.literal("creative"),
+        v.literal("minimal"),
+      ),
+    ),
+  },
+  handler: async (ctx, { cardId, content, templateSlug }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("not authenticated");
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+    if (!user) throw new Error("user row missing");
+    const card = await ctx.db.get(cardId);
+    if (!card) throw new Error("card not found");
+    const run = await ctx.db.get(card.runId);
+    if (!run || run.userId !== user._id) throw new Error("forbidden");
+    // Build the patch from only the keys actually provided so callers
+    // can update content alone, template alone, or both.
+    const patch: { content?: unknown; templateSlug?: typeof templateSlug } = {};
+    if (content !== undefined) patch.content = content;
+    if (templateSlug !== undefined) patch.templateSlug = templateSlug;
+    if (Object.keys(patch).length === 0) return;
+    await ctx.db.patch(cardId, patch);
   },
 });
