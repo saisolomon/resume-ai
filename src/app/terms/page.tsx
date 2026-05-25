@@ -13,7 +13,7 @@ export default function TermsPage() {
         <header className="border-b border-[#D2D2D7]/70 pb-8">
           <h1 className="text-h1 text-[#1D1D1F]">Terms of service</h1>
           <p className="mt-3 font-mono text-[13px] tabular-nums text-[#86868B]">
-            Last updated · 2026-05-23
+            Last updated · 2026-05-25
           </p>
         </header>
 
@@ -21,10 +21,10 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-h2 text-[#1D1D1F]">What this is</h2>
             <p className="text-[16px] leading-relaxed text-[#6E6E73]">
-              resume.ai is a resume tailoring tool powered by Claude
-              (Anthropic). You give us a job posting and your resume; we
-              generate tailored versions, ATS scores, and related job-hunt
-              material. That&apos;s the whole product.
+              resume.ai is an AI-powered resume tailoring tool. You give us
+              a job posting and your resume; we generate tailored versions,
+              ATS scores, and related job-hunt material. That&apos;s the
+              whole product.
             </p>
           </section>
 
@@ -78,8 +78,8 @@ export default function TermsPage() {
               don&apos;t refund unused credits &mdash; credits never
               expire, so they sit in your account until you need them. If
               you&apos;re unsure whether resume.ai will work for you, start
-              with a Single ($9) before buying a pack. Stripe-side disputes
-              and chargebacks are handled per their standard process.
+              with a Single ($9) before buying a pack. Payment-processor
+              disputes and chargebacks are handled per their standard process.
             </p>
           </section>
 

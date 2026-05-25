@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         <header className="border-b border-[#D2D2D7]/70 pb-8">
           <h1 className="text-h1 text-[#1D1D1F]">Privacy policy</h1>
           <p className="mt-3 font-mono text-[13px] tabular-nums text-[#86868B]">
-            Last updated · 2026-05-23
+            Last updated · 2026-05-25
           </p>
         </header>
 
@@ -36,9 +36,9 @@ export default function PrivacyPage() {
               <li>
                 <strong>Signed-in users.</strong>{" "}
                 <span className="text-[#6E6E73]">
-                  The above plus your email (via Clerk) and, if you subscribe,
-                  your Stripe customer ID. We retain this until you delete your
-                  account.
+                  The above plus your email address and, if you purchase, a
+                  billing identifier from our payment processor. We retain
+                  this until you delete your account.
                 </span>
               </li>
               <li>
@@ -52,37 +52,58 @@ export default function PrivacyPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-h2 text-[#1D1D1F]">What we share</h2>
+            <h2 className="text-h2 text-[#1D1D1F]">How your data is processed</h2>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
+              To operate the product we work with a small number of service
+              providers, each scoped to a single function. Each receives only
+              the data needed to perform their function, governed by their
+              own privacy commitments.
+            </p>
             <ul className="space-y-3 text-[16px] leading-relaxed text-[#1D1D1F]">
               <li>
-                <strong>Anthropic.</strong>{" "}
+                <strong>Tailored generation.</strong>{" "}
                 <span className="text-[#6E6E73]">
-                  Your resume and JD content is sent to Anthropic&apos;s Claude
-                  API to generate the tailored output. Anthropic does not
-                  retain or train on your data per their API terms.
+                  Your resume and job description content is processed by a
+                  third-party language-model provider to produce the tailored
+                  output. The provider operates under enterprise terms that
+                  prohibit retention of your inputs and prohibit using your
+                  content to train any model.
                 </span>
               </li>
               <li>
-                <strong>Firecrawl.</strong>{" "}
+                <strong>Job posting retrieval.</strong>{" "}
                 <span className="text-[#6E6E73]">
-                  The job URL is sent to Firecrawl to scrape the JD.
+                  The URL you submit is fetched by a web-scraping service so
+                  we can extract the JD text. Only the URL is sent.
                 </span>
               </li>
               <li>
-                <strong>Clerk.</strong>{" "}
-                <span className="text-[#6E6E73]">Handles authentication.</span>
-              </li>
-              <li>
-                <strong>Stripe.</strong>{" "}
-                <span className="text-[#6E6E73]">Handles payment.</span>
-              </li>
-              <li>
-                <strong>Convex / Vercel.</strong>{" "}
+                <strong>Authentication.</strong>{" "}
                 <span className="text-[#6E6E73]">
-                  Infrastructure providers (database, hosting).
+                  Account credentials are managed by a third-party identity
+                  provider so we never store your password.
+                </span>
+              </li>
+              <li>
+                <strong>Payments.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  Billing details are handled by a PCI-compliant payment
+                  processor. Card numbers never touch our systems.
+                </span>
+              </li>
+              <li>
+                <strong>Infrastructure.</strong>{" "}
+                <span className="text-[#6E6E73]">
+                  Database, hosting, and content delivery are provided by
+                  industry-standard cloud infrastructure vendors.
                 </span>
               </li>
             </ul>
+            <p className="text-[16px] leading-relaxed text-[#6E6E73]">
+              We don&apos;t sell your data. We don&apos;t share it with
+              advertisers. We don&apos;t use your resume content to train
+              language models or improve any third party&apos;s product.
+            </p>
           </section>
 
           <section className="space-y-4">
@@ -95,9 +116,9 @@ export default function PrivacyPage() {
               >
                 Settings → Danger zone
               </Link>{" "}
-              to permanently delete your account and all your data. The
-              deletion cascades to Stripe (cancels any active subscription) and
-              Convex (removes all runs, resumes, and chat history).
+              to permanently delete your account and all your data. Deletion
+              cascades across all systems — any active billing arrangement is
+              cancelled and every run, resume, and chat history is removed.
             </p>
           </section>
 
