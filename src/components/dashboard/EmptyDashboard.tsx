@@ -30,7 +30,7 @@ export function EmptyDashboard() {
         </h2>
         <p className="mt-3 text-[15px] leading-relaxed text-[#6E6E73]">
           {needsCredits
-            ? "Every credit tailors 4 resume designs and 3 cover letter variants to one job posting. Credits never expire."
+            ? "Every credit tailors 4 resume designs to one job posting, with an ATS deep-scan and unlimited fine-tune edits. Credits never expire."
             : "Drop a job posting URL and your resume. We'll tailor four versions and score them against the JD in under thirty seconds."}
         </p>
         <Link
