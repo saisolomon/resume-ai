@@ -31,12 +31,12 @@ export function SiteFooter() {
           >
             Terms
           </Link>
-          <a
-            href="mailto:hi@resume.ai"
+          <Link
+            href="/contact"
             className="transition-colors hover:text-[#1D1D1F]"
           >
             Contact
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

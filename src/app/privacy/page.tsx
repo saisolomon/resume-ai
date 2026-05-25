@@ -106,10 +106,10 @@ export default function PrivacyPage() {
             <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               Questions about this policy:{" "}
               <a
-                href="mailto:hi@resume.ai"
+                href="mailto:saisolomon45@gmail.com"
                 className="text-[#0071E3] underline-offset-4 hover:underline"
               >
-                hi@resume.ai
+                saisolomon45@gmail.com
               </a>
               .
             </p>

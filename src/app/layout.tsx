@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ConvexClerkProvider } from "@/providers/ConvexClerkProvider";
 import "./globals.css";
 
@@ -92,6 +94,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ConvexClerkProvider>{children}</ConvexClerkProvider>
+        {/* Vercel Analytics (page views, custom events) + Speed Insights
+            (Core Web Vitals). Both auto-skip in dev, no env vars required.
+            PII-safe: no IPs stored, no fingerprinting — only aggregate
+            metrics. Enable from the Vercel dashboard per project. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
