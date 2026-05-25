@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 
 /**
  * Closing CTA — repeat the offer, Apple-light.
@@ -7,9 +8,25 @@ import Link from "next/link";
  * shadow-xl). Pill primary CTA. Sentence-case throughout. No refund or
  * guarantee language — credits are consumed on generation and we don't
  * promise career outcomes.
+ *
+ * Each card carries an abbreviated 4-bullet "what you get" list. The
+ * full feature list (with Coming Soon markers on items still in
+ * roadmap) lives on /pricing — the "See full pricing" CTA below routes
+ * there. Bullets here are deliberately limited to shipped features so
+ * landing copy is honest without needing the Coming Soon pill UI.
  */
 
-const PRICING = [
+type Pack = {
+  pack: string;
+  credits: string;
+  price: string;
+  perUnit: string | null;
+  tagline: string;
+  anchored: boolean;
+  bullets: string[];
+};
+
+const PRICING: Pack[] = [
   {
     pack: "Single",
     credits: "1 credit",
@@ -17,6 +34,12 @@ const PRICING = [
     perUnit: null,
     tagline: "Tailored for one job. One purchase. Done.",
     anchored: false,
+    bullets: [
+      "4 tailored resume designs",
+      "3 cover letter variants",
+      "ATS deep-scan + per-bullet impact",
+      "Unlimited chat fine-tune edits",
+    ],
   },
   {
     pack: "5-pack",
@@ -25,6 +48,12 @@ const PRICING = [
     perUnit: "$5.80 per resume",
     tagline: "For the active job hunt.",
     anchored: true,
+    bullets: [
+      "Everything in Single, ×5",
+      "LinkedIn profile rewrite",
+      "Saved runs in your dashboard",
+      "Credits never expire",
+    ],
   },
   {
     pack: "20-pack",
@@ -33,6 +62,12 @@ const PRICING = [
     perUnit: "$3.95 per resume",
     tagline: "The full job hunt, ammunition included.",
     anchored: false,
+    bullets: [
+      "Everything in 5-pack, ×4",
+      "Outreach templates per JD",
+      "Cover letters in any language",
+      "Credits never expire",
+    ],
   },
 ];
 
@@ -55,7 +90,7 @@ export function ClosingCTA() {
             {PRICING.map((p) => (
               <div
                 key={p.pack}
-                className={`relative flex flex-col items-center gap-3 rounded-[20px] bg-white p-8 transition-shadow duration-300 ${
+                className={`relative flex flex-col rounded-[20px] bg-white p-8 text-left transition-shadow duration-300 ${
                   p.anchored
                     ? "shadow-card-xl md:scale-[1.02]"
                     : "shadow-card hover:shadow-card-hover"
@@ -66,13 +101,15 @@ export function ClosingCTA() {
                     Most popular
                   </span>
                 )}
+
+                {/* Header: pack name + price + per-unit */}
                 <span className="text-[13px] font-medium text-[#6E6E73]">
                   {p.pack}
                 </span>
-                <div className="text-[44px] font-semibold leading-none tracking-tight text-[#1D1D1F]">
+                <div className="mt-2 text-[44px] font-semibold leading-none tracking-tight text-[#1D1D1F]">
                   {p.price}
                 </div>
-                <div className="text-[13px] text-[#86868B]">
+                <div className="mt-2 text-[13px] text-[#86868B]">
                   {p.credits}
                   {p.perUnit && (
                     <>
@@ -81,9 +118,30 @@ export function ClosingCTA() {
                     </>
                   )}
                 </div>
-                <p className="mt-2 max-w-[18ch] text-[15px] leading-snug text-[#1D1D1F]">
+                <p className="mt-3 text-[15px] leading-snug text-[#1D1D1F]">
                   {p.tagline}
                 </p>
+
+                {/* Hairline divider above the bullet list */}
+                <div
+                  className="my-5 h-px bg-[#D2D2D7]"
+                  aria-hidden="true"
+                />
+
+                {/* Offerings — abbreviated. Full list on /pricing. */}
+                <ul className="flex-1 space-y-2.5 text-[14px]">
+                  {p.bullets.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <Check
+                        className={`mt-0.5 size-4 shrink-0 ${
+                          p.anchored ? "text-[#1A7F45]" : "text-[#6E6E73]"
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <span className="text-[#1D1D1F]">{b}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
