@@ -72,15 +72,14 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-h2 text-[#1D1D1F]">Refunds</h2>
             <p className="text-[16px] leading-relaxed text-[#6E6E73]">
-              30-day refund guarantee. If you&apos;re not happy with a paid
-              plan within 30 days of purchase, email{" "}
-              <a
-                href="mailto:hi@resume.ai"
-                className="text-[#0071E3] underline-offset-4 hover:underline"
-              >
-                hi@resume.ai
-              </a>{" "}
-              and we&apos;ll refund you. No forms, no questions.
+              All sales are final. Credits are consumed when a generation
+              run starts, which is the moment we incur AI infrastructure
+              cost. We don&apos;t refund consumed credits, and we
+              don&apos;t refund unused credits &mdash; credits never
+              expire, so they sit in your account until you need them. If
+              you&apos;re unsure whether resume.ai will work for you, start
+              with a Single ($9) before buying a pack. Stripe-side disputes
+              and chargebacks are handled per their standard process.
             </p>
           </section>
 

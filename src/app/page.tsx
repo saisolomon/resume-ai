@@ -29,7 +29,7 @@ import {
  *   BeforeAfter        — two-column 64 vs 91 ATS comparison
  *   AtsHonestySection  — "Floor / Ceiling / What ATS isn't" on alt canvas
  *   Manifesto          — calm statement of purpose
- *   ClosingCTA         — pricing trio + 30-day guarantee + pill CTAs
+ *   ClosingCTA         — pricing trio + pill CTAs
  *   WhatWeDontDo       — category practices vs how resume.ai works
  *   SiteFooter         — hairline divider, three inline links
  *

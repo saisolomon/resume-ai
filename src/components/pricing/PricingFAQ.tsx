@@ -1,16 +1,17 @@
 import { Plus } from "lucide-react";
 
-// v4 credit-pack model. Per Design.md, the FAQ MUST cover: expiry,
-// guarantee, what's in a credit, fine-tune scope, and "why per-credit not
-// subscription". Voice stays direct — no hedging, no marketing-speak.
+// v4 credit-pack model. Per Design.md, the FAQ covers: expiry, what's
+// in a credit, fine-tune scope, "why per-credit not subscription", and
+// our honest stance on refunds. Voice stays direct — no hedging, no
+// marketing-speak.
 const faqs = [
   {
     q: "Do credits expire?",
     a: "No. Ever. Buy a 5-pack today, use 1 credit this week, save 4 for the next career move. Credits sit in your account until you spend them.",
   },
   {
-    q: "What if I don't land an interview?",
-    a: "30 days. Email us, we refund in full. No questionnaire, no exit survey, no \"let me transfer you\" — one reply, money back. The credits don't need to be used; the offer is on the work, not on the volume.",
+    q: "Can I get a refund?",
+    a: "Credits are consumed as soon as a run starts — that's the moment we incur AI infrastructure cost — so we don't refund them. What we do instead: credits never expire, you get four tailored angles per credit so you almost never need to spend a second one on the same JD, and unlimited chat fine-tune edits are free on every run. If you're not sure resume.ai will work for you, start with Single ($9) before going larger.",
   },
   {
     q: "What's in one credit?",
