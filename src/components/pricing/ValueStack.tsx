@@ -1,22 +1,27 @@
-import { Check } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 
-type StackItem = { item: string; value: string };
+type StackItem = { item: string; value: string; comingSoon?: boolean };
 
 // 20-pack implied-value stack. Per Design.md, the dream-outcome stack lives
 // in the 20-pack — every obstacle to landing a job has a line in this list.
 // Numbers are "if you bought each component separately on the open market"
 // — they're plausible-but-defensible (e.g., interview prep tools charge
 // $50-150/mo; the human review market starts around $150).
+//
+// `comingSoon: true` items are on the roadmap — they render with a muted
+// clock + a "Coming soon" pill so the value stack stays honest. They still
+// count toward the total because that's what the buyer will get over the
+// lifetime of credits (which never expire).
 const twentyPackStack: StackItem[] = [
   { item: "20 × 4-angle resume gallery (80 designs total)", value: "$180" },
-  { item: "20 × 3-variant cover letter (60 letters)", value: "$60" },
+  { item: "20 × 3-variant cover letter (60 letters)", value: "$60", comingSoon: true },
   { item: "20 × ATS deep-scan + per-bullet impact", value: "$80" },
   { item: "Unlimited chat fine-tune edits per run", value: "$30" },
-  { item: "LinkedIn profile rewrite (1× included)", value: "$40" },
-  { item: "10 × interview prep sessions — likely Qs + practice", value: "$150" },
-  { item: "20 × outreach DM templates for hiring managers", value: "$60" },
-  { item: "Cover letter generator in English + Spanish", value: "$20" },
-  { item: "1 × human review by a certified recruiter", value: "$150" },
+  { item: "LinkedIn profile rewrite (1× included)", value: "$40", comingSoon: true },
+  { item: "10 × interview prep sessions — likely Qs + practice", value: "$150", comingSoon: true },
+  { item: "20 × outreach DM templates for hiring managers", value: "$60", comingSoon: true },
+  { item: "Cover letter generator in English + Spanish", value: "$20", comingSoon: true },
+  { item: "1 × human review by a certified recruiter", value: "$150", comingSoon: true },
 ];
 
 /**
@@ -55,11 +60,32 @@ export function ValueStack() {
               }`}
             >
               <div className="flex items-start gap-3">
-                <Check
-                  className="mt-0.5 size-5 shrink-0 text-[#1A7F45]"
-                  aria-hidden="true"
-                />
-                <span className="text-[15px] text-[#1D1D1F]">{row.item}</span>
+                {row.comingSoon ? (
+                  <Clock
+                    className="mt-0.5 size-5 shrink-0 text-[#86868B]"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Check
+                    className="mt-0.5 size-5 shrink-0 text-[#1A7F45]"
+                    aria-hidden="true"
+                  />
+                )}
+                <span
+                  className={`flex flex-wrap items-center gap-x-2 text-[15px] ${
+                    row.comingSoon ? "text-[#6E6E73]" : "text-[#1D1D1F]"
+                  }`}
+                >
+                  {row.item}
+                  {row.comingSoon && (
+                    <span
+                      className="inline-flex items-center rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#92400E]"
+                      aria-label="Coming soon"
+                    >
+                      Coming soon
+                    </span>
+                  )}
+                </span>
               </div>
               <span className="font-mono text-[15px] font-medium tabular-nums text-[#86868B]">
                 {row.value}

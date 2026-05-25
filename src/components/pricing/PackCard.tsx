@@ -2,11 +2,21 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 
 // v4 credit-pack model. The pricing page lives on `{ pack }` semantics —
 // the checkout API rejects anything else with `unknown_pack`.
 export type Pack = "single" | "5pack" | "20pack";
+
+// Pricing bullet shape. `comingSoon` is the honest-pricing flag for
+// items we list in the pack value stack but haven't shipped yet — they
+// render with a muted clock icon + a "Coming soon" pill rather than the
+// standard green check, so a buyer can see the offer roadmap without
+// being lied to about what they'll receive today.
+export type PricingBullet = {
+  text: string;
+  comingSoon?: boolean;
+};
 
 // If a signed-out visitor hits a paid CTA, stash the chosen pack so when
 // they bounce back from /sign-up we auto-resume checkout. Mirrors the v2
@@ -36,7 +46,7 @@ export function PackCard({
   credits: number;
   /** "$9.00 per resume" / "$5.80 per resume" / "$3.95 per resume". */
   perUnit: string;
-  bullets: string[];
+  bullets: PricingBullet[];
   /** Italic 1-liner under the bullets, voice-of-brand. */
   voiceLine: string;
   ctaLabel: string;
@@ -145,17 +155,42 @@ export function PackCard({
       {/* Hairline divider above the bullets */}
       <div className="my-2 h-px bg-[#D2D2D7]" aria-hidden="true" />
 
-      {/* Feature list */}
+      {/* Feature list — shipped items get the standard green/slate check;
+          Coming-soon items get a muted clock + pill so a buyer can see
+          what's promised vs what's coming without ambiguity. */}
       <ul className="flex-1 space-y-3 text-[15px]">
         {bullets.map((b, i) => (
           <li key={i} className="flex items-start gap-3">
-            <Check
-              className={`mt-0.5 size-5 shrink-0 ${
-                anchored ? "text-[#1A7F45]" : "text-[#6E6E73]"
-              }`}
-              aria-hidden="true"
-            />
-            <span className="text-[#1D1D1F]">{b}</span>
+            {b.comingSoon ? (
+              <Clock
+                className="mt-0.5 size-5 shrink-0 text-[#86868B]"
+                aria-hidden="true"
+              />
+            ) : (
+              <Check
+                className={`mt-0.5 size-5 shrink-0 ${
+                  anchored ? "text-[#1A7F45]" : "text-[#6E6E73]"
+                }`}
+                aria-hidden="true"
+              />
+            )}
+            <span
+              className={
+                b.comingSoon
+                  ? "flex flex-wrap items-center gap-x-2 text-[#6E6E73]"
+                  : "text-[#1D1D1F]"
+              }
+            >
+              {b.text}
+              {b.comingSoon && (
+                <span
+                  className="inline-flex items-center rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#92400E]"
+                  aria-label="Coming soon"
+                >
+                  Coming soon
+                </span>
+              )}
+            </span>
           </li>
         ))}
       </ul>

@@ -11,34 +11,39 @@ import {
   AuthAwareNavLink,
 } from "@/components/layout/SiteNav";
 
-// Per Design.md, every credit = 4 tailored resume designs + 3 cover letter
-// variants + ATS deep-scan + unlimited fine-tune edits. The 5-pack and
-// 20-pack add bonuses on top — they're not larger versions of the same
-// thing, they're "everything in Single, × N, + the implied-value stack".
+// Per Design.md, every credit = 4 tailored resume designs + ATS deep-scan
+// + unlimited fine-tune edits. The 5-pack and 20-pack add bonuses on top —
+// they're not larger versions of the same thing, they're "everything in
+// Single, × N, + the implied-value stack".
+//
+// `comingSoon: true` is the honest-pricing flag — these items are on the
+// roadmap and surface in the value stack so a buyer can see the trajectory,
+// but they render with a muted clock icon + a "Coming soon" pill so we're
+// never telling someone they get something they don't.
 
 const SINGLE_BULLETS = [
-  "4 tailored resume designs (one JD)",
-  "3 cover letter variants",
-  "ATS deep-scan with per-bullet impact",
-  "PDF + DOCX downloads",
-  "Unlimited chat fine-tune edits",
+  { text: "4 tailored resume designs (one JD)" },
+  { text: "3 cover letter variants", comingSoon: true },
+  { text: "ATS deep-scan with per-bullet impact" },
+  { text: "PDF + DOCX downloads" },
+  { text: "Unlimited chat fine-tune edits" },
 ];
 
 const FIVE_PACK_BULLETS = [
-  "5 × everything in Single",
-  "LinkedIn profile rewrite (1× included)",
-  "Save your runs in your dashboard",
-  "Side-by-side compare any 2 runs",
-  "Credits never expire",
+  { text: "5 × everything in Single" },
+  { text: "LinkedIn profile rewrite (1× included)", comingSoon: true },
+  { text: "Save your runs in your dashboard" },
+  { text: "Side-by-side compare any 2 runs", comingSoon: true },
+  { text: "Credits never expire" },
 ];
 
 const TWENTY_PACK_BULLETS = [
-  "20 × everything in 5-pack",
-  "Cover letters in English + Spanish",
-  "Interview prep — 10 sessions",
-  "Outreach templates for hiring managers",
-  "1 × human review by a certified recruiter",
-  "Credits never expire",
+  { text: "20 × everything in 5-pack" },
+  { text: "Cover letters in English + Spanish", comingSoon: true },
+  { text: "Interview prep — 10 sessions", comingSoon: true },
+  { text: "Outreach templates for hiring managers", comingSoon: true },
+  { text: "1 × human review by a certified recruiter", comingSoon: true },
+  { text: "Credits never expire" },
 ];
 
 export default function PricingPage() {
@@ -59,9 +64,8 @@ export default function PricingPage() {
           Pay per resume. No subscription.
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-body-l text-[#6E6E73]">
-          Every credit ships 4 tailored resume designs, 3 cover letter variants,
-          an ATS deep-scan, and unlimited chat fine-tune edits. Credits never
-          expire.
+          Every credit ships 4 tailored resume designs, an ATS deep-scan, and
+          unlimited chat fine-tune edits. Credits never expire.
         </p>
       </section>
 
