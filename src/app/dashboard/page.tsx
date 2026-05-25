@@ -33,12 +33,19 @@ export default function DashboardPage() {
           <CreditedBanner />
         </Suspense>
 
-        {/* Header — two CTAs: primary upload-resume path (lands on the
-            landing Hero), secondary JD-only path. Kept side by side so
-            both flows have equal discoverability for signed-in users. */}
-        <div className="mb-10 flex items-end justify-between gap-4">
+        {/* Header — three CTAs: primary upload-resume path (lands on
+            the landing Hero), secondary JD-only path, tertiary LinkedIn
+            rewrite. All side-by-side so signed-in users see the full
+            surface of what's available without digging. */}
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <h1 className="text-h1 text-[#1D1D1F]">Your runs</h1>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/linkedin"
+              className="focus-ring inline-flex h-11 items-center gap-2 rounded-full border border-[#D2D2D7] bg-white px-5 text-[15px] font-medium text-[#1D1D1F] transition-colors duration-200 hover:border-[#86868B] hover:bg-[#F5F5F7]"
+            >
+              LinkedIn rewrite
+            </Link>
             <Link
               href="/new"
               className="focus-ring inline-flex h-11 items-center gap-2 rounded-full border border-[#D2D2D7] bg-white px-5 text-[15px] font-medium text-[#1D1D1F] transition-colors duration-200 hover:border-[#86868B] hover:bg-[#F5F5F7]"

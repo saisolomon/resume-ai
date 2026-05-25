@@ -20,7 +20,7 @@ import type { ResumeData } from "../../src/lib/resume/types";
  * operations separate makes each one's behavior predictable.
  */
 
-const SYSTEM = `You translate resumes from one language to another while preserving all factual content. You receive a ResumeData JSON object and a target language. Return the same JSON shape with translated content.
+const SYSTEM = `You translate resumes and cover letters from one language to another while preserving all factual content. You receive a ResumeData JSON object, optionally a coverLetters array, and a target language. Return a JSON object with a translated resume and (when present) translated cover letters.
 
 ## Preserve verbatim (do NOT translate these)
 1. Proper nouns: person names, employer/company names, school/university names.
@@ -35,30 +35,48 @@ const SYSTEM = `You translate resumes from one language to another while preserv
 8. Bullet content — full, natural, fluent target-language sentences. Maintain the bullet's quantified result and skill-based framing.
 9. Degree names ("B.S. Computer Science" → "Lic. Ciencias de la Computación" in Spanish) — use the locale-appropriate degree abbreviation if one exists, otherwise translate descriptively.
 10. \`additionalInfo\` entries — translate descriptive labels (e.g. "Programming languages:") but preserve the technology names themselves.
+11. Cover letter prose — translate into idiomatic target-language business writing. Same name / employer / number preservation rules apply.
 
 ## Style rules
-11. Use the most widely-understood register of the target language (e.g. Mexican-accessible Spanish, Brazilian Portuguese, France-French) rather than a regional dialect, unless the resume's address makes the region obvious.
-12. Maintain bullet character limits (each bullet ≤ 240 chars). Translation tends to expand text — tighten phrasing as needed to stay within limit.
-13. Maintain verb tense convention: present for current roles, past for prior roles.
-14. Keep the candidate's voice — no marketing language, no buzzwords, no first person. The original was written by a careful resume writer; preserve that quality.
+12. Use the most widely-understood register of the target language (e.g. Mexican-accessible Spanish, Brazilian Portuguese, France-French) rather than a regional dialect, unless the resume's address makes the region obvious.
+13. Maintain bullet character limits (each bullet ≤ 240 chars). Translation tends to expand text — tighten phrasing as needed to stay within limit.
+14. Maintain verb tense convention in the resume: present for current roles, past for prior roles.
+15. Keep the candidate's voice — no marketing language, no buzzwords. The original was written by a careful writer; preserve that quality.
 
-## ResumeData shape (return exactly this — no markdown fences, no preamble)
+## Return format
+
+A single JSON object — no markdown fences, no preamble:
 
 {
-  "name": "",
-  "contactLine1": "",
-  "contactLine2": "",
-  "education": [{ "institution": "", "location": "", "degree": "", "date": "", "gpa": "", "details": [] }],
-  "experienceSections": [{ "heading": "Experience", "entries": [{ "company": "", "companyNote": "", "location": "", "roles": [{ "title": "", "date": "", "bullets": [] }] }] }],
-  "additionalInfo": []
+  "resume": {
+    "name": "",
+    "contactLine1": "",
+    "contactLine2": "",
+    "education": [{ "institution": "", "location": "", "degree": "", "date": "", "gpa": "", "details": [] }],
+    "experienceSections": [{ "heading": "Experience", "entries": [{ "company": "", "companyNote": "", "location": "", "roles": [{ "title": "", "date": "", "bullets": [] }] }] }],
+    "additionalInfo": []
+  },
+  "coverLetters": ["...", "...", "..."]   // OMIT this key if no cover letters were provided
 }`;
 
-function buildUserMessage(resume: ResumeData, targetLang: string): string {
-  return `Translate this resume into ${targetLang}.
+function buildUserMessage(
+  resume: ResumeData,
+  coverLetters: string[] | undefined,
+  targetLang: string,
+): string {
+  return `Translate the following resume${coverLetters && coverLetters.length > 0 ? " and cover letters" : ""} into ${targetLang}.
+
+## Resume
 
 ${JSON.stringify(resume, null, 2)}
-
-Return the translated resume as JSON.`;
+${
+  coverLetters && coverLetters.length > 0
+    ? `\n## Cover letters (${coverLetters.length} variants)\n\n${coverLetters
+        .map((cl, i) => `### Variant ${i + 1}\n${cl}`)
+        .join("\n\n")}\n`
+    : ""
+}
+Return the translated content as a JSON object per the system instructions.`;
 }
 
 export const translateCard = internalAction({
@@ -78,15 +96,20 @@ export const translateCard = internalAction({
 
     try {
       const client = getAnthropic();
+      // Single combined Sonnet call: translate the resume AND any
+      // existing cover letter variants in one round-trip. Saves a
+      // call (and keeps voice consistent between the resume and the
+      // cover letters in the target language).
       const resp = await client.messages.create({
         model: MODELS.sonnet,
-        max_tokens: 4096,
+        max_tokens: 6144,
         system: SYSTEM,
         messages: [
           {
             role: "user",
             content: buildUserMessage(
               cardRow.content as ResumeData,
+              cardRow.coverLetters,
               targetLanguage,
             ),
           },
@@ -110,7 +133,10 @@ export const translateCard = internalAction({
       if (json.startsWith("```")) {
         json = json.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
       }
-      const translated = JSON.parse(json) as ResumeData;
+      const parsed = JSON.parse(json) as {
+        resume: ResumeData;
+        coverLetters?: string[];
+      };
 
       // Preserve the existing ATS score — translation doesn't change
       // how well the bullets match the JD's keywords (in fact, it may
@@ -118,9 +144,17 @@ export const translateCard = internalAction({
       // language). We don't auto-rescore against the JD; if the user
       // wants a fresh score against a translated JD, they can use
       // chat fine-tune.
+      const patch: {
+        content: ResumeData;
+        coverLetters?: string[];
+      } = { content: parsed.resume };
+      if (parsed.coverLetters && parsed.coverLetters.length > 0) {
+        patch.coverLetters = parsed.coverLetters;
+      }
+
       await ctx.runMutation(internal.cards.patchCard, {
         cardId,
-        patch: { content: translated },
+        patch,
       });
     } catch (err) {
       // Re-throw so the public action wrapper can propagate the error

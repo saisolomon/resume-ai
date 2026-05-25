@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "What's in one credit?",
-    a: "Four tailored resume designs (Engineering depth, Leadership, Cross-functional, Specialist), an ATS deep-scan with per-bullet impact scoring, and unlimited chat fine-tune edits on the run. PDF + DOCX downloads. One JD per credit. Three cover letter variants per credit are on the roadmap — see the pricing card for what's shipping when.",
+    a: "Four tailored resume designs (Engineering depth, Leadership, Cross-functional, Specialist), three cover letter variants (Direct, Story, Concise), an ATS deep-scan with per-bullet impact scoring, and unlimited chat fine-tune edits on the run. PDF + DOCX downloads. One JD per credit.",
   },
   {
     q: "Can I keep editing after generation?",
@@ -27,7 +27,7 @@ const faqs = [
   },
   {
     q: "What's the difference between the packs?",
-    a: "Same core deliverable per credit — what changes is the bonuses. The 5-pack will add a LinkedIn rewrite. The 20-pack will add interview prep (10 sessions), outreach templates for hiring managers, bilingual cover letters (English + Spanish), and one human review by a certified recruiter. Several of those bonus items are on the roadmap — your credits never expire, so they unlock automatically as we ship them. If you're applying to one job, get Single. If you're job-hunting, get the 5-pack. If you're running a real hunt, the 20-pack pays back fast.",
+    a: "Same core deliverable per credit — what changes is the bonuses. The 5-pack adds a LinkedIn rewrite. The 20-pack adds outreach templates for hiring managers and bilingual cover letters (English + Spanish — translated on demand from the workspace). Two items are still on the roadmap: interview prep (10 sessions) and a human review by a certified recruiter. Credits never expire, so they unlock automatically as we ship them. If you're applying to one job, get Single. If you're job-hunting, get the 5-pack. If you're running a real hunt, the 20-pack pays back fast.",
   },
   {
     q: "Do my resumes stay private?",

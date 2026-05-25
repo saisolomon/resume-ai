@@ -14,13 +14,13 @@ type StackItem = { item: string; value: string; comingSoon?: boolean };
 // lifetime of credits (which never expire).
 const twentyPackStack: StackItem[] = [
   { item: "20 × 4-angle resume gallery (80 designs total)", value: "$180" },
-  { item: "20 × 3-variant cover letter (60 letters)", value: "$60", comingSoon: true },
+  { item: "20 × 3-variant cover letter (60 letters)", value: "$60" },
   { item: "20 × ATS deep-scan + per-bullet impact", value: "$80" },
   { item: "Unlimited chat fine-tune edits per run", value: "$30" },
-  { item: "LinkedIn profile rewrite (1× included)", value: "$40", comingSoon: true },
+  { item: "LinkedIn profile rewrite (1× included)", value: "$40" },
+  { item: "20 × outreach DM templates for hiring managers", value: "$60" },
+  { item: "Cover letter generator in English + Spanish", value: "$20" },
   { item: "10 × interview prep sessions — likely Qs + practice", value: "$150", comingSoon: true },
-  { item: "20 × outreach DM templates for hiring managers", value: "$60", comingSoon: true },
-  { item: "Cover letter generator in English + Spanish", value: "$20", comingSoon: true },
   { item: "1 × human review by a certified recruiter", value: "$150", comingSoon: true },
 ];
 

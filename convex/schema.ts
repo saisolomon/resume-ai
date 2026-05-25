@@ -108,7 +108,51 @@ export default defineSchema({
       }),
     ),
     failureReason: v.optional(v.string()),
+    // Cover letters — three variants per card, generated on demand via
+    // the workspace "Generate cover letters" action. Stored as plain
+    // text strings (paragraphs separated by \n\n). The translation
+    // pipeline operates on them via the same translateMyCard path.
+    coverLetters: v.optional(v.array(v.string())),
   }).index("by_run", ["runId"]),
+
+  // Outreach templates — three per run (cold to recruiter, referral
+  // ask, hiring-manager intro). Lives on the run rather than the card
+  // because outreach is JD/company-keyed, not angle-keyed. Generated
+  // on demand from /run/[runId].
+  outreachTemplates: defineTable({
+    runId: v.id("runs"),
+    userId: v.id("users"),
+    templates: v.array(
+      v.object({
+        kind: v.union(
+          v.literal("cold_recruiter"),
+          v.literal("referral_ask"),
+          v.literal("hiring_manager"),
+        ),
+        subject: v.string(),
+        body: v.string(),
+      }),
+    ),
+  }).index("by_run", ["runId"]),
+
+  // LinkedIn rewrites — standalone deliverable, not tied to a run.
+  // Users land on /linkedin, paste current profile + target title or
+  // JD, get back rewritten Headline / About / featured experiences.
+  // We persist so the user can come back to it later without re-paying
+  // a Sonnet call.
+  linkedinRewrites: defineTable({
+    userId: v.id("users"),
+    targetTitle: v.string(),
+    headline: v.string(),
+    about: v.string(),
+    experienceRewrites: v.array(
+      v.object({
+        roleTitle: v.string(),
+        company: v.string(),
+        rewrite: v.string(),
+      }),
+    ),
+  }).index("by_user", ["userId"]),
 
   chatMessages: defineTable({
     cardId: v.id("cards"),
