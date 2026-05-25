@@ -1,6 +1,6 @@
 "use client";
 import { use, useCallback, useEffect, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -49,6 +49,7 @@ export default function WorkspacePage({
     cardId: cardId as Id<"cards">,
   });
   const updateMyCardContent = useMutation(api.dashboard.updateMyCardContent);
+  const translateMyCard = useAction(api.translateActions.translateMyCard);
 
   // Local working copy of the resume — initialized once card loads.
   // We keep templateSlug in local state too so template switches feel
@@ -65,6 +66,27 @@ export default function WorkspacePage({
       setLocalTemplate(card.templateSlug as TemplateSlug);
     }
   }, [card, localContent]);
+
+  // Translate handler — called from StylePanel. The Convex action
+  // patches card.content server-side; once the query re-fires we
+  // refresh the local working copy from the new server state so the
+  // editor immediately shows the translated content. We deliberately
+  // do NOT update localContent synchronously here — the server is the
+  // source of truth for translated text, and we want any stale local
+  // edits to be replaced wholesale.
+  const handleTranslate = useCallback(
+    async (targetLanguage: string) => {
+      await translateMyCard({
+        cardId: cardId as Id<"cards">,
+        targetLanguage,
+      });
+      // Force a re-hydration from the next server snapshot by clearing
+      // localContent — the useEffect above will repopulate when the
+      // useQuery delivers the patched card.
+      setLocalContent(null);
+    },
+    [cardId, translateMyCard],
+  );
 
   // Auth redirect — single source of truth, mirrors /edit page pattern.
   useEffect(() => {
@@ -165,6 +187,7 @@ export default function WorkspacePage({
           saveStatus={saveStatus}
           downloadHref={`/api/download/${cardId}`}
           chatHref={`/run/${card.runId}/edit/${cardId}?chat=1`}
+          onTranslate={handleTranslate}
         />
       </div>
     </div>
