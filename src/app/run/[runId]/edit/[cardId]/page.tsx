@@ -1,7 +1,7 @@
 "use client";
 import { use, useEffect } from "react";
 import { useQuery } from "convex/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -22,6 +22,18 @@ export default function EditCardPage({
 }) {
   const { runId, cardId } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Workspace is now the default edit surface. The chat-based editor is
+  // still accessible via `?chat=1` (linked from the workspace's "Chat
+  // fine-tune" action) so the AI fine-tune flow remains available.
+  const chatMode = searchParams.get("chat") === "1";
+
+  useEffect(() => {
+    if (!chatMode) {
+      router.replace(`/workspace/${cardId}`);
+    }
+  }, [chatMode, cardId, router]);
+
   const { isSignedIn, isLoaded } = useUser();
   // Owner-gated card lookup — public api.cards._getCardById leaks card
   // content/score to anyone with a guessed ID, so we use the dashboard
@@ -36,6 +48,9 @@ export default function EditCardPage({
     }
   }, [isLoaded, isSignedIn, runId, cardId, router]);
 
+  // If we're not in chat mode, the redirect above will fire — render
+  // nothing in the meantime so the user doesn't see the chat UI flash.
+  if (!chatMode) return null;
   if (isLoaded && !isSignedIn) return null;
   if (card === undefined) {
     return (
