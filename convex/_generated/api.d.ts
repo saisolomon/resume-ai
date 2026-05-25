@@ -12,6 +12,7 @@ import type * as ai_anthropic from "../ai/anthropic.js";
 import type * as ai_generateStarter from "../ai/generateStarter.js";
 import type * as ai_runAngle from "../ai/runAngle.js";
 import type * as ai_score from "../ai/score.js";
+import type * as ai_translateCard from "../ai/translateCard.js";
 import type * as cards from "../cards.js";
 import type * as cardsActions from "../cardsActions.js";
 import type * as chatMessages from "../chatMessages.js";
@@ -39,6 +40,7 @@ import type * as scrape_routing from "../scrape/routing.js";
 import type * as stripe from "../stripe.js";
 import type * as stripeActions from "../stripeActions.js";
 import type * as stripeWebhook from "../stripeWebhook.js";
+import type * as translateActions from "../translateActions.js";
 import type * as users from "../users.js";
 
 import type {
@@ -52,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   "ai/generateStarter": typeof ai_generateStarter;
   "ai/runAngle": typeof ai_runAngle;
   "ai/score": typeof ai_score;
+  "ai/translateCard": typeof ai_translateCard;
   cards: typeof cards;
   cardsActions: typeof cardsActions;
   chatMessages: typeof chatMessages;
@@ -79,6 +82,7 @@ declare const fullApi: ApiFromModules<{
   stripe: typeof stripe;
   stripeActions: typeof stripeActions;
   stripeWebhook: typeof stripeWebhook;
+  translateActions: typeof translateActions;
   users: typeof users;
 }>;
 

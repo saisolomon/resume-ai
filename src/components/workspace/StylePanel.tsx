@@ -1,8 +1,11 @@
 "use client";
+import { useState } from "react";
 import type { TemplateSlug } from "@/components/try/ResumePreviewHtml";
 import { ScoreBadge } from "@/components/try/ScoreBadge";
-import { Download, MessageSquare } from "lucide-react";
+import { Download, Languages, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import { LANGUAGES, type LanguageCode } from "@/lib/i18n/languages";
+import { useLanguage } from "@/lib/i18n/useLanguage";
 
 /**
  * Right-side workspace panel. Holds: card metadata strip (angle, score,
@@ -26,6 +29,11 @@ type Props = {
   saveStatus: "idle" | "saving" | "saved" | "error";
   downloadHref: string;
   chatHref: string;
+  // Translate handler — workspace passes a function that calls the
+  // Convex translateMyCard action. Returns void; the workspace will
+  // refresh its local copy from the Convex query after the action
+  // settles. The panel just owns the dropdown UX + button state.
+  onTranslate: (targetLanguage: string) => Promise<void>;
 };
 
 const SAVE_LABEL: Record<Props["saveStatus"], string> = {
@@ -50,7 +58,30 @@ export function StylePanel({
   saveStatus,
   downloadHref,
   chatHref,
+  onTranslate,
 }: Props) {
+  // Default the translate target to the user's preferred language from
+  // the SiteNav switcher — so a Spanish-preferring user opens the
+  // workspace and one click translates without further selection.
+  const { language: preferred } = useLanguage();
+  const [target, setTarget] = useState<LanguageCode>(preferred);
+  const [translating, setTranslating] = useState(false);
+  const [translateError, setTranslateError] = useState<string | null>(null);
+
+  const handleTranslate = async () => {
+    setTranslating(true);
+    setTranslateError(null);
+    try {
+      const targetDef = LANGUAGES.find((l) => l.code === target);
+      if (!targetDef) throw new Error("Unknown language");
+      await onTranslate(targetDef.aiName);
+    } catch (err) {
+      setTranslateError((err as Error).message);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   return (
     <aside className="flex h-full flex-col gap-6 overflow-y-auto bg-white p-5 shadow-card">
       {/* ── Card meta + save status ── */}
@@ -104,6 +135,52 @@ export function StylePanel({
             );
           })}
         </div>
+      </section>
+
+      <hr className="border-[#D2D2D7]/60" />
+
+      {/* ── Translate ── */}
+      <section>
+        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#86868B]">
+          Translate
+        </h3>
+        <p className="mb-3 text-[12px] leading-relaxed text-[#86868B]">
+          Translate the resume content. Names, employers, schools, and dates
+          stay as written; titles, bullets, and section headings get
+          natural target-language phrasing.
+        </p>
+        <div className="flex gap-2">
+          <select
+            value={target}
+            onChange={(e) => setTarget(e.target.value as LanguageCode)}
+            disabled={translating}
+            aria-label="Translate resume into"
+            className="focus-ring h-10 flex-1 rounded-full border border-[#D2D2D7] bg-white px-3 text-[14px] font-medium text-[#1D1D1F] transition-colors hover:border-[#86868B] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.nativeName}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={handleTranslate}
+            disabled={translating}
+            className="focus-ring inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[#1D1D1F] bg-white px-3.5 text-[13px] font-medium text-[#1D1D1F] transition-colors hover:bg-[#F5F5F7] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Languages className="size-3.5" aria-hidden="true" />
+            {translating ? "Translating." : "Translate"}
+          </button>
+        </div>
+        {translateError && (
+          <p
+            role="alert"
+            className="mt-2 text-[12px] leading-relaxed text-[#B91C1C]"
+          >
+            {translateError}
+          </p>
+        )}
       </section>
 
       <hr className="border-[#D2D2D7]/60" />

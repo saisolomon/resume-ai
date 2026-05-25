@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { UserButton, useUser } from "@clerk/nextjs";
 import type { ReactNode } from "react";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 /**
  * Top nav — Apple-style sticky blur bar.
@@ -31,8 +32,12 @@ export function SiteNav({
       >
         resume.ai
       </Link>
-      <div className="flex items-center gap-x-8 text-[15px]">
+      <div className="flex items-center gap-x-6 text-[15px] sm:gap-x-8">
         {children}
+        {/* Language switcher sits just before the auth slot — present
+            on every page (signed-in or not) so international users have
+            consistent access. */}
+        <LanguageSwitcher />
         {!isLoaded ? (
           <span className="h-7 w-16" aria-hidden="true" />
         ) : isSignedIn ? (
