@@ -19,7 +19,7 @@ export function DangerZone() {
       const resp = await fetch("/api/account", { method: "DELETE" });
       if (!resp.ok) {
         console.error("account delete failed", { status: resp.status });
-        setError("Couldn't delete account. Try again or email hi@resume.ai.");
+        setError("Couldn't delete account. Try again or email saisolomon45@gmail.com.");
         setLoading(false);
         return;
       }
@@ -27,7 +27,7 @@ export function DangerZone() {
       await signOut({ redirectUrl: "/" });
     } catch (err) {
       console.error("delete threw", err);
-      setError("Couldn't delete account. Try again or email hi@resume.ai.");
+      setError("Couldn't delete account. Try again or email saisolomon45@gmail.com.");
       setLoading(false);
     }
   }
