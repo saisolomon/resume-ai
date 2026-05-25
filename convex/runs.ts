@@ -127,3 +127,21 @@ export const insertInitialCards = internalMutation({
     return ids;
   },
 });
+
+// JD-only flow inserts ONE card (not 4). Without a real candidate
+// resume to tailor, generating four angles is wasted spend — the four
+// would all read the same. Defaults to Engineering depth + Classic
+// since that's the most-conservative starting point; users switch
+// templates from the workspace style panel anyway.
+export const insertSingleStarterCard = internalMutation({
+  args: { runId: v.id("runs") },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("cards", {
+      runId: args.runId,
+      angle: "eng_depth",
+      angleLabel: "Starter draft",
+      templateSlug: "classic",
+      status: "pending",
+    });
+  },
+});

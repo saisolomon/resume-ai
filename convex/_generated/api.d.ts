@@ -9,6 +9,7 @@
  */
 
 import type * as ai_anthropic from "../ai/anthropic.js";
+import type * as ai_generateStarter from "../ai/generateStarter.js";
 import type * as ai_runAngle from "../ai/runAngle.js";
 import type * as ai_score from "../ai/score.js";
 import type * as cards from "../cards.js";
@@ -48,6 +49,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "ai/anthropic": typeof ai_anthropic;
+  "ai/generateStarter": typeof ai_generateStarter;
   "ai/runAngle": typeof ai_runAngle;
   "ai/score": typeof ai_score;
   cards: typeof cards;
