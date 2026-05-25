@@ -9,6 +9,9 @@
  */
 
 import type * as ai_anthropic from "../ai/anthropic.js";
+import type * as ai_generateCoverLetters from "../ai/generateCoverLetters.js";
+import type * as ai_generateLinkedinRewrite from "../ai/generateLinkedinRewrite.js";
+import type * as ai_generateOutreachTemplates from "../ai/generateOutreachTemplates.js";
 import type * as ai_generateStarter from "../ai/generateStarter.js";
 import type * as ai_runAngle from "../ai/runAngle.js";
 import type * as ai_score from "../ai/score.js";
@@ -22,10 +25,13 @@ import type * as costGuard from "../costGuard.js";
 import type * as creditTransactions from "../creditTransactions.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
+import type * as featuresActions from "../featuresActions.js";
 import type * as http from "../http.js";
 import type * as ipVelocity from "../ipVelocity.js";
 import type * as jobDescriptions from "../jobDescriptions.js";
 import type * as jobDescriptionsActions from "../jobDescriptionsActions.js";
+import type * as linkedin from "../linkedin.js";
+import type * as outreach from "../outreach.js";
 import type * as rateLimit from "../rateLimit.js";
 import type * as resumes from "../resumes.js";
 import type * as resumesActions from "../resumesActions.js";
@@ -51,6 +57,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "ai/anthropic": typeof ai_anthropic;
+  "ai/generateCoverLetters": typeof ai_generateCoverLetters;
+  "ai/generateLinkedinRewrite": typeof ai_generateLinkedinRewrite;
+  "ai/generateOutreachTemplates": typeof ai_generateOutreachTemplates;
   "ai/generateStarter": typeof ai_generateStarter;
   "ai/runAngle": typeof ai_runAngle;
   "ai/score": typeof ai_score;
@@ -64,10 +73,13 @@ declare const fullApi: ApiFromModules<{
   creditTransactions: typeof creditTransactions;
   crons: typeof crons;
   dashboard: typeof dashboard;
+  featuresActions: typeof featuresActions;
   http: typeof http;
   ipVelocity: typeof ipVelocity;
   jobDescriptions: typeof jobDescriptions;
   jobDescriptionsActions: typeof jobDescriptionsActions;
+  linkedin: typeof linkedin;
+  outreach: typeof outreach;
   rateLimit: typeof rateLimit;
   resumes: typeof resumes;
   resumesActions: typeof resumesActions;

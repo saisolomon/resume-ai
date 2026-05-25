@@ -9,6 +9,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { CardSkeleton } from "@/components/try/CardSkeleton";
 import { CardTile } from "@/components/try/CardTile";
+import { OutreachPanel } from "@/components/run/OutreachPanel";
 import { SiteNav, NavLink } from "@/components/layout/SiteNav";
 
 export default function RunPage({
@@ -144,7 +145,7 @@ export default function RunPage({
         </div>
 
         {/* Card grid */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        <div className="mb-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
           {cards.map((card) =>
             card.status === "ready" && card.content && card.atsScore ? (
               <CardTile
@@ -181,6 +182,11 @@ export default function RunPage({
             ),
           )}
         </div>
+
+        {/* Outreach templates — sits under the card grid. Only shown
+            when at least one card is ready, since the AI uses the first
+            ready card's resume as context for outreach generation. */}
+        {readyCount > 0 && <OutreachPanel runId={runId as Id<"runs">} />}
       </div>
     </main>
   );

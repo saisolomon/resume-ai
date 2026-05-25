@@ -75,7 +75,7 @@ export function CreditBalanceCard() {
       <p className="mt-4 text-[15px] leading-relaxed text-[#6E6E73]">
         {isEmpty
           ? "Out of credits. Buy a pack to start a new run."
-          : "Each credit generates 4 resume designs with ATS deep-scan and unlimited fine-tune edits. Credits never expire."}
+          : "Each credit generates 4 resume designs and 3 cover letter variants. Credits never expire."}
       </p>
     </div>
   );

@@ -48,7 +48,7 @@ export function ClosingCTA() {
           <h2 className="text-display text-[#1D1D1F]">Start with one.</h2>
           <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-[#6E6E73]">
             Pay once. Credits never expire. Every credit gets you 4 tailored
-            resume angles, an ATS deep-scan, and unlimited fine-tune edits.
+            resume angles and 3 cover letter variants.
           </p>
 
           <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-3 sm:items-stretch">

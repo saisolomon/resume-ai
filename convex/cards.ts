@@ -31,6 +31,7 @@ export const patchCard = internalMutation({
       content: v.optional(v.any()),
       atsScore: v.optional(v.any()),
       failureReason: v.optional(v.string()),
+      coverLetters: v.optional(v.array(v.string())),
     }),
   },
   handler: async (ctx, args) => {

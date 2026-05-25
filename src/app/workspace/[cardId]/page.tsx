@@ -12,6 +12,7 @@ import type { ResumeData } from "@/lib/resume/types";
 import { SiteNav } from "@/components/layout/SiteNav";
 import { EditableResume } from "@/components/workspace/EditableResume";
 import { StylePanel } from "@/components/workspace/StylePanel";
+import { CoverLettersPanel } from "@/components/workspace/CoverLettersPanel";
 import { useAutoSave } from "@/components/workspace/useAutoSave";
 
 /**
@@ -169,14 +170,21 @@ export default function WorkspacePage({
         </Link>
       </SiteNav>
 
-      {/* Two-column split: editable preview on the left, style panel on
-          the right. Stack on mobile (preview first, panel below). */}
+      {/* Two-column split: editable preview + cover letters on the
+          left, style panel on the right. Stack on mobile (preview first,
+          panel below). */}
       <div className="grid flex-1 grid-cols-1 gap-4 p-4 sm:p-6 lg:grid-cols-[1fr_320px]">
-        <div className="overflow-y-auto rounded-2xl bg-white shadow-card">
-          <EditableResume
-            data={localContent}
-            template={localTemplate}
-            onChange={setLocalContent}
+        <div className="flex flex-col gap-4">
+          <div className="overflow-y-auto rounded-2xl bg-white shadow-card">
+            <EditableResume
+              data={localContent}
+              template={localTemplate}
+              onChange={setLocalContent}
+            />
+          </div>
+          <CoverLettersPanel
+            cardId={cardId as Id<"cards">}
+            coverLetters={card.coverLetters}
           />
         </div>
         <StylePanel

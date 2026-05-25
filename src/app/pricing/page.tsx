@@ -23,7 +23,7 @@ import {
 
 const SINGLE_BULLETS = [
   { text: "4 tailored resume designs (one JD)" },
-  { text: "3 cover letter variants", comingSoon: true },
+  { text: "3 cover letter variants" },
   { text: "ATS deep-scan with per-bullet impact" },
   { text: "PDF + DOCX downloads" },
   { text: "Unlimited chat fine-tune edits" },
@@ -31,7 +31,7 @@ const SINGLE_BULLETS = [
 
 const FIVE_PACK_BULLETS = [
   { text: "5 × everything in Single" },
-  { text: "LinkedIn profile rewrite (1× included)", comingSoon: true },
+  { text: "LinkedIn profile rewrite (1× included)" },
   { text: "Save your runs in your dashboard" },
   { text: "Side-by-side compare any 2 runs", comingSoon: true },
   { text: "Credits never expire" },
@@ -39,9 +39,9 @@ const FIVE_PACK_BULLETS = [
 
 const TWENTY_PACK_BULLETS = [
   { text: "20 × everything in 5-pack" },
-  { text: "Cover letters in English + Spanish", comingSoon: true },
+  { text: "Cover letters in English + Spanish" },
+  { text: "Outreach templates for hiring managers" },
   { text: "Interview prep — 10 sessions", comingSoon: true },
-  { text: "Outreach templates for hiring managers", comingSoon: true },
   { text: "1 × human review by a certified recruiter", comingSoon: true },
   { text: "Credits never expire" },
 ];
@@ -64,8 +64,9 @@ export default function PricingPage() {
           Pay per resume. No subscription.
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-body-l text-[#6E6E73]">
-          Every credit ships 4 tailored resume designs, an ATS deep-scan, and
-          unlimited chat fine-tune edits. Credits never expire.
+          Every credit ships 4 tailored resume designs, 3 cover letter variants,
+          an ATS deep-scan, and unlimited chat fine-tune edits. Credits never
+          expire.
         </p>
       </section>
 
