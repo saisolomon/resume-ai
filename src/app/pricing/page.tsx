@@ -33,7 +33,7 @@ const FIVE_PACK_BULLETS = [
   { text: "5 × everything in Single" },
   { text: "LinkedIn profile rewrite (1× included)" },
   { text: "Save your runs in your dashboard" },
-  { text: "Side-by-side compare any 2 runs", comingSoon: true },
+  { text: "Side-by-side compare any 2 runs" },
   { text: "Credits never expire" },
 ];
 
