@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAction, useMutation } from "convex/react";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { getFingerprint } from "@/lib/fingerprint";
 import { ResumeDropzone } from "@/components/upload/ResumeDropzone";
@@ -166,6 +167,21 @@ export function Hero() {
 
       <p className="text-center text-[15px] text-[#6E6E73]">
         $9 · No subscription · Credits never expire.
+      </p>
+
+      {/* JD-only secondary path — small link beneath the main CTA so it's
+          discoverable without competing with the primary "upload resume"
+          conversion. Only meaningful for signed-in users (the new flow
+          burns a credit), but we show it to anonymous too — the /new page
+          handles the sign-in redirect. */}
+      <p className="text-center text-[14px] text-[#86868B]">
+        No resume yet?{" "}
+        <Link
+          href="/new"
+          className="text-[#1D1D1F] underline-offset-4 hover:underline"
+        >
+          Start from just a job posting →
+        </Link>
       </p>
     </form>
   );

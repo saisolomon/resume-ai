@@ -3,6 +3,7 @@ import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
+import type { ResumeData } from "../src/lib/resume/types";
 
 export const startRun = action({
   args: {
@@ -116,5 +117,112 @@ export const startRun = action({
     }
 
     return runId;
+  },
+});
+
+// JD-only flow entry point. Signed-in users only — anonymous users
+// can use the existing upload-resume flow, which has the IP velocity
+// + rate-limit infrastructure already plumbed through the
+// /api/anonymous-run-start route. Keeping JD-only signed-in-only keeps
+// the abuse surface tight (you have to burn a credit + a Clerk account
+// to fire a Sonnet call here).
+export const startRunFromForm = action({
+  args: {
+    jdUrl: v.string(),
+    formData: v.object({
+      name: v.string(),
+      contactLine: v.string(),
+      eduInstitution: v.string(),
+      eduDegree: v.string(),
+      eduDate: v.string(),
+      currentRole: v.string(),
+      currentCompany: v.optional(v.string()),
+      targetTitle: v.string(),
+      yearsExp: v.string(),
+    }),
+  },
+  handler: async (ctx, args): Promise<{ runId: Id<"runs">; cardId: Id<"cards"> }> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("not_authenticated");
+    const user = await ctx.runQuery(api.users.getCurrentUser, {});
+    if (!user) throw new Error("user_row_missing");
+
+    if ((user.credits ?? 0) <= 0) {
+      throw new Error(
+        "no_credits: You're out of credits. Buy a pack to start a new run.",
+      );
+    }
+
+    // Build the skeleton ResumeData from form input. The AI generator
+    // (ai/generateStarter) reads this via run.resumeId → resumes.parsed
+    // and is allowed to draft bullets against it.
+    const skeleton: ResumeData = {
+      name: args.formData.name,
+      contactLine1: args.formData.contactLine,
+      contactLine2: undefined,
+      education: [
+        {
+          institution: args.formData.eduInstitution,
+          location: "",
+          degree: args.formData.eduDegree,
+          date: args.formData.eduDate,
+        },
+      ],
+      experienceSections: [
+        {
+          heading: "Experience",
+          entries: [
+            {
+              company:
+                args.formData.currentCompany || "Current role",
+              location: "",
+              roles: [
+                {
+                  title: args.formData.currentRole,
+                  date: `${args.formData.yearsExp} yrs · Present`,
+                  bullets: [],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      additionalInfo: [],
+    };
+
+    const resumeId = (await ctx.runMutation(
+      internal.resumes.insertSyntheticResume,
+      {
+        userId: user._id,
+        title: `${args.formData.name} — starter (${args.formData.targetTitle})`,
+        parsed: skeleton,
+      },
+    )) as Id<"resumes">;
+
+    const jdId = (await ctx.runAction(
+      api.jobDescriptionsActions.resolveJobDescription,
+      { url: args.jdUrl },
+    )) as Id<"jobDescriptions">;
+
+    const runId = (await ctx.runMutation(internal.runs.insertRun, {
+      userId: user._id,
+      resumeId,
+      jobDescriptionId: jdId,
+    })) as Id<"runs">;
+
+    // Burn the credit immediately — same as the standard run flow.
+    await ctx.runMutation(internal.users.consumeCredit, { userId: user._id });
+
+    const cardId = (await ctx.runMutation(
+      internal.runs.insertSingleStarterCard,
+      { runId },
+    )) as Id<"cards">;
+
+    await ctx.scheduler.runAfter(0, internal.ai.generateStarter.generateStarter, {
+      cardId,
+      formData: args.formData,
+    });
+
+    return { runId, cardId };
   },
 });
