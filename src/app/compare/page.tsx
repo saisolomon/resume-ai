@@ -74,11 +74,16 @@ function CompareRunsClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runIdA, runIdB]);
 
-  // Auth guard.
-  if (isLoaded && !isSignedIn) {
-    router.replace("/sign-in?redirect_url=/compare");
-    return null;
-  }
+  // Auth gate via effect, not during render. Calling router.replace
+  // synchronously in the render body throws under React 19 / Next 16.
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.replace("/sign-in?redirect_url=/compare");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  if (!isLoaded) return <CompareSkeleton />;
+  if (!isSignedIn) return null;
 
   if (runs === undefined) return <CompareSkeleton />;
 

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAction, useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
@@ -47,11 +47,26 @@ export default function NewResumePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Auth gate — redirect to sign-in with redirect_url back to /new.
-  if (isLoaded && !isSignedIn) {
-    router.replace("/sign-in?redirect_url=/new");
-    return null;
+  // Auth gate via effect, not during render. Calling router.replace
+  // synchronously in the render body throws under React 19 / Next 16
+  // and surfaces as the client-side exception overlay in prod.
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.replace("/sign-in?redirect_url=/new");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  if (!isLoaded) {
+    return (
+      <main className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
+        <SiteNav home="/dashboard" />
+        <div className="mx-auto max-w-2xl px-6 py-16 text-[15px] text-[#6E6E73] sm:px-8">
+          Loading.
+        </div>
+      </main>
+    );
   }
+  if (!isSignedIn) return null;
 
   const update = (
     field: keyof typeof form,
