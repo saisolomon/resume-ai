@@ -30,7 +30,7 @@ import {
  *   AtsHonestySection  — "Floor / Ceiling / What ATS isn't" on alt canvas
  *   Manifesto          — calm statement of purpose
  *   ClosingCTA         — pricing trio + pill CTAs
- *   WhatWeDontDo       — category practices vs how resume.ai works
+ *   WhatWeDontDo       — category practices vs how jdresumes works
  *   SiteFooter         — hairline divider, three inline links
  *
  * HeroPreview is intentionally omitted: TemplateBrowser already plays the

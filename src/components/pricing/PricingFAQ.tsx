@@ -11,7 +11,7 @@ const faqs = [
   },
   {
     q: "Can I get a refund?",
-    a: "Credits are consumed as soon as a run starts — that's the moment we incur AI infrastructure cost — so we don't refund them. What we do instead: credits never expire, you get four tailored angles per credit so you almost never need to spend a second one on the same JD, and unlimited chat fine-tune edits are free on every run. If you're not sure resume.ai will work for you, start with Single ($9) before going larger.",
+    a: "Credits are consumed as soon as a run starts — that's the moment we incur AI infrastructure cost — so we don't refund them. What we do instead: credits never expire, you get four tailored angles per credit so you almost never need to spend a second one on the same JD, and unlimited chat fine-tune edits are free on every run. If you're not sure jdresumes will work for you, start with Single ($9) before going larger.",
   },
   {
     q: "What's in one credit?",

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://resume-ai-kappa-rouge.vercel.app";
+  "https://jdresumes.com";
 
 /**
  * robots.txt — public marketing routes are crawlable; auth-gated and

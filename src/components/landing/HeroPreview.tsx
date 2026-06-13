@@ -16,7 +16,7 @@ import type { ResumeData } from "@/lib/resume/types";
  * page that needs it, restyle for the light brand (white card, soft
  * shadow, sentence-case tabs) before importing it.
  *
- * Hero-side product preview. Shows what resume.ai ships — one of four
+ * Hero-side product preview. Shows what jdresumes ships — one of four
  * angles at a time. Data is hardcoded — this is a presentational element.
  */
 

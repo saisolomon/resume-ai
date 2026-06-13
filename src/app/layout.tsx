@@ -20,9 +20,9 @@ const geistMono = Geist_Mono({
 // custom domain env isn't wired up yet.
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://resume-ai-kappa-rouge.vercel.app";
+  "https://jdresumes.com";
 
-const TITLE = "resume.ai — Four resumes. One application.";
+const TITLE = "jdresumes — Four resumes. One application.";
 const DESCRIPTION =
   "One job. Four angles. Thirty seconds. We tailor your resume four ways so you can pick the one that lands.";
 
@@ -30,11 +30,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s · resume.ai",
+    template: "%s · jdresumes",
   },
   description: DESCRIPTION,
-  applicationName: "resume.ai",
-  authors: [{ name: "resume.ai" }],
+  applicationName: "jdresumes",
+  authors: [{ name: "jdresumes" }],
   keywords: [
     "AI resume",
     "resume tailoring",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    siteName: "resume.ai",
+    siteName: "jdresumes",
     title: TITLE,
     description: DESCRIPTION,
     // Next will inject opengraph-image.tsx automatically; this is for
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   // screen. Doesn't affect non-Apple platforms.
   appleWebApp: {
     capable: true,
-    title: "resume.ai",
+    title: "jdresumes",
     statusBarStyle: "default",
   },
 };

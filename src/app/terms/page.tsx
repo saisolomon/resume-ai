@@ -21,7 +21,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-h2 text-[#1D1D1F]">What this is</h2>
             <p className="text-[16px] leading-relaxed text-[#6E6E73]">
-              resume.ai is an AI-powered resume tailoring tool. You give us
+              jdresumes is an AI-powered resume tailoring tool. You give us
               a job posting and your resume; we generate tailored versions,
               ATS scores, and related job-hunt material. That&apos;s the
               whole product.
@@ -51,7 +51,7 @@ export default function TermsPage() {
             <h2 className="text-h2 text-[#1D1D1F]">Our service</h2>
             <ul className="space-y-3 text-[16px] leading-relaxed text-[#6E6E73]">
               <li>
-                We try to keep resume.ai running, but this is not a critical
+                We try to keep jdresumes running, but this is not a critical
                 service. Outages happen. Plan accordingly.
               </li>
               <li>
@@ -77,7 +77,7 @@ export default function TermsPage() {
               cost. We don&apos;t refund consumed credits, and we
               don&apos;t refund unused credits &mdash; credits never
               expire, so they sit in your account until you need them. If
-              you&apos;re unsure whether resume.ai will work for you, start
+              you&apos;re unsure whether jdresumes will work for you, start
               with a Single ($9) before buying a pack. Payment-processor
               disputes and chargebacks are handled per their standard process.
             </p>
@@ -87,7 +87,7 @@ export default function TermsPage() {
             <h2 className="text-h2 text-[#1D1D1F]">Liability</h2>
             <p className="text-[16px] leading-relaxed text-[#6E6E73]">
               We are not liable for any career outcome — good or bad — that
-              results from using resume.ai. We provide a tool. You decide how
+              results from using jdresumes. We provide a tool. You decide how
               to use it, what to send, and where to apply. Our total liability
               to you is capped at what you&apos;ve paid us in the last 12
               months.
