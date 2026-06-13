@@ -21,14 +21,14 @@ export default function AppleIcon() {
           justifyContent: "center",
           background: "#1D1D1F",
           color: "#F5F5F7",
-          fontSize: 120,
+          fontSize: 96,
           fontWeight: 700,
           letterSpacing: "-0.04em",
           fontFamily:
             "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
         }}
       >
-        r<span style={{ color: "#3B82F6" }}>.</span>
+        <span style={{ color: "#3B82F6" }}>jd</span>
       </div>
     ),
     { ...size },

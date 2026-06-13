@@ -14,7 +14,7 @@ import { ImageResponse } from "next/og";
  *    so the share preview reads as the product, not a brochure.
  */
 
-export const alt = "resume.ai — Four resumes. One application.";
+export const alt = "jdresumes — Four resumes. One application.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -53,7 +53,7 @@ export default async function OpengraphImage() {
               alignItems: "center",
             }}
           >
-            resume<span style={{ color: "#3B82F6" }}>.</span>ai
+            <span style={{ color: "#3B82F6" }}>jd</span>resumes
           </div>
           <div
             style={{
@@ -135,7 +135,7 @@ export default async function OpengraphImage() {
               display: "flex",
             }}
           >
-            resume.ai
+            jdresumes.com
           </div>
         </div>
       </div>

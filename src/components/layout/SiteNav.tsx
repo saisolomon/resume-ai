@@ -10,7 +10,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
  * Design.md spec: h-16 (64px) backdrop-blur bg-white/72, hairline bottom
  * border, sentence-case nav links at 15px text-[#1D1D1F], more breathing
  * room between items (gap-x-8) than the prior dev-tool nav. The lowercase
- * "resume.ai" wordmark is the only thing in the left slot.
+ * "jdresumes" wordmark is the only thing in the left slot.
  *
  * The auth slot has a single hydration placeholder so signed-in users never
  * see a "Sign in" flash on first paint.
@@ -30,7 +30,7 @@ export function SiteNav({
         href={home}
         className="text-[20px] font-semibold tracking-tight text-[#1D1D1F] transition-colors hover:text-[#6E6E73]"
       >
-        resume.ai
+        <span className="text-[#3B82F6]">jd</span>resumes
       </Link>
       <div className="flex items-center gap-x-6 text-[15px] sm:gap-x-8">
         {children}

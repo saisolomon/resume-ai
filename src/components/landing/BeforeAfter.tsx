@@ -8,7 +8,7 @@ import type { ResumeData } from "@/lib/resume/types";
  *
  * Per Design.md (Before/After Comparison pattern), this is the implicit-
  * value sell. Left: a template-resume version of the candidate (generic
- * bullets, no JD-aware language, low ATS score). Right: the resume.ai
+ * bullets, no JD-aware language, low ATS score). Right: the jdresumes
  * output for a specific JD (quantified bullets, JD keywords, high ATS
  * score). Same person, same role, same employer — the only thing that
  * changes is the tailoring.
@@ -137,7 +137,7 @@ export function BeforeAfter() {
           </h2>
           <p className="mt-4 text-[17px] leading-relaxed text-[#6E6E73]">
             One JD, one credit, one minute. The left side is what most
-            engineers send. The right side is what resume.ai ships.
+            engineers send. The right side is what jdresumes ships.
           </p>
         </div>
 

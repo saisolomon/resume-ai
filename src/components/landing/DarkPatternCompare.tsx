@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
  * Reframed from the prior "dark pattern compare" — Apple voice is
  * confidence through specificity, not insurgent attack. The left column
  * lists category practices (no specific competitor brands by name); the
- * right column lists how resume.ai works. Two columns of light cards on
+ * right column lists how jdresumes works. Two columns of light cards on
  * the alt canvas, hairline divider between rows.
  *
  * Filename is preserved (`DarkPatternCompare.tsx`) to avoid a rename
@@ -76,7 +76,7 @@ export function WhatWeDontDo() {
             </div>
             <div className="border-t border-[#D2D2D7]/70 px-6 py-4 lg:border-l-0 lg:border-t-0 lg:px-8">
               <span className="text-[13px] font-medium text-[#1D1D1F]">
-                How resume.ai works
+                How jdresumes works
               </span>
             </div>
           </div>

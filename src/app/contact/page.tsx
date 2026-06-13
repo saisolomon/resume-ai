@@ -24,7 +24,7 @@ const SUPPORT_EMAIL = "saisolomon45@gmail.com";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Get in touch with the resume.ai team. Billing questions, bug reports, feature requests, partnerships.",
+    "Get in touch with the jdresumes team. Billing questions, bug reports, feature requests, partnerships.",
 };
 
 type Channel = {
@@ -42,7 +42,7 @@ const CHANNELS: Channel[] = [
     description:
       "Pre-purchase questions, how-things-work, partnership inquiries. We read every message and reply within one business day.",
     cta: "Email general support",
-    href: `mailto:${SUPPORT_EMAIL}?subject=resume.ai%20%E2%80%94%20general%20question`,
+    href: `mailto:${SUPPORT_EMAIL}?subject=jdresumes%20%E2%80%94%20general%20question`,
   },
   {
     icon: ShieldAlert,
@@ -50,7 +50,7 @@ const CHANNELS: Channel[] = [
     description:
       "Checkout failed, a credit didn't drop, generation hung, the workspace lost edits. Include your account email + a one-line description; we'll dig in immediately.",
     cta: "Email the on-call",
-    href: `mailto:${SUPPORT_EMAIL}?subject=resume.ai%20%E2%80%94%20bug%20report`,
+    href: `mailto:${SUPPORT_EMAIL}?subject=jdresumes%20%E2%80%94%20bug%20report`,
   },
   {
     icon: Mail,
@@ -58,7 +58,7 @@ const CHANNELS: Channel[] = [
     description:
       "We don't refund consumed credits (see Terms), but if Stripe charged you twice, a credit didn't appear, or you need a receipt re-sent, email here and we'll fix it.",
     cta: "Email billing",
-    href: `mailto:${SUPPORT_EMAIL}?subject=resume.ai%20%E2%80%94%20billing`,
+    href: `mailto:${SUPPORT_EMAIL}?subject=jdresumes%20%E2%80%94%20billing`,
   },
 ];
 

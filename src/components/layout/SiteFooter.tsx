@@ -11,7 +11,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <div className="flex items-center gap-3 text-[13px] text-[#86868B]">
           <span className="font-semibold tracking-tight text-[#1D1D1F]">
-            resume.ai
+            <span className="text-[#3B82F6]">jd</span>resumes
           </span>
           <span aria-hidden="true" className="text-[#D2D2D7]">
             ·

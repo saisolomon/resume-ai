@@ -20,7 +20,7 @@ export default function Icon() {
           justifyContent: "center",
           background: "#1D1D1F",
           color: "#F5F5F7",
-          fontSize: 22,
+          fontSize: 18,
           fontWeight: 700,
           letterSpacing: "-0.04em",
           fontFamily:
@@ -28,7 +28,7 @@ export default function Icon() {
           borderRadius: 6,
         }}
       >
-        r<span style={{ color: "#3B82F6" }}>.</span>
+        <span style={{ color: "#3B82F6" }}>jd</span>
       </div>
     ),
     { ...size },
