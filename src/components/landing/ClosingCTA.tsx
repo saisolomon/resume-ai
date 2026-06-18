@@ -26,19 +26,21 @@ type Pack = {
   bullets: string[];
 };
 
+// Anchor high (principle 1) — match /pricing: 20-pack first so each tier
+// reads as a deal vs the $79 anchor; 5-pack stays the highlighted center.
 const PRICING: Pack[] = [
   {
-    pack: "Single",
-    credits: "1 credit",
-    price: "$9",
-    perUnit: null,
-    tagline: "Tailored for one job. One purchase. Done.",
+    pack: "20-pack",
+    credits: "20 credits + bonuses",
+    price: "$79",
+    perUnit: "$3.95 per resume",
+    tagline: "The full job hunt, ammunition included.",
     anchored: false,
     bullets: [
-      "4 tailored resume designs",
-      "3 cover letter variants",
-      "ATS deep-scan + per-bullet impact",
-      "Unlimited chat fine-tune edits",
+      "Everything in 5-pack, ×4",
+      "Outreach templates per JD",
+      "Cover letters in English + Spanish",
+      "Credits never expire",
     ],
   },
   {
@@ -56,17 +58,17 @@ const PRICING: Pack[] = [
     ],
   },
   {
-    pack: "20-pack",
-    credits: "20 credits + bonuses",
-    price: "$79",
-    perUnit: "$3.95 per resume",
-    tagline: "The full job hunt, ammunition included.",
+    pack: "Single",
+    credits: "1 credit",
+    price: "$9",
+    perUnit: null,
+    tagline: "Tailored for one job. One purchase. Done.",
     anchored: false,
     bullets: [
-      "Everything in 5-pack, ×4",
-      "Outreach templates per JD",
-      "Cover letters in any language",
-      "Credits never expire",
+      "4 tailored resume designs",
+      "3 cover letter variants",
+      "ATS deep-scan + per-bullet impact",
+      "Unlimited chat fine-tune edits",
     ],
   },
 ];

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { Check, Clock } from "lucide-react";
+import { Check, Clock, Minus } from "lucide-react";
 
 // v4 credit-pack model. The pricing page lives on `{ pack }` semantics —
 // the checkout API rejects anything else with `unknown_pack`.
@@ -33,6 +33,9 @@ export function PackCard({
   credits,
   perUnit,
   bullets,
+  notIncluded,
+  saveBadge,
+  saveTone = "value",
   voiceLine,
   ctaLabel,
   anchored,
@@ -47,6 +50,21 @@ export function PackCard({
   /** "$9.00 per resume" / "$5.80 per resume" / "$3.95 per resume". */
   perUnit: string;
   bullets: PricingBullet[];
+  /**
+   * Loss-aversion rows — features this pack does NOT include that a larger
+   * pack does. Rendered greyed with a muted minus so a buyer feels what
+   * they give up by sizing down, not just what they get (principle 5).
+   * The top pack passes none.
+   */
+  notIncluded?: string[];
+  /**
+   * Per-resume savings pill under the price. The credit-model stand-in for
+   * an annual-discount toggle (principle 8): "$3.95/resume" only lands when
+   * the buyer sees it's 56% cheaper than buying Single each time.
+   */
+  saveBadge?: string;
+  /** "value" → green wash (a real saving). "muted" → grey (neutral note). */
+  saveTone?: "value" | "muted";
   /** Italic 1-liner under the bullets, voice-of-brand. */
   voiceLine: string;
   ctaLabel: string;
@@ -150,6 +168,19 @@ export function PackCard({
         <div className="mt-3 text-[15px] text-[#6E6E73] tabular-nums">
           {credits} credit{credits === 1 ? "" : "s"} · {perUnit}
         </div>
+        {saveBadge && (
+          <div className="mt-3">
+            <span
+              className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-medium ${
+                saveTone === "muted"
+                  ? "bg-[#F5F5F7] text-[#6E6E73]"
+                  : "bg-[#F0FDF4] text-[#1A7F45]"
+              }`}
+            >
+              {saveBadge}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Hairline divider above the bullets */}
@@ -158,42 +189,63 @@ export function PackCard({
       {/* Feature list — shipped items get the standard green/slate check;
           Coming-soon items get a muted clock + pill so a buyer can see
           what's promised vs what's coming without ambiguity. */}
-      <ul className="flex-1 space-y-3 text-[15px]">
-        {bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-3">
-            {b.comingSoon ? (
-              <Clock
-                className="mt-0.5 size-5 shrink-0 text-[#86868B]"
-                aria-hidden="true"
-              />
-            ) : (
-              <Check
-                className={`mt-0.5 size-5 shrink-0 ${
-                  anchored ? "text-[#1A7F45]" : "text-[#6E6E73]"
-                }`}
-                aria-hidden="true"
-              />
-            )}
-            <span
-              className={
-                b.comingSoon
-                  ? "flex flex-wrap items-center gap-x-2 text-[#6E6E73]"
-                  : "text-[#1D1D1F]"
-              }
-            >
-              {b.text}
-              {b.comingSoon && (
-                <span
-                  className="inline-flex items-center rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#92400E]"
-                  aria-label="Coming soon"
-                >
-                  Coming soon
-                </span>
+      <div className="flex flex-1 flex-col gap-3 text-[15px]">
+        <ul className="space-y-3">
+          {bullets.map((b, i) => (
+            <li key={i} className="flex items-start gap-3">
+              {b.comingSoon ? (
+                <Clock
+                  className="mt-0.5 size-5 shrink-0 text-[#86868B]"
+                  aria-hidden="true"
+                />
+              ) : (
+                <Check
+                  className={`mt-0.5 size-5 shrink-0 ${
+                    anchored ? "text-[#1A7F45]" : "text-[#6E6E73]"
+                  }`}
+                  aria-hidden="true"
+                />
               )}
-            </span>
-          </li>
-        ))}
-      </ul>
+              <span
+                className={
+                  b.comingSoon
+                    ? "flex flex-wrap items-center gap-x-2 text-[#6E6E73]"
+                    : "text-[#1D1D1F]"
+                }
+              >
+                {b.text}
+                {b.comingSoon && (
+                  <span
+                    className="inline-flex items-center rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-[#92400E]"
+                    aria-label="Coming soon"
+                  >
+                    Coming soon
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Loss-aversion rows — what you give up by sizing down. Muted minus
+            + grey text so they read as "not in this pack" without shouting. */}
+        {notIncluded && notIncluded.length > 0 && (
+          <ul className="space-y-3" aria-label="Not included in this pack">
+            {notIncluded.map((text, i) => (
+              <li key={i} className="flex items-start gap-3 text-[#6E6E73]">
+                <Minus
+                  className="mt-0.5 size-5 shrink-0 text-[#86868B]"
+                  aria-hidden="true"
+                />
+                <span>
+                  <span className="sr-only">Not included: </span>
+                  {text}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {/* Brand voice line — quiet caption */}
       <p className="text-[13px] text-[#86868B]">{voiceLine}</p>

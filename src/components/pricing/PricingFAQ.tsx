@@ -53,7 +53,7 @@ export function PricingFAQ() {
         <div className="mt-12 divide-y divide-[#D2D2D7]/70 overflow-hidden rounded-2xl bg-white shadow-card">
           {faqs.map((f, i) => (
             <details key={i} className="group">
-              <summary className="flex list-none items-center justify-between gap-4 px-6 py-5 text-left text-[17px] font-medium text-[#1D1D1F] transition-colors hover:bg-[#FAFAFA] sm:px-8">
+              <summary className="focus-ring flex list-none items-center justify-between gap-4 px-6 py-5 text-left text-[17px] font-medium text-[#1D1D1F] transition-colors hover:bg-[#FAFAFA] sm:px-8">
                 {f.q}
                 <Plus
                   aria-hidden="true"
