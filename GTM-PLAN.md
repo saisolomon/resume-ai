@@ -54,6 +54,36 @@
 - **Secondary/long-tail:** Uneed, Fazier, Tiny Launch, Launching Next, SaaSHub, AlternativeTo (list jdresumes as an alternative to Teal/Rezi/Jobscan). Microlaunch + Reddit r/SideProject for indie traction.
 - **Re-launch cadence:** Each major feature is a new launch reason. Examples: "Now with bilingual EN+ES cover letters," "New: per-bullet ATS impact scoring," "Now exports native DOCX." YC says 3+ launches minimum — schedule them ~4–6 weeks apart.
 
+### Product Hunt launch kit (ready to paste)
+
+**Topics (pick ~3, in priority order):** `Career` (highest-intent, job-seeker audience) · `Artificial Intelligence` (biggest traffic, accurate) · `Productivity` (broad reach, "saves you an evening"). Flex the third with `Hiring` or `Tech` if you want a more ICP-specific slot. Keep Career + AI locked.
+
+**Tagline options (~60 char limit — the real conversion lever):**
+- `Paste a job post, get 4 tailored resumes + an ATS score`
+- `Tailor your resume to any job — 4 angles in 30 seconds`
+- `4 tailored resumes from one job description. Pay per use.`
+
+**Maker's first comment** (post at 12:01am PT, pin it; swap the name if you post under a different handle):
+
+> Hey Product Hunt 👋 I'm Isaiah, the maker.
+>
+> I built jdresumes because I was sick of the same ritual every application: open last week's resume, spend an evening shuffling bullets for *this* job, second-guess it, send it anyway. Everyone knows you're supposed to tailor every resume. Nobody has the energy to.
+>
+> So jdresumes does the retailoring — not the writing. You paste a job posting URL and drop your resume, and ~30 seconds later you get FOUR tailored versions of it, each from a different angle (engineering depth, leadership, cross-functional, specialist), plus 3 cover-letter variants and an ATS deep-scan that scores you per bullet. Ship the one that fits, in PDF or DOCX.
+>
+> A few things I deliberately refused to do:
+> • No subscription. Pay per use ($9 / $29 / $79), credits never expire, nothing auto-renews.
+> • No generic AI voice — Sonnet rewrites YOUR bullets in your wording, it doesn't invent a new you.
+> • Honest ATS scoring. The score is a floor, not a ceiling: we tell you what's missing, not that you're guaranteed an interview.
+>
+> You can try it free — no account, no card. First run's on me.
+>
+> Launch-day offer: drop a role you're targeting below and I'll run your resume against it live and share the ATS breakdown. 🎯
+>
+> I'd love feedback from anyone job-hunting right now — what would make this a no-brainer for your next application? I'm here all day.
+
+**Why this comment works:** opens with personal pain (PH rewards authenticity over hype), front-loads the concrete demo, hits the three real differentiators (pay-per-credit, your-voice, honest-ATS), removes risk (free, no card), and the "drop a role and I'll run it live" line drives comments — which both lift PH ranking and let you demo the product in public all day. Be glued to the thread the first few hours.
+
 **Assets/tools needed:**
 - 60–90s demo video (paste JD → 4 resumes generate → ATS score appears). Reuse across all platforms.
 - 4–6 product screenshots (the 4 angles side-by-side; the ATS deep-scan with per-bullet scoring; the pricing page showing "credits never expire").
